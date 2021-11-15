@@ -1,0 +1,20 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+"discord.py" = {git = "https://github.com/iDevision/enhanced-discord.py"}
+jishaku = ">=2.3.0"
+
+[dev-packages]
+pre-commit = "*"
+isort = "*"
+black = "*"
+autoflake = "*"
+
+[requires]
+python_version = "3.8"
+
+[scripts]
+start = "python runner.py"

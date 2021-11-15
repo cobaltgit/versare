@@ -1,0 +1,13 @@
+{
+    "token": "",
+    "defaults": {
+        "prefix": "$",
+        "welcome_msg": "Welcome to {0}, {1}!"
+    },
+    "db_dump_path": "",
+    "intents": {
+        "members": true,
+        "messages": true,
+        "guilds": true
+    }
+}
