@@ -15,9 +15,13 @@ class Versare(commands.AutoShardedBot):
 
     def __init__(self):
 
-        with open("config.json", "r") as config_file:
+        with open("config/config.json", "r") as config_file:
             self.config = json.load(config_file)
             config_file.close()
+
+        with open("config/auth.json", "r") as token_file:
+            self.token = json.load(token_file)["token"]
+            token_file.close()
 
         self.exts = [cog.replace("/", ".")[2:-3] for cog in glob("./cogs/**/*.py")]
 

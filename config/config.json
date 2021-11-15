@@ -1,5 +1,4 @@
 {
-    "token": "",
     "defaults": {
         "prefix": "$",
         "welcome_msg": "Welcome to {0}, {1}!"

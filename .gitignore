@@ -139,3 +139,6 @@ cython_debug/
 
 # Versare SQLite Database
 db/bot.db
+
+# Bot token file
+config/auth.json
