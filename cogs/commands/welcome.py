@@ -6,9 +6,6 @@ class Welcome(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def cog_check(self, ctx):
-        return ctx.author.guild_permissions.administrator
-
     @commands.group(name="welcome")
     async def welcome(self, ctx):
         if ctx.invoked_subcommand is not None:
@@ -38,6 +35,7 @@ The welcome message for this guild is '{welcome_message}'"""
         )
 
     @welcome.command(name="setchn")
+    @commands.has_permissions(manage_guild=True, manage_channels=True, manage_messages=True)
     async def setchn(
         self,
         ctx,
@@ -57,6 +55,7 @@ The welcome message for this guild is '{welcome_message}'"""
         await ctx.send(f"Welcome channel is now `{channel}`")
 
     @welcome.command(name="setmsg")
+    @commands.has_permissions(manage_guild=True, manage_channels=True, manage_messages=True)
     async def setmsg(
         self,
         ctx,

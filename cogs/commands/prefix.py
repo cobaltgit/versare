@@ -7,9 +7,6 @@ class Prefix(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def cog_check(self, ctx):
-        return ctx.author.guild_permissions.administrator
-
     @commands.group(name="prefix")
     async def prefix(self, ctx):
         """Get the prefix for this server"""
