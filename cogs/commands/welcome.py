@@ -6,6 +6,9 @@ class Welcome(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    async def cog_check(self, ctx):
+        return ctx.author.guild_permissions.administrator
+
     @commands.group(name="welcome")
     async def welcome(self, ctx):
         if ctx.invoked_subcommand is not None:
