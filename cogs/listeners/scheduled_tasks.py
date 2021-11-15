@@ -13,6 +13,13 @@ class ScheduledTasks(commands.Cog):
     @tasks.loop(hours=24)
     async def backupdb_scheduled(self):
         """Back up the bot's database"""
+
+        if not self.bot.config.get("db_dump_path", False):
+            print(
+                f"[{datetime.now().strftime('%d-%M-%Y %H:%M:%S')}] Scheduled database backup skipped due to dump path being unset.\n-> Set the database dump path in the bot's config.json file, located in the config directory."
+            )
+            return
+
         dump_path = os.path.join(
             self.bot.config["db_dump_path"],
             f"versare-{datetime.now().strftime('%d-%m-%Y')}.sql",
