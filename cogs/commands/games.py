@@ -28,7 +28,11 @@ class Games(commands.Cog):
         rollstr = ", ".join(str(roll) for roll in rolls)
 
         embed = discord.Embed(color=0x880000, title="Dice")
-        fields = [("Amount", amount, True), ("Rolls", rollstr, True), ("Sum of Rolls", sumofrolls, True)]
+        fields = [
+            ("Amount", amount, True),
+            ("Rolls", rollstr, True),
+            ("Sum of Rolls", sumofrolls, True),
+        ]
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
         embed.set_thumbnail(
@@ -38,7 +42,9 @@ class Games(commands.Cog):
 
     @commands.command(name="coin", aliases=["coinflip"])
     async def coin(
-        self, ctx, amount: Optional[int] = commands.Option(description="How many coins to flip?", default=1)
+        self,
+        ctx,
+        amount: Optional[int] = commands.Option(description="How many coins to flip?", default=1),
     ):
         if amount > 100:
             await ctx.send("You can't flip more than 100 coins at once.")

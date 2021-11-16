@@ -9,12 +9,22 @@ class Internet(commands.Cog):
         self.bot = bot
 
     @commands.command(name="lmgtfy", aliases=["google", "websearch"])
-    async def lmgtfy(self, ctx, *, query: str = commands.Option(description="What would you like to query?")):
+    async def lmgtfy(
+        self,
+        ctx,
+        *,
+        query: str = commands.Option(description="What would you like to query?"),
+    ):
         await ctx.send(f"https://lmgtfy.app/?q={quote_plus(query)}")
 
     @commands.command(name="isgd", aliases=["vgd", "urlshort"])
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def isgd(self, ctx, *, urls: str = commands.Option(description="One or more URLs to shorten")):
+    async def isgd(
+        self,
+        ctx,
+        *,
+        urls: str = commands.Option(description="One or more URLs to shorten"),
+    ):
         if len(urls.split()) > 5:
             await ctx.send("No more than 5 URLs can be shortened at a time")
             return
