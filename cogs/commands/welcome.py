@@ -79,7 +79,10 @@ The welcome message for this guild is '{welcome_message}'"""
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
-        self.bot.db_cur.execute("SELECT welcome_channel_id FROM welcome WHERE guild_id = ?", (member.guild.id,))
+        self.bot.db_cur.execute(
+            "SELECT welcome_channel_id FROM welcome WHERE guild_id = ?",
+            (member.guild.id,),
+        )
         result = self.bot.db_cur.fetchone()
         if result is None:
             if member.guild.system_channel is None:
@@ -93,6 +96,49 @@ The welcome message for this guild is '{welcome_message}'"""
         welcome_message = str(result[0]) if result is not None else self.bot.config["defaults"]["welcome_msg"]
 
         await welcome_channel.send(welcome_message.format(member.guild, member.mention))
+
+    @commands.Cog.listener()
+    async def on_guild_join(self, guild):
+        if guild.system_channel is None:
+            if "general" in guild.channels:
+                welcome_channel = discord.utils.get(guild.channels, name="general").id
+                for channel in guild.text_channels:
+                    if channel.permissions_for(guild.me).send_messages:
+                        await channel.send(
+                            "System channel not found for this guild. Falling back to `#general` for welcome channel."
+                        )
+                    break
+            else:
+                for channel in guild.text_channels:
+                    if channel.permissions_for(guild.me).send_messages:
+                        await channel.send(
+                            f"Welcome channel not set! Enter command `{self.bot.config['default_prefix']}welcome setchn <channel>` to set it."
+                        )
+                    break
+                return
+        else:
+            welcome_channel = guild.system_channel
+        self.bot.db_cur.execute("SELECT * FROM welcome WHERE guild_id = ?", (guild.id,))
+        result = self.bot.db_cur.fetchone()
+        if not result:
+            self.bot.db_cur.execute(
+                "INSERT INTO welcome(welcome_message, welcome_channel_id, guild_id)",
+                (
+                    self.bot.config["welcome_msg"],
+                    welcome_channel,
+                    guild.id,
+                ),
+            )
+        else:
+            self.bot.db_cur.execute(
+                "UPDATE welcome SET welcome_message = ? WHERE guild_id = ?",
+                (self.bot.config["welcome_msg"], guild.id),
+            )
+            self.bot.db_cur.execute(
+                "UPDATE welcome SET welcome_channel_id = ? WHERE guild_id = ?",
+                (welcome_channel, guild.id),
+            )
+        self.bot.db_cxn.commit()
 
 
 def setup(bot):
