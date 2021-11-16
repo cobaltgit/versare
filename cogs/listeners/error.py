@@ -11,7 +11,7 @@ class ErrorHandler(commands.Cog):
             await ctx.send(f"Required argument `{error.param}` missing.")
         elif isinstance(error, commands.CommandOnCooldown):
             await ctx.send(
-                f":stopwatch Cooldown: you can run command `{ctx.command}` after {round(error.retry_after, 1)} seconds."
+                f":hourglass: | Cooldown - you can run command `{ctx.command}` after {round(error.retry_after, 1)} seconds."
             )
         elif isinstance(error, commands.ConversionError):
             await ctx.send(f"Conversion error: {error}")
