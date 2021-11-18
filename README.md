@@ -6,7 +6,20 @@ At that point, you can just invite the bot to your server if you don't want to c
 
 ### Requirements
 
-Pyenv with Python 3.8 installed (instructions below if you haven't)  
+This is what you'll need to run your bot:  
+```
+Pyenv with Python 3.8 installed
+SQLite3
+Pipenv
+```
+
+Pip package requirements are below:  
+```
+enhanced-discord.py
+wikipedia
+lxml
+jishaku
+```
 
 
 ## Setup
