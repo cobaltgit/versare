@@ -1,5 +1,7 @@
 from urllib.parse import quote_plus
 
+import discord
+import wikipedia
 from discord.ext import commands
 
 
@@ -45,6 +47,51 @@ class Internet(commands.Cog):
                     )
                 return
             await ctx.send(resp["shorturl"])
+
+    @commands.command(name="wikipedia", aliases=["wiki", "encyclopedia"])
+    async def wikipedia(self, ctx, *, query: str = commands.Option(description="Search Wikipedia")):
+        """Query Wikipedia, the free encyclopedia."""
+        try:
+            embed = discord.Embed(
+                title=wikipedia.page(query).title,
+                url=wikipedia.page(query).url,
+                description=wikipedia.summary(query, sentences=3, auto_suggest=True, redirect=True, chars=1000),
+                color=ctx.author.color,
+            )
+        except wikipedia.DisambiguationError as e:
+
+            def check(msg):
+                return (
+                    msg.author == ctx.author
+                    and msg.channel == ctx.channel
+                    and int(msg.content) in list(range(len(e.options)))
+                )
+
+            await ctx.send(f"Disambiguation: choose one of the following (0-{len(e.options)}):")
+            await ctx.send("```" + "\n".join(e.options) + "```")
+
+            msg = await self.bot.wait_for("message", check=check)
+
+            if int(msg.content) > len(e.options):
+                await ctx.send(":x: | Invalid choice")
+                return
+
+            query = e.options[int(msg.content)]
+
+            try:
+                embed = discord.Embed(
+                    title=wikipedia.page(query).title,
+                    url=wikipedia.page(query).url,
+                    description=wikipedia.summary(query, sentences=3, auto_suggest=True, redirect=True, chars=1000),
+                    color=0x0047AB,
+                )
+            except wikipedia.DisambiguationError as e:
+                pass
+
+            await ctx.send(embed=embed)
+
+            return
+        await ctx.send(embed=embed)
 
 
 def setup(bot):

@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 "discord.py" = {git = "https://github.com/iDevision/enhanced-discord.py"}
 jishaku = ">=2.3.0"
+wikipedia = "*"
+lxml = "*"
 
 [dev-packages]
 pre-commit = "*"
