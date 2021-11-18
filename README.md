@@ -67,7 +67,8 @@ $ pipenv run start
 
 ### Inviting the bot to your server
 
-Go back to the developer portal and go to the *OAuth2* tab on the sidebar and the **__OAuth2 URL Generator__** section.  
-Tick the `bot` and `applications.commands` scopes under the *SCOPES* section and tick the `Administrator` permission underneath *BOT PERMISSIONS*  
-An invite link should appear underneath the *SCOPES* section. Copy that and paste it into a new browser tab, invite the bot to a server you own or moderate and Bob's your uncle.  
-You've successfully set up an instance of Versare!
+* Go back to the developer portal and go to the *OAuth2* tab on the sidebar and the **__OAuth2 URL Generator__** section.  
+
+* Tick the `bot` and `applications.commands` scopes under the *SCOPES* section and tick the `Administrator` permission underneath *BOT PERMISSIONS*  
+  
+* An invite link should appear underneath the *SCOPES* section. Copy that and paste it into a new browser tab, invite the bot to a server you own or moderate and Bob's your uncle. You've successfully set up an instance of Versare!
