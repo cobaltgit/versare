@@ -13,7 +13,7 @@ class Prefix(commands.Cog):
         if ctx.invoked_subcommand is None:
             self.bot.db_cur.execute("SELECT prefix FROM custompfx WHERE guild_id = ?", (ctx.guild.id,))
             result = self.bot.db_cur.fetchone()
-            prefix = self.bot.config["default_prefix"] if result is None else str(result[0])
+            prefix = self.bot.config["defaults"]["prefix"] if result is None else str(result[0])
             await ctx.send(f"Prefix for this guild is `{prefix}`")
 
     @prefix.command(name="set")
