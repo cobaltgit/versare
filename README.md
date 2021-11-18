@@ -4,6 +4,11 @@ A general-purpose **WORK-IN-PROGRESS - INCOMPLETE** Discord bot for the masses
 The main instance of Versare will be up when the bot is in a more complete state.  
 At that point, you can just invite the bot to your server if you don't want to create your own instance.
 
+### Requirements
+
+Pyenv with Python 3.8 installed (instructions below if you haven't)  
+
+
 ## Setup
 
 Instructions on how to set up your instance of Versare
@@ -19,21 +24,9 @@ $ git clone https://github.com/cobaltgit/versare.git
 ### Installing the dependencies
 
 Next, we need to install the dependencies so the code can run  
-You'll need `pipenv` and ideally [`pyenv`](https://github.com/pyenv/pyenv) installed on your system for this. Install [`pyenv`](https://github.com/pyenv/pyenv) with your system package manager and `pipenv` through `pip`.
+You'll need `pipenv` and ideally [`pyenv`](https://github.com/pyenv/pyenv) installed on your system for this. Follow the setup instructions for [`pyenv`](https://github.com/pyenv/pyenv) and install Python version 3.8.12, which is what you'll need for the bot to run properly. Make sure to also configure your shell environment for [`pyenv`](https://github.com/pyenv/pyenv).
 
-* Follow the pyenv setup instructions and install version `3.8.12` with this command:
-```bash
-$ pyenv install 3.8.12
-```
-Make sure you have configured your pyenv shell environment.
-
-* Go to the directory of your bot and run this command to set the version of Python for the bot:
-```bash
-$ pyenv local 3.8.12
-```
-
-
-* Next, to install `pipenv`, run this command in the terminal
+* Assuming you've installed Pyenv and 3.8.12 properly, to install `pipenv`, run this command in the terminal
 ```bash
 $ python3 -m pip install pipenv
 ```
