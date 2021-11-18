@@ -11,7 +11,7 @@ Instructions on how to set up your instance of Versare
 ### Fetching the code
 
 To fetch the code, you need `git` installed on your system  
-Run this command in the terminal to clone the Git repository  
+* Run this command in the terminal to clone the Git repository  
 ```bash
 $ git clone https://github.com/cobaltgit/versare.git
 ```
@@ -19,12 +19,26 @@ $ git clone https://github.com/cobaltgit/versare.git
 ### Installing the dependencies
 
 Next, we need to install the dependencies so the code can run  
-You'll need `pipenv` and ideally `pyenv` installed on your system for this. Install `pyenv` with your system package manager and `pipenv` through `pip`.  
+You'll need `pipenv` and ideally [`pyenv`](https://github.com/pyenv/pyenv) installed on your system for this. Install [`pyenv`](https://github.com/pyenv/pyenv) with your system package manager and `pipenv` through `pip`.
+
+* Follow the pyenv setup instructions and install version `3.8.12` with this command:
+```bash
+$ pyenv install 3.8.12
+```
+Make sure you have configured your pyenv shell environment.
+
+* Go to the directory of your bot and run this command to set the version of Python for the bot:
+```bash
+$ pyenv local 3.8.12
+```
+
+
+* Next, to install `pipenv`, run this command in the terminal
 ```bash
 $ python3 -m pip install pipenv
 ```
 
-Change to the directory of the bot's code and run the following command
+* Install the required packages in your environment with this command:
 ```bash
 $ pipenv install
 ```
@@ -39,26 +53,26 @@ $ pre-commit install
 ### Initialising the bot on Discord
 
 Next, we'll need to initialise our bot on Discord's side   
-Click [this link](https://discord.com/developers/applications) to go to the Discord Developer Portal and log in if needed.  
+* Click [this link](https://discord.com/developers/applications) to go to the Discord Developer Portal and log in if needed.  
 
-Click on the **New Application** button toward the top right corner and give a name to your instance (ideally Versare, but do whatver :) )  
-Go to the *Bot* tab on the sidebar and click **Add Bot**. This generates a new bot account on Discord's side.  
-Check all radio buttons under the **__Privileged Gateway Intents__** section.
+* Click on the **New Application** button toward the top right corner and give a name to your instance (ideally Versare, but do whatver :) )  
+* Go to the *Bot* tab on the sidebar and click **Add Bot**. This generates a new bot account on Discord's side.  
+* Check all radio buttons under the **__Privileged Gateway Intents__** section.
 
 ### Authenticating the bot and launching
 
-Scroll up to the top, and click **Copy** underneath the *TOKEN* section.  
-Create a file in the config directory with your favourite text editor.  
+* Scroll up to the top, and click **Copy** underneath the *TOKEN* section.  
+* Create a file in the config directory with your favourite text editor.  
 ```bash
 $ nano config/auth.json
 ```
-The file should look something like this - paste your token in the `token` key-value pair:  
+-> The file should look something like this - paste your token in the `token` key-value pair:  
 ```json
 {
     "token": "bot-token-here"
 }
 ```
-Save the file and exit your editor.  
+* Save the file and exit your editor.  
 
 Finally, to launch your bot at any time, go to the directory containing the code and run this command:  
 ```bash
