@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
-from gzip import open as gzipopen
+from gzip import open as gzopen
+from shutil import copyfileobj as cp
 
 from discord.ext import commands, tasks
 
@@ -31,10 +32,9 @@ class ScheduledTasks(commands.Cog):
         with open(dump_path, "w") as dump:
             dump.writelines(self.bot.db_cxn.iterdump())
 
-        with open(dump_path, "r") as dump:
-            with gzipopen(dump_path + ".gz", "wb") as gzipped_dump:
-                gzipped_dump.write(bytes(dump.read(), "utf-8"))
-            os.remove(dump_path)
+        with open(dump_path, "rb") as dump:
+            with gzopen(dump_path + ".gz", "wb") as gzipped_dump:
+                cp(dump, gzipped_dump)
 
         print(f"[{datetime.now().strftime('%d-%M-%Y %H:%M:%S')}] Scheduled database backup completed")
 

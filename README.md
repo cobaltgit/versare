@@ -1,6 +1,8 @@
 # Versare
 
-A general-purpose **WORK-IN-PROGRESS - INCOMPLETE** Discord bot for the masses
+A general-purpose **WORK-IN-PROGRESS - INCOMPLETE** Discord bot for the masses  
+The main instance of Versare will be up when the bot is in a more complete state.  
+At that point, you can just invite the bot to your server if you don't want to create your own instance.
 
 ## Setup
 
