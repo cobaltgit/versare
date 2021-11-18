@@ -1,7 +1,11 @@
 import json
+import logging
+import os
 import sqlite3
 from datetime import datetime
 from glob import glob
+from gzip import open as gzopen
+from shutil import copyfileobj as cp
 
 import aiohttp
 import discord
@@ -14,6 +18,16 @@ class Versare(commands.AutoShardedBot):
     db_cur = db_cxn.cursor()
 
     def __init__(self):
+
+        if not os.path.exists("./logs"):
+            os.makedirs("./logs")
+
+        self.logpath = f'logs/discord-{datetime.now().strftime("%d-%m-%Y-%H:%M:%S")}.log'
+        self.logger = logging.getLogger("discord")
+        self.logger.setLevel(logging.DEBUG)
+        handler = logging.FileHandler(filename=self.logpath, encoding="utf-8", mode="w")
+        handler.setFormatter(logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s"))
+        self.logger.addHandler(handler)
 
         with open("config/config.json", "r") as config_file:
             self.config = json.load(config_file)
@@ -85,5 +99,10 @@ class Versare(commands.AutoShardedBot):
         self.db_cxn.commit()
         self.db_cur.close()
         self.db_cxn.close()
+
+        with open(self.logpath, "rb") as log:
+            with gzopen(self.logpath + ".gz", "wb") as gzipped_log:
+                cp(log, gzipped_log)
+        os.remove(self.logpath)
 
         await super().close()

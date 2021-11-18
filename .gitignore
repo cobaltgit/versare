@@ -142,3 +142,6 @@ db/bot.db
 
 # Bot token file
 config/auth.json
+
+# Bot logs
+logs/
