@@ -35,6 +35,7 @@ class ScheduledTasks(commands.Cog):
         with open(dump_path, "rb") as dump:
             with gzopen(dump_path + ".gz", "wb") as gzipped_dump:
                 cp(dump, gzipped_dump)
+        os.remove(dump_path)
 
         print(f"[{datetime.now().strftime('%d-%M-%Y %H:%M:%S')}] Scheduled database backup completed")
 
