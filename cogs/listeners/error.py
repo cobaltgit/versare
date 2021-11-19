@@ -26,12 +26,15 @@ class ErrorHandler(commands.Cog):
             )
         elif isinstance(error, commands.CommandNotFound):
             available_commands = [command.name for command in self.bot.walk_commands()]
-            ratios = [fuzz.ratio(ctx.command, command) for command in available_commands]
+            ratios = [
+                fuzz.ratio(ctx.message.content[len(self.bot.guildpfx) :], command) for command in available_commands
+            ]
             closest_match = available_commands[ratios.index(max(ratios))]
             await ctx.send(
-                f""":x: | Command `{ctx.message.content.split()[0]}` not found.
+                f""":x: | Command `{ctx.message.content[len(self.bot.guildpfx):].split()[0]}` not found.
 Maybe you meant `{closest_match}`?"""
             )
+
         else:
             raise error
 

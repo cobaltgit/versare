@@ -35,9 +35,8 @@ class Versare(commands.AutoShardedBot):
         def _get_prefix(bot, message):
             self.db_cur.execute("SELECT prefix FROM custompfx WHERE guild_id = ?", (message.guild.id,))
             result = self.db_cur.fetchone()
-            return commands.when_mentioned_or(self.config["defaults"]["prefix"] if result is None else str(result[0]))(
-                bot, message
-            )
+            self.guildpfx = self.config["defaults"]["prefix"] if result is None else str(result[0])
+            return commands.when_mentioned_or(self.guildpfx)(bot, message)
 
         super().__init__(
             slash_commands=True,
