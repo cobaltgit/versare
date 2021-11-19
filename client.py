@@ -22,13 +22,6 @@ class Versare(commands.AutoShardedBot):
         if not os.path.exists("./logs"):
             os.makedirs("./logs")
 
-        self.logpath = f'logs/discord-{datetime.now().strftime("%d-%m-%Y-%H:%M:%S")}.log'
-        self.logger = logging.getLogger("discord")
-        self.logger.setLevel(logging.DEBUG)
-        handler = logging.FileHandler(filename=self.logpath, encoding="utf-8", mode="w")
-        handler.setFormatter(logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s"))
-        self.logger.addHandler(handler)
-
         with open("config/config.json", "r") as config_file:
             self.config = json.load(config_file)
             config_file.close()
@@ -58,6 +51,13 @@ class Versare(commands.AutoShardedBot):
     def run(self, token: str = None) -> None:
         if token is None:
             raise ValueError("Please provide a valid Discord bot token")
+
+        self.logpath = f'logs/discord-{datetime.now().strftime("%d-%m-%Y-%H:%M:%S")}.log'
+        self.logger = logging.getLogger("discord")
+        self.logger.setLevel(logging.DEBUG)
+        handler = logging.FileHandler(filename=self.logpath, encoding="utf-8", mode="w")
+        handler.setFormatter(logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s"))
+        self.logger.addHandler(handler)
 
         self.loaded_cogs = []
 
