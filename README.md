@@ -8,7 +8,7 @@ At that point, you can just invite the bot to your server if you don't want to c
 
 This is what you'll need to run your bot:  
 ```
-Python 3.9.7 installed on system - if you haven't already, use pyen
+Python 3.9.7 installed on system - if you haven't already, use pyenv
 SQLite3
 Pipenv
 ```
@@ -19,6 +19,8 @@ enhanced-discord.py
 wikipedia
 lxml
 jishaku
+thefuzz
+python-Levenshtein
 ```
 
 
@@ -40,7 +42,7 @@ Next, we need to install the dependencies so the code can run
 You'll need `pipenv` for this. If you don't have Python 3.9.7 installed on your system, use [`pyenv`](https://github.com/pyenv/pyenv).  
 Follow the setup instructions from there and install 3.9.7
 
-* To install `pipenv`, run this command in the terminal
+* Assuming you've installed Python 3.9.7 properly if you haven't already, install `pipenv` with this command in the terminal
 ```bash
 $ python3 -m pip install pipenv
 ```
