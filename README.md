@@ -23,6 +23,11 @@ thefuzz
 python-Levenshtein
 ```
 
+### TO-DO LIST
+A list of things that need to be implemented next
+* Fix consecutive `DisambiguationError`s with `wikipedia` command
+* ADD MORE COMMANDS!!!
+
 
 ## Setup
 
