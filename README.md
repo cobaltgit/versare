@@ -8,7 +8,7 @@ At that point, you can just invite the bot to your server if you don't want to c
 
 This is what you'll need to run your bot:  
 ```
-Pyenv with Python 3.8 installed
+Python 3.9.7 installed on system - if you haven't already, use pyen
 SQLite3
 Pipenv
 ```
@@ -37,9 +37,10 @@ $ git clone https://github.com/cobaltgit/versare.git
 ### Installing the dependencies
 
 Next, we need to install the dependencies so the code can run  
-You'll need `pipenv` and ideally [`pyenv`](https://github.com/pyenv/pyenv) installed on your system for this. Follow the setup instructions for [`pyenv`](https://github.com/pyenv/pyenv) and install Python version 3.8.12, which is what you'll need for the bot to run properly. Make sure to also configure your shell environment for [`pyenv`](https://github.com/pyenv/pyenv).
+You'll need `pipenv` for this. If you don't have Python 3.9.7 installed on your system, use [`pyenv`](https://github.com/pyenv/pyenv).  
+Follow the setup instructions from there and install 3.9.7
 
-* Assuming you've installed Pyenv and 3.8.12 properly, to install `pipenv`, run this command in the terminal
+* To install `pipenv`, run this command in the terminal
 ```bash
 $ python3 -m pip install pipenv
 ```
