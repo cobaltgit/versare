@@ -26,7 +26,6 @@ class ErrorHandler(commands.Cog):
             )
         elif isinstance(error, commands.CommandNotFound):
             available_commands = [command.name for command in self.bot.walk_commands()]
-            print(available_commands)
             ratios = [fuzz.ratio(ctx.command, command) for command in available_commands]
             closest_match = available_commands[ratios.index(max(ratios))]
             await ctx.send(
