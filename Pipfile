@@ -8,6 +8,8 @@ name = "pypi"
 jishaku = ">=2.3.0"
 wikipedia = "*"
 lxml = "*"
+python-levenshtein = "*"
+thefuzz = "*"
 
 [dev-packages]
 pre-commit = "*"

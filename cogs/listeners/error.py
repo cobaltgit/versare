@@ -1,4 +1,5 @@
 from discord.ext import commands
+from thefuzz import fuzz
 
 
 class ErrorHandler(commands.Cog):
@@ -24,7 +25,14 @@ class ErrorHandler(commands.Cog):
                 f"Permissions check for command `{ctx.command}` failed - this command may only work if you are the bot owner or have administrator permissions.."
             )
         elif isinstance(error, commands.CommandNotFound):
-            return
+            available_commands = [command.name for command in self.bot.walk_commands()]
+            print(available_commands)
+            ratios = [fuzz.ratio(ctx.command, command) for command in available_commands]
+            closest_match = available_commands[ratios.index(max(ratios))]
+            await ctx.send(
+                f""":x: | Command `{ctx.message.content.split()[0]}` not found.
+Maybe you meant `{closest_match}`?"""
+            )
         else:
             raise error
 
