@@ -3,6 +3,7 @@ from urllib.parse import quote_plus
 import discord
 import wikipedia
 from discord.ext import commands
+from wikipedia.exceptions import PageError
 
 
 class Internet(commands.Cog):
@@ -95,6 +96,13 @@ class Internet(commands.Cog):
             await ctx.send(embed=embed)
 
             return
+
+        except wikipedia.PageError:
+            await ctx.send(
+                f":globe_with_meridians: | Page ID `{query}` doesn't match any pages - maybe that page doesn't exist? Try another."
+            )
+            return
+
         await ctx.send(embed=embed)
 
 
