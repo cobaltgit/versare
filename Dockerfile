@@ -14,6 +14,6 @@ RUN apt-get update && apt-get install git gcc linux-libc-dev libc6-dev -y --no-i
     pip uninstall -y micropipenv[toml]
     
 
-VOLUME ["/app/db/backup", "/app/logs"]
+VOLUME ["/app/db", "/app/logs"]
 ENTRYPOINT [ "/app/docker-init.sh" ]
 CMD [ "python", "runner.py" ]

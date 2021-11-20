@@ -7,5 +7,5 @@ services:
       DEFAULT_PREFIX: "v!"
       DEFAULT_WELCOME_MSG: "Welcome to {0}, {1}!"
     volumes:
-      - /path/to/db/backup:/app/db/backup
+      - /path/to/bot/db:/app/db
       - /path/to/bot/logs:/app/logs
