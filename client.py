@@ -72,6 +72,7 @@ class Versare(commands.AutoShardedBot):
                 print(f"[ERR] Cog `{cog}` raised an exception while loading:\n-> {type(e).__name__}: {e}")
 
         self.httpsession = aiohttp.ClientSession()
+        self.load_extension("jishaku")
 
         super().run(token)
 
