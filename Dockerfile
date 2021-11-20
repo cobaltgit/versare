@@ -10,7 +10,8 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install git gcc linux-libc-dev libc6-dev -y --no-install-recommends && rm -rf /var/lib/apt/lists/* && \
     pip install --no-cache-dir micropipenv[toml] && \
-    chmod +x /app/docker-init.sh && micropipenv install --deploy && apt-get autopurge -y git gcc
+    chmod +x /app/docker-init.sh && micropipenv install --deploy && apt-get autopurge -y git gcc && \
+    pip uninstall -y micropipenv[toml]
     
 
 VOLUME ["/app/db/backup", "/app/logs"]
