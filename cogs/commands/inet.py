@@ -54,9 +54,10 @@ class Internet(commands.Cog):
     async def wikipedia(self, ctx, *, query: str = commands.Option(description="Search Wikipedia")):
         """Query Wikipedia, the free encyclopedia."""
         try:
+            page = wikipedia.page(query, auto_suggest=False)
             embed = discord.Embed(
-                title=wikipedia.page(query).title,
-                url=wikipedia.page(query).url,
+                title=page.title,
+                url=page.url,
                 description=wikipedia.summary(query, sentences=3, auto_suggest=False, redirect=True, chars=1000),
                 color=ctx.author.color,
             )
@@ -81,9 +82,10 @@ class Internet(commands.Cog):
             query = e.options[int(msg.content)]
 
             try:
+                page = wikipedia.page(query, auto_suggest=False)
                 embed = discord.Embed(
-                    title=wikipedia.page(query).title,
-                    url=wikipedia.page(query).url,
+                    title=page.title,
+                    url=page.url,
                     description=wikipedia.summary(query, sentences=3, auto_suggest=False, redirect=True, chars=1000),
                     color=0x0047AB,
                 )
