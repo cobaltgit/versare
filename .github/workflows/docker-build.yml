@@ -4,6 +4,14 @@ on:
   push:
     branches:
       - 'main'
+    paths:
+      - "**/*.py"
+      - "Dockerfile"
+      - ".dockerignore"
+      - "db/init.sql"
+      - "Pipfile*"
+      - "docker-init.sh"
+      - "config/*"
 
 jobs:
   docker:
