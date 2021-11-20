@@ -84,7 +84,7 @@ class Internet(commands.Cog):
                 embed = discord.Embed(
                     title=wikipedia.page(query).title,
                     url=wikipedia.page(query).url,
-                    description=wikipedia.summary(query, sentences=3, auto_suggest=True, redirect=True, chars=1000),
+                    description=wikipedia.summary(query, sentences=3, auto_suggest=False, redirect=True, chars=1000),
                     color=0x0047AB,
                 )
             except wikipedia.DisambiguationError as e:
