@@ -27,6 +27,7 @@ class Internet(commands.Cog):
         *,
         urls: str = commands.Option(description="One or more URLs to shorten"),
     ):
+        """Batch-shorten up to 5 URLs at a time with the is.gd API"""
         if len(urls.split()) > 5:
             await ctx.send("No more than 5 URLs can be shortened at a time")
             return
