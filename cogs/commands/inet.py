@@ -17,6 +17,7 @@ class Internet(commands.Cog):
         *,
         query: str = commands.Option(description="What would you like to query?"),
     ):
+        """Let me Google that for you - pass a query and get your link"""
         await ctx.send(f"https://lmgtfy.app/?q={quote_plus(query)}")
 
     @commands.command(name="isgd", aliases=["vgd", "urlshort"])
