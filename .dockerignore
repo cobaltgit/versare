@@ -1,0 +1,6 @@
+.*
+README.md
+LICENSE
+db/bot.db
+config/auth.json
+logs/

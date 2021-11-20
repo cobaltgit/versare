@@ -8,6 +8,7 @@ At that point, you can just invite the bot to your server if you don't want to c
 
 This is what you'll need to run your bot:  
 ```
+GCC
 Python 3.9.7 installed on system - if you haven't already, use pyenv
 SQLite3
 Pipenv
@@ -91,6 +92,28 @@ $ nano config/auth.json
 Finally, to launch your bot at any time, go to the directory containing the code and run this command:  
 ```bash
 $ pipenv run start
+```
+
+## ALTERNATE SETUP - DOCKER
+
+You'll need Docker installed on your system for this much simpler way of setting up - install it with your system package manager if you haven't already  
+All you have to do is run this command in the terminal, assuming Docker is installed on your system:
+```bash
+$ docker run -d -it -e TOKEN=your-token-here \
+    -e DEFAULT_PREFIX=v!
+    -e DEFAULT_WELCOME_MSG=Welcome\ to\ {0},\ {1}!
+    -v /path/to/db/backup:/app/db/backup
+    cobaltdocker/versare
+```
+
+Or, if you have Docker Compose installed, substitute the environment variables in `docker-compose.yml` for your own and run this command:
+```bash
+$ docker-compose up -d
+```
+
+To access your database backup directory, you may need to chown it:
+```bash
+$ sudo chown -R $(id -u):$(id -g) /path/to/db/backup
 ```
 
 ### Inviting the bot to your server

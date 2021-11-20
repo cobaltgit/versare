@@ -48,7 +48,7 @@ class Versare(commands.AutoShardedBot):
         )
 
     def run(self, token: str = None) -> None:
-        if token is None:
+        if not token:
             raise ValueError("Please provide a valid Discord bot token")
 
         self.logpath = f'logs/discord-{datetime.now().strftime("%d-%m-%Y-%H:%M:%S")}.log'
