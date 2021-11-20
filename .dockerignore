@@ -4,3 +4,5 @@ LICENSE
 db/bot.db
 config/auth.json
 logs/
+docker-compose.yml
+Dockerfile

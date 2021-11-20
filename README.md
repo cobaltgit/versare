@@ -100,9 +100,10 @@ You'll need Docker installed on your system for this much simpler way of setting
 All you have to do is run this command in the terminal, assuming Docker is installed on your system:
 ```bash
 $ docker run -d -it -e TOKEN=your-token-here \
-    -e DEFAULT_PREFIX=v!
-    -e DEFAULT_WELCOME_MSG=Welcome\ to\ {0},\ {1}!
-    -v /path/to/db/backup:/app/db/backup
+    -e DEFAULT_PREFIX=v! \
+    -e DEFAULT_WELCOME_MSG=Welcome\ to\ {0},\ {1}! \
+    -v /path/to/db/backup:/app/db/backup \
+    -v /path/to/bot/logs:/app/logs
     cobaltdocker/versare
 ```
 
@@ -111,9 +112,9 @@ Or, if you have Docker Compose installed, substitute the environment variables i
 $ docker-compose up -d
 ```
 
-To access your database backup directory, you may need to chown it:
+To access your database backup and logs directories, you may need to chown them:
 ```bash
-$ sudo chown -R $(id -u):$(id -g) /path/to/db/backup
+$ sudo chown -R $(id -u):$(id -g) /path/to/db/backup /path/to/bot/logs
 ```
 
 ### Inviting the bot to your server

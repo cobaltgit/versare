@@ -10,9 +10,9 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install git gcc linux-libc-dev libc6-dev -y --no-install-recommends && rm -rf /var/lib/apt/lists/* && \
     pip install --no-cache-dir micropipenv[toml] && \
-    chmod +x /app/docker/init.sh && mv /app/docker/init.sh /app/init.sh && rmdir docker && \
-    micropipenv install --deploy && apt-get autopurge -y git gcc
+    chmod +x /app/docker-init.sh && micropipenv install --deploy && apt-get autopurge -y git gcc
+    
 
-VOLUME ["/app/db/backup"]
-ENTRYPOINT [ "/app/init.sh" ]
+VOLUME ["/app/db/backup", "/app/logs"]
+ENTRYPOINT [ "/app/docker-init.sh" ]
 CMD [ "python", "runner.py" ]
