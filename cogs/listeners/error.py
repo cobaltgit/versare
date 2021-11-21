@@ -27,9 +27,7 @@ class ErrorHandler(commands.Cog):
         elif isinstance(error, commands.CommandNotFound):
             prefix = self.bot.guildpfx if not self.bot.user.mentioned_in(ctx.message) else f"<@!{self.bot.user.id}>"
             available_commands = [command.name for command in self.bot.walk_commands()]
-            ratios = [
-                fuzz.ratio(ctx.message.content[len(self.bot.guildpfx) :], command) for command in available_commands
-            ]
+            ratios = [fuzz.ratio(ctx.message.content[len(prefix) :], command) for command in available_commands]
             closest_match = available_commands[ratios.index(max(ratios))]
             await ctx.send(
                 f""":x: | Command `{ctx.message.content[len(prefix):].split()[0]}` not found.
