@@ -47,6 +47,9 @@ class ErrorHandler(commands.Cog):
                 f""":x: | Command `{ctx.message.content[len(prefix):].split()[0]}` not found.
 Maybe you meant `{closest_match}`?"""
             )
+        elif isinstance(error, commands.UserInputError):
+            await ctx.send("Invalid user input")
+            await self.send_command_help(ctx)
 
         else:
             raise error
