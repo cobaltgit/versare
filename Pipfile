@@ -10,6 +10,7 @@ wikipedia = "*"
 lxml = "*"
 python-levenshtein = "*"
 thefuzz = "*"
+cryptography = "*"
 
 [dev-packages]
 pre-commit = "*"

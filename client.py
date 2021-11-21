@@ -9,6 +9,7 @@ from shutil import copyfileobj as cp
 
 import aiohttp
 import discord
+from cryptography.fernet import Fernet
 from discord.ext import commands
 
 
@@ -24,11 +25,16 @@ class Versare(commands.AutoShardedBot):
 
         with open("config/config.json", "r") as config_file:
             self.config = json.load(config_file)
-            config_file.close()
 
-        with open("config/auth.json", "r") as token_file:
-            self.token = json.load(token_file)["token"]
-            token_file.close()
+        with open("config/auth.json", "r") as auth_file:
+            self.auth = json.load(auth_file)
+            self.token = self.auth["token"]
+            if not self.auth.get("db_encryption_key"):
+                self.auth["db_encryption_key"] = str(Fernet.generate_key().decode("utf-8"))
+                with open("config/auth.json", "w") as key_dump:
+                    json.dump(self.auth, key_dump)
+
+            self.fernet = Fernet(self.auth["db_encryption_key"])
 
         self.init_exts = (cog.replace("/", ".")[2:-3] for cog in glob("./cogs/**/*.py"))
 
@@ -96,6 +102,7 @@ class Versare(commands.AutoShardedBot):
             except Exception as e:
                 print(f"[ERR] Cog `{cog}` raised an exception while unloading:\n-> {type(e).__name__}: {e}")
 
+        self.db_cur.execute("DELETE FROM sniper")
         self.db_cxn.commit()
         self.db_cur.close()
         self.db_cxn.close()

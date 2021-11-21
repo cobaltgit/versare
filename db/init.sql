@@ -12,4 +12,17 @@ CREATE TABLE IF NOT EXISTS welcome(
 CREATE TABLE IF NOT EXISTS custompfx(
     guild_id INTEGER,
     prefix TEXT DEFAULT "$" NOT NULL
+);
+
+--Table for snipe command
+CREATE TABLE IF NOT EXISTS sniper(
+    channel_id INTEGER,
+    author_id INTEGER,
+    message TEXT
+);
+
+--Allow opting out of snipe command
+CREATE TABLE IF NOT EXISTS sniper_optout(
+    guild_id INTEGER,
+    user_id INTEGER
 )

@@ -22,6 +22,7 @@ lxml
 jishaku
 thefuzz
 python-Levenshtein
+cryptography
 ```
 
 ### TO-DO LIST
@@ -88,6 +89,10 @@ $ nano config/auth.json
 }
 ```
 * Save the file and exit your editor.  
+* Make sure only YOU can access the auth file:
+```bash
+$ chmod 600 config/auth.json
+```
 
 Finally, to launch your bot at any time, go to the directory containing the code and run this command:  
 ```bash
