@@ -30,7 +30,7 @@ class Versare(commands.AutoShardedBot):
             self.token = json.load(token_file)["token"]
             token_file.close()
 
-        self.exts = [cog.replace("/", ".")[2:-3] for cog in glob("./cogs/**/*.py")]
+        self.init_exts = (cog.replace("/", ".")[2:-3] for cog in glob("./cogs/**/*.py"))
 
         def _get_prefix(bot, message):
             self.db_cur.execute("SELECT prefix FROM custompfx WHERE guild_id = ?", (message.guild.id,))
@@ -64,7 +64,7 @@ class Versare(commands.AutoShardedBot):
             self.db_cur.executescript(db_init.read())
             db_init.close()
 
-        for cog in self.exts:
+        for cog in self.init_exts:
             try:
                 self.load_extension(cog)
                 self.loaded_cogs.append(cog)
