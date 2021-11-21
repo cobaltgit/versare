@@ -16,13 +16,27 @@ class ErrorHandler(commands.Cog):
             )
         elif isinstance(error, commands.ConversionError):
             await ctx.send(f"Conversion error: {error}")
+        elif isinstance(error, commands.BotMissingPermissions):
+            missing = [perm.replace("_", " ").replace("guild", "server").title() for perm in error.missing_perms]
+            fmt = (
+                "{}, and {}".format("**, **".join(missing[:-1]), missing[-1])
+                if len(missing) > 2
+                else " and ".join(missing)
+            )
+            await ctx.send(f"I am missing **{fmt}** permission(s) needed to run this command.")
         elif isinstance(error, commands.MissingPermissions):
-            await ctx.send(f"Permission denied: {error}")
+            missing = [perm.replace("_", " ").replace("guild", "server").title() for perm in error.missing_perms]
+            fmt = (
+                "{}, and {}".format("**, **".join(missing[:-1]), missing[-1])
+                if len(missing) > 2
+                else " and ".join(missing)
+            )
+            await ctx.send(f"You are missing **{fmt}** permission(s) needed to run this command.")
         elif isinstance(error, commands.DisabledCommand):
             await ctx.send(f"`{ctx.command}` has been disabled.")
         elif isinstance(error, commands.CheckFailure):
             await ctx.send(
-                f"Permissions check for command `{ctx.command}` failed - this command may only work if you are the bot owner or have administrator permissions.."
+                f"Permissions check for command `{ctx.command}` failed - this command may only work if you are the bot owner or have administrator permissions."
             )
         elif isinstance(error, commands.CommandNotFound):
             prefix = self.bot.guildpfx if not self.bot.user.mentioned_in(ctx.message) else f"<@!{self.bot.user.id}>"
@@ -36,6 +50,7 @@ Maybe you meant `{closest_match}`?"""
 
         else:
             raise error
+        return
 
 
 def setup(bot):

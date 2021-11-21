@@ -3,7 +3,6 @@ from urllib.parse import quote_plus
 import discord
 import wikipedia
 from discord.ext import commands
-from wikipedia.exceptions import PageError
 
 
 class Internet(commands.Cog):
@@ -72,8 +71,8 @@ class Internet(commands.Cog):
 
             try:
                 msg = await self.bot.wait_for("message", check=check)
-            except ValueError as e:
-                await ctx.send(f":x: | Invalid value")
+            except ValueError:
+                await ctx.send(f":x: | Invalid choice")
                 return
 
             if msg.content not in e.options:
