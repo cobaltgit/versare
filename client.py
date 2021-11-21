@@ -100,9 +100,12 @@ class Versare(commands.AutoShardedBot):
         self.db_cur.close()
         self.db_cxn.close()
 
-        with open(self.logpath, "rb") as log:
-            with gzopen(self.logpath + ".gz", "wb") as gzipped_log:
-                cp(log, gzipped_log)
-        os.remove(self.logpath)
+        try:
+            with open(self.logpath, "rb") as log:
+                with gzopen(self.logpath + ".gz", "wb") as gzipped_log:
+                    cp(log, gzipped_log)
+            os.remove(self.logpath)
+        except FileNotFoundError:
+            pass
 
         await super().close()

@@ -65,22 +65,22 @@ class Internet(commands.Cog):
         except wikipedia.DisambiguationError as e:
 
             def check(msg):
-                return (
-                    msg.author == ctx.author
-                    and msg.channel == ctx.channel
-                    and int(msg.content) in list(range(len(e.options)))
-                )
+                return msg.author == ctx.author and msg.channel == ctx.channel and msg.content in e.options
 
-            await ctx.send(f"Disambiguation: choose one of the following (0-{len(e.options)}):")
-            await ctx.send("```" + "\n".join(e.options) + "```")
+            await ctx.send(f"Disambiguation: choose one of the following:")
+            await ctx.send("```\n" + ", ".join(e.options) + "\n```")
 
-            msg = await self.bot.wait_for("message", check=check)
+            try:
+                msg = await self.bot.wait_for("message", check=check)
+            except ValueError as e:
+                await ctx.send(f":x: | Invalid value")
+                return
 
-            if int(msg.content) > len(e.options):
+            if msg.content not in e.options:
                 await ctx.send(":x: | Invalid choice")
                 return
 
-            query = e.options[int(msg.content)]
+            query = e.options[e.options.index(msg.content)]
 
             try:
                 page = wikipedia.page(query, auto_suggest=False)
