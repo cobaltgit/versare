@@ -65,6 +65,29 @@ class Moderation(commands.Cog):
         if not result or ctx.author.id not in result:
             await ctx.send(":envelope: | You are already opted in to being sniped.")
 
+    @commands.command(name="editsnipe", aliases=["esnipe"])
+    async def editsnipe(self, ctx):
+        self.bot.db_cur.execute("SELECT * FROM editsniper WHERE channel_id = ?", (ctx.message.channel.id,))
+        result = self.bot.db_cur.fetchone()
+        if not result:
+            await ctx.send(":envelope: | No message to editsnipe")
+            return
+        author = ctx.message.guild.get_member(result[1])
+        channel = ctx.message.guild.get_channel(result[0])
+        embed = discord.Embed(
+            color=author.color,
+            timestamp=datetime.utcnow(),
+        )
+        fields = [
+            ("Before", self.bot.fernet.decrypt(result[2]).decode("utf-8"), True),
+            ("After", self.bot.fernet.decrypt(result[3]).decode("utf-8"), True),
+        ]
+        for name, value, inline in fields:
+            embed.add_field(name=name, value=value, inline=inline)
+        embed.set_author(name=author, icon_url=author.avatar.url)
+        embed.set_footer(text=f"Message sniped from #{channel}")
+        await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Moderation(bot))

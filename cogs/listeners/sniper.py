@@ -35,6 +35,34 @@ class Sniper(commands.Cog):
         self.bot.db_cur.execute("DELETE FROM sniper")
         self.bot.db_cxn.commit()
 
+    @commands.Cog.listener()
+    async def on_message_edit(self, before, after):
+        self.bot.db_cur.execute("DELETE FROM editsniper WHERE channel_id = ?", (before.channel.id,))
+
+        self.bot.db_cur.execute("SELECT user_id FROM sniper_optout WHERE guild_id = ?", (before.guild.id,))
+        optout_uids = self.bot.db_cur.fetchone()
+        if optout_uids is not None and before.author.id in optout_uids:
+            return
+
+        before_msg = before.content.encode()
+        after_msg = after.content.encode()
+        self.encrypted_msg_before = self.bot.fernet.encrypt(before_msg)
+        self.encrypted_msg_after = self.bot.fernet.encrypt(after_msg)
+
+        self.bot.db_cur.execute(
+            "INSERT INTO editsniper(message_before, message_after, author_id, channel_id) VALUES (?,?,?,?)",
+            (
+                self.encrypted_msg_before,
+                self.encrypted_msg_after,
+                before.author.id,
+                before.channel.id,
+            ),
+        )
+        self.bot.db_cxn.commit()
+        await aiosleep(60)
+        self.bot.db_cur.execute("DELETE FROM editsniper")
+        self.bot.db_cxn.commit()
+
 
 def setup(bot):
     bot.add_cog(Sniper(bot))

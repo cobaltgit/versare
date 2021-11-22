@@ -21,7 +21,15 @@ CREATE TABLE IF NOT EXISTS sniper(
     message TEXT
 );
 
---Allow opting out of snipe command
+--Ditto, for edited messages
+CREATE TABLE IF NOT EXISTS editsniper(
+    channel_id INTEGER,
+    author_id INTEGER,
+    message_before TEXT,
+    message_after TEXT
+);
+
+--Allow opting out of snipe commands
 CREATE TABLE IF NOT EXISTS sniper_optout(
     guild_id INTEGER,
     user_id INTEGER
