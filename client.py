@@ -102,10 +102,12 @@ class Versare(commands.AutoShardedBot):
             except Exception as e:
                 print(f"[ERR] Cog `{cog}` raised an exception while unloading:\n-> {type(e).__name__}: {e}")
 
-        self.db_cur.execute("DELETE FROM sniper")
-        self.db_cxn.commit()
-        self.db_cur.close()
-        self.db_cxn.close()
+        if os.path.exists("db/bot.db"):
+            self.db_cur.execute("DELETE FROM sniper")
+            self.db_cur.execute("DELETE FROM editsniper")
+            self.db_cxn.commit()
+            self.db_cur.close()
+            self.db_cxn.close()
 
         try:
             with open(self.logpath, "rb") as log:
