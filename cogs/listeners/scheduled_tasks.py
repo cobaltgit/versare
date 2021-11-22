@@ -28,6 +28,9 @@ class ScheduledTasks(commands.Cog):
 
         if not os.path.exists(dump_path.rsplit("/", 1)[0]):
             os.makedirs(dump_path.rsplit("/", 1)[0])
+        
+        self.bot.db_cur.execute("DELETE FROM sniper")
+        self.bot.db_cxn.commit()
 
         with open(dump_path, "w") as dump:
             dump.writelines(self.bot.db_cxn.iterdump())
