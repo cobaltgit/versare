@@ -1,7 +1,7 @@
 .*
 README.md
 LICENSE
-db/bot.db*
+db/versare.db*
 config/auth.json
 logs/
 docker-compose.yml
