@@ -138,7 +138,7 @@ dmypy.json
 cython_debug/
 
 # Versare SQLite Database
-db/bot.db*
+db/versare.db*
 
 # Bot token file
 config/auth.json

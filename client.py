@@ -1,23 +1,19 @@
 import json
 import logging
 import os
-import sqlite3
 from datetime import datetime
 from glob import glob
 from gzip import open as gzopen
 from shutil import copyfileobj as cp
 
 import aiohttp
+import asqlite
 import discord
 from cryptography.fernet import Fernet
 from discord.ext import commands
 
 
 class Versare(commands.AutoShardedBot):
-
-    db_cxn = sqlite3.connect("./db/bot.db")
-    db_cur = db_cxn.cursor()
-
     def __init__(self):
 
         if not os.path.exists("./logs"):
@@ -32,26 +28,30 @@ class Versare(commands.AutoShardedBot):
             if not self.auth.get("db_encryption_key"):
                 self.auth["db_encryption_key"] = str(Fernet.generate_key().decode("utf-8"))
                 with open("config/auth.json", "w") as key_dump:
-                    json.dump(self.auth, key_dump)
+                    json.dump(self.auth, key_dump, indent=4)
 
-            self.fernet = Fernet(self.auth["db_encryption_key"])
+            try:
+                self.fernet = Fernet(self.auth["db_encryption_key"])
+            except Exception as e:
+                print(f"[FATAL] Unable to initialise Fernet encryption\n-> {type(e).__name__}: {e}")
+                exit(1)
 
         self.init_exts = (cog.replace("/", ".")[2:-3] for cog in glob("./cogs/**/*.py"))
 
-        def _get_prefix(bot, message):
-            self.db_cur.execute("SELECT prefix FROM custompfx WHERE guild_id = ?", (message.guild.id,))
-            result = self.db_cur.fetchone()
-            self.guildpfx = self.config["defaults"]["prefix"] if result is None else str(result[0])
-            return commands.when_mentioned_or(self.guildpfx)(bot, message)
-
         super().__init__(
             slash_commands=True,
-            command_prefix=_get_prefix,
+            command_prefix=self._get_prefix,
             intents=discord.Intents(**self.config["intents"]),
             case_insensitive=True,
             strip_after_prefix=True,
             help_command=commands.MinimalHelpCommand(),
         )
+
+    async def _get_prefix(self, bot, message):
+        await self.db_cur.execute("SELECT prefix FROM custompfx WHERE guild_id = ?", (message.guild.id,))
+        result = await self.db_cur.fetchone()
+        self.guildpfx = self.config["defaults"]["prefix"] if result is None else str(result[0])
+        return commands.when_mentioned_or(self.guildpfx)(bot, message)
 
     def run(self, token: str = None) -> None:
         if not token:
@@ -66,10 +66,6 @@ class Versare(commands.AutoShardedBot):
 
         self.loaded_cogs = []
 
-        with open("./db/init.sql", "r") as db_init:
-            self.db_cur.executescript(db_init.read())
-            db_init.close()
-
         for cog in self.init_exts:
             try:
                 self.load_extension(cog)
@@ -80,6 +76,12 @@ class Versare(commands.AutoShardedBot):
         self.httpsession = aiohttp.ClientSession()
         self.load_extension("jishaku")
 
+        async def db_init():
+            self.db_cxn = await asqlite.connect("db/versare.db")
+            self.db_cur = await self.db_cxn.cursor()
+            await self.db_cur.executescript(open("db/init.sql", "r").read())
+
+        self.loop.run_until_complete(db_init())
         super().run(token)
 
     async def on_ready(self):
@@ -102,12 +104,12 @@ class Versare(commands.AutoShardedBot):
             except Exception as e:
                 print(f"[ERR] Cog `{cog}` raised an exception while unloading:\n-> {type(e).__name__}: {e}")
 
-        if os.path.exists("db/bot.db"):
-            self.db_cur.execute("DELETE FROM sniper")
-            self.db_cur.execute("DELETE FROM editsniper")
-            self.db_cxn.commit()
-            self.db_cur.close()
-            self.db_cxn.close()
+        if os.path.exists("db/versare.db"):
+            await self.db_cur.execute("DELETE FROM sniper")
+            await self.db_cur.execute("DELETE FROM editsniper")
+            await self.db_cxn.commit()
+            await self.db_cur.close()
+            await self.db_cxn.close()
 
         try:
             with open(self.logpath, "rb") as log:

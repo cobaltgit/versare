@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "bea393bab363f5d2c4d0f8d175d6c3a1e8161df2ec15e22fede687c2dfebbd27"
+            "sha256": "28b0c0db879b105dcc355b72152f4c2c1b1d1b54a8ca494dc63cef60ca0cc3d2"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -58,6 +58,10 @@
             ],
             "markers": "python_version >= '3.6'",
             "version": "==3.7.4.post0"
+        },
+        "asqlite": {
+            "git": "https://github.com/Rapptz/asqlite",
+            "ref": "ffc55a5b3d1b5e9c440c01620148be7fa6493ef5"
         },
         "astunparse": {
             "hashes": [

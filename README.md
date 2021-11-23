@@ -23,6 +23,7 @@ jishaku
 thefuzz
 python-Levenshtein
 cryptography
+asqlite
 ```
 
 ### TO-DO LIST

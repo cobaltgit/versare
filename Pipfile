@@ -11,6 +11,7 @@ lxml = "*"
 python-levenshtein = "*"
 thefuzz = "*"
 cryptography = "*"
+asqlite = {git = "https://github.com/Rapptz/asqlite"}
 
 [dev-packages]
 pre-commit = "*"
