@@ -99,7 +99,7 @@ class Internet(commands.Cog):
                     title=page.title,
                     url=page.url,
                     description=wikipedia.summary(query, sentences=3, auto_suggest=False, redirect=True, chars=1000),
-                    color=ctx.author.color or 0x0047AB,
+                    color=ctx.author.color,
                 )
             except wikipedia.DisambiguationError as e:
                 pass
