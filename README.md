@@ -108,6 +108,7 @@ All you have to do is run this command in the terminal, assuming Docker is insta
 $ docker run -d -it -e TOKEN=your-token-here \
     -e DEFAULT_PREFIX=v! \
     -e DEFAULT_WELCOME_MSG=Welcome\ to\ {0},\ {1}! \
+    -v /path/to/db/backup:/app/db/backup
     -v /path/to/bot/db:/app/db \
     -v /path/to/bot/logs:/app/logs
     cobaltdocker/versare

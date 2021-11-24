@@ -1,7 +1,6 @@
 FROM python:3.9.7-slim-bullseye AS base
 
 ENV DEFAULT_PREFIX='$'
-ENV DB_BACKUP_PATH=
 ENV DEFAULT_WELCOME_MSG="Welcome to {0}, {1}!"
 
 COPY . /app
@@ -14,6 +13,6 @@ RUN apt-get update && apt-get install git gcc linux-libc-dev libc6-dev -y --no-i
     pip uninstall -y micropipenv[toml]
     
 
-VOLUME ["/app/db", "/app/logs"]
+VOLUME ["/app/db", "/app/db/backup" "/app/logs"]
 ENTRYPOINT [ "/app/docker-init.sh" ]
 CMD [ "python", "runner.py" ]

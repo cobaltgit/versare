@@ -6,7 +6,7 @@ services:
       TOKEN: "your-token-here"
       DEFAULT_PREFIX: "v!"
       DEFAULT_WELCOME_MSG: "Welcome to {0}, {1}!"
-      DB_BACKUP_PATH: "/app/db/backup"
     volumes:
       - /path/to/bot/db:/app/db
       - /path/to/bot/logs:/app/logs
+      - /path/to/db/backup:/app/db/backup
