@@ -12,7 +12,11 @@ class Fun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="pp")
+    @commands.command(
+        name="pp",
+        brief="Measure someone's PP size (obviously jokingly)",
+        description="Measure someone's PP size (obviously jokingly)",
+    )
     async def pp(
         self,
         ctx,
@@ -25,7 +29,7 @@ class Fun(commands.Cog):
         embed = discord.Embed(
             title="PP Size",
             description=f"{person.mention}'s PP Size\n{size} ({len(size)}cm)",
-            color=person.color or 0x0047AB,
+            color=person.color,
             timestamp=datetime.utcnow(),
         )
         await ctx.send(embed=embed)

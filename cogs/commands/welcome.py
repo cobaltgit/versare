@@ -6,8 +6,13 @@ class Welcome(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.group(name="welcome")
+    @commands.group(
+        name="welcome",
+        brief="Welcome commands",
+        description="Welcome commands - if no subcommand is passed, return the welcome message and channel for the guild",
+    )
     async def welcome(self, ctx):
+        """Get the welcome message and channel for this guild"""
         if ctx.invoked_subcommand is not None:
             return
 
@@ -34,7 +39,11 @@ The welcome channel for this guild is `{self.bot.get_channel(welcome_channel)}`
 The welcome message for this guild is '{welcome_message}'"""
         )
 
-    @welcome.command(name="setchn")
+    @welcome.command(
+        name="setchn",
+        brief="Set the channel for welcome messages",
+        description="Set the channel for welcome messages to be sent in",
+    )
     @commands.has_permissions(manage_guild=True, manage_channels=True, manage_messages=True)
     async def setchn(
         self,
@@ -54,7 +63,11 @@ The welcome message for this guild is '{welcome_message}'"""
         await self.bot.db_cxn.commit()
         await ctx.send(f"Welcome channel is now `{channel}`")
 
-    @welcome.command(name="setmsg")
+    @welcome.command(
+        name="setmsg",
+        brief="Set the welcome message to send when a new member joins",
+        description="Set the welcome message to automatically send when a new member joins the server",
+    )
     @commands.has_permissions(manage_guild=True, manage_channels=True, manage_messages=True)
     async def setmsg(
         self,

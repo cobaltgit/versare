@@ -10,7 +10,7 @@ class Games(commands.Cog):
         """Games to play"""
         self.bot = bot
 
-    @commands.command(name="dice")
+    @commands.command(name="dice", brief="Roll some dice", description="Roll up to 100 dice with 20 sides")
     async def dice(
         self,
         ctx,
@@ -41,7 +41,12 @@ class Games(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command(name="coin", aliases=["coinflip"])
+    @commands.command(
+        name="coin",
+        aliases=["coinflip"],
+        brief="Flip a coin and get heads or tails, up to 100 actually",
+        description="Flip up to 100 coins at once",
+    )
     async def coin(
         self,
         ctx,
@@ -69,7 +74,11 @@ class Games(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command(name="8ball")
+    @commands.command(
+        name="8ball",
+        brief="Ask the Magic 8-Ball",
+        description="Ask the future-foreseeing Magic 8-Ball and get the answer to your question",
+    )
     async def eightball(self, ctx, *, question: str = commands.Option(description="Ask the Magic 8 Ball")):
         """Ask the Magic 8-Ball and get an answer to your question"""
         responses = [

@@ -8,7 +8,11 @@ class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.group(name="snipe")
+    @commands.group(
+        name="snipe",
+        brief="Get the last deleted message from a channel",
+        description="Get the last deleted message from a channel - some users may opt out, so if they've deleted a message and you try to snipe it, nothing is returned",
+    )
     async def snipe(self, ctx):
         """Get the last deleted message from a channel"""
         if ctx.invoked_subcommand is None:
@@ -28,9 +32,9 @@ class Moderation(commands.Cog):
             embed.set_footer(text=f"Message sniped from #{channel}")
             await ctx.send(embed=embed)
 
-    @snipe.command(name="optout")
+    @snipe.command(name="optout", brief="Opt out of being sniped or editsniped")
     async def optout(self, ctx):
-        """Opt out of being sniped"""
+        """Opt out of being sniped or editsniped"""
         await self.bot.db_cur.execute("SELECT user_id FROM sniper_optout WHERE guild_id = ?", (ctx.guild.id,))
         result = await self.bot.db_cur.fetchone()
         if result is None:
@@ -44,7 +48,11 @@ class Moderation(commands.Cog):
         if ctx.author.id in result:
             await ctx.send(":envelope: | You are already opted out of being sniped.")
 
-    @snipe.command(name="optin")
+    @snipe.command(
+        name="optin",
+        brief="Opt in to being sniped or editsniped",
+        description="Opt back in to being sniped or edit-sniped by others",
+    )
     async def optin(self, ctx):
         """Opt back in to being sniped"""
         await self.bot.db_cur.execute("SELECT user_id FROM sniper_optout WHERE guild_id = ?", (ctx.guild.id,))
@@ -65,7 +73,12 @@ class Moderation(commands.Cog):
         if not result or ctx.author.id not in result:
             await ctx.send(":envelope: | You are already opted in to being sniped.")
 
-    @commands.command(name="editsnipe", aliases=["esnipe"])
+    @commands.command(
+        name="editsnipe",
+        aliases=["esnipe"],
+        brief="Get the contents of the last edited message before and after",
+        description="Get the contents of the last edited message before and after - some users may opt out, so if they edit a message and you try to snipe it, nothing is returned.",
+    )
     async def editsnipe(self, ctx):
         await self.bot.db_cur.execute("SELECT * FROM editsniper WHERE channel_id = ?", (ctx.message.channel.id,))
         result = await self.bot.db_cur.fetchone()

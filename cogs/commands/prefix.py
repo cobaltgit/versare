@@ -7,7 +7,7 @@ class Prefix(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.group(name="prefix")
+    @commands.group(name="prefix", brief="Get the prefix for the guild you are in")
     async def prefix(self, ctx):
         """Get the prefix for this server"""
         if ctx.invoked_subcommand is None:
@@ -16,7 +16,7 @@ class Prefix(commands.Cog):
             prefix = self.bot.config["defaults"]["prefix"] if result is None else str(result[0])
             await ctx.send(f"Prefix for this guild is `{prefix}`")
 
-    @prefix.command(name="set")
+    @prefix.command(name="set", brief="Set the prefix for the guild you are in")
     @commands.has_permissions(manage_guild=True)
     async def set(
         self,

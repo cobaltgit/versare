@@ -13,14 +13,13 @@ class ScheduledTasks(commands.Cog):
         self.tasks = [self.backupdb_scheduled]
 
     def db_dump(self, dump_path):
-
-        tempcxn = connect("db/versare.db")
-        tempcur = tempcxn.cursor()
+        """
+        asqlite has no iterdump function, so we have to convert this function to async with loop.run_in_executor (see line 48)
+        Dumps the database with a temporary connection and compresses it with gzip
+        """
 
         with open(dump_path, "w") as dump:
-            dump.writelines(tempcxn.iterdump())
-        tempcur.close()
-        tempcxn.close()
+            dump.writelines(connect("db/versare.db").iterdump())
 
         with open(dump_path, "rb") as dump:
             with gzopen(dump_path + ".gz", "wb") as gzipped_dump:

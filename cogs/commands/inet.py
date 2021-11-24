@@ -10,7 +10,12 @@ class Internet(commands.Cog):
         """Internet related commands"""
         self.bot = bot
 
-    @commands.command(name="lmgtfy", aliases=["google", "websearch"])
+    @commands.command(
+        name="lmgtfy",
+        aliases=["google", "websearch"],
+        brief="Pass a query and get your link!",
+        description="Return a link to 'Let me Google that for you', a simplified Google for dummies",
+    )
     async def lmgtfy(
         self,
         ctx,
@@ -50,7 +55,12 @@ class Internet(commands.Cog):
                 return
             await ctx.send(resp["shorturl"])
 
-    @commands.command(name="wikipedia", aliases=["wiki", "encyclopedia"])
+    @commands.command(
+        name="wikipedia",
+        aliases=["wiki", "encyclopedia"],
+        brief="Query Wikipedia for information",
+        description="Use the Wikipedia API to query a page and get info on it",
+    )
     async def wikipedia(self, ctx, *, query: str = commands.Option(description="Search Wikipedia")):
         """Query Wikipedia, the free encyclopedia."""
         try:
@@ -59,7 +69,7 @@ class Internet(commands.Cog):
                 title=page.title,
                 url=page.url,
                 description=wikipedia.summary(query, sentences=3, auto_suggest=False, redirect=True, chars=1000),
-                color=ctx.author.color or 0x0047AB,
+                color=ctx.author.color,
             )
         except wikipedia.DisambiguationError as e:
 
