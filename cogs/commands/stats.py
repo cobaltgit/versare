@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 from time import time
 
 import discord
@@ -21,7 +21,7 @@ class Stats(commands.Cog):
         api_start = time()
         msg = await ctx.send("Ping...")
         api_end = time()
-        embed = discord.Embed(title="Pong!", color=ctx.author.color)
+        embed = discord.Embed(title="Pong!", color=ctx.author.color, timestamp=datetime.utcnow())
         fields = [
             ("Websocket Latency", str(round(self.bot.latency * 1000)) + "ms", True),
             ("API Latency", str(round((api_end - api_start) * 1000)) + "ms", True),

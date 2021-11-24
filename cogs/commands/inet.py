@@ -1,3 +1,4 @@
+from datetime import datetime
 from urllib.parse import quote_plus
 
 import discord
@@ -70,6 +71,7 @@ class Internet(commands.Cog):
                 url=page.url,
                 description=wikipedia.summary(query, sentences=3, auto_suggest=False, redirect=True, chars=1000),
                 color=ctx.author.color,
+                timestamp=datetime.utcnow(),
             )
         except wikipedia.DisambiguationError as e:
 

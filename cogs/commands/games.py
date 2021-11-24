@@ -1,3 +1,4 @@
+from datetime import datetime
 from random import choice, randint
 from typing import Optional
 
@@ -28,7 +29,7 @@ class Games(commands.Cog):
         sumofrolls = sum(rolls)
         rollstr = ", ".join(str(roll) for roll in rolls)
 
-        embed = discord.Embed(color=0x880000, title="Dice")
+        embed = discord.Embed(color=0x880000, title="Dice", timestamp=datetime.utcnow())
         fields = [
             ("Amount", amount, True),
             ("Rolls", rollstr, True),
@@ -59,7 +60,7 @@ class Games(commands.Cog):
 
         flips = [choice(["Heads", "Tails"]) for _ in range(amount)]
         flipstr = ", ".join(flips)
-        embed = discord.Embed(color=0xFFD700, title="Coin Flip")
+        embed = discord.Embed(color=0xFFD700, title="Coin Flip", timestamp=datetime.utcnow())
         fields = [
             ("Amount of Coins", amount, True),
             ("Results", flipstr, True),
@@ -104,7 +105,7 @@ class Games(commands.Cog):
             "Very doubtful.",
         ]
 
-        embed = discord.Embed(title="The Magic 8-Ball", color=0x000080)
+        embed = discord.Embed(title="The Magic 8-Ball", color=0x000080, timestamp=datetime.utcnow())
         fields = [("You asked:", question, True), ("Magic 8-Ball says:", choice(responses), True)]
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
