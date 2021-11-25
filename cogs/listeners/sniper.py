@@ -19,8 +19,7 @@ class Sniper(commands.Cog):
         if optout_uids is not None and message.author.id in optout_uids:
             return
 
-        msg = message.content.encode()
-        self.encrypted_msg = self.bot.fernet.encrypt(msg)
+        self.encrypted_msg = self.bot.fernet.encrypt(message.content.encode())
 
         await self.bot.db_cur.execute(
             "INSERT INTO sniper(message, author_id, channel_id) VALUES (?,?,?)",
@@ -44,10 +43,8 @@ class Sniper(commands.Cog):
         if optout_uids is not None and before.author.id in optout_uids:
             return
 
-        before_msg = before.content.encode()
-        after_msg = after.content.encode()
-        self.encrypted_msg_before = self.bot.fernet.encrypt(before_msg)
-        self.encrypted_msg_after = self.bot.fernet.encrypt(after_msg)
+        self.encrypted_msg_before = self.bot.fernet.encrypt(before.content.encode())
+        self.encrypted_msg_after = self.bot.fernet.encrypt(after.content.encode())
 
         await self.bot.db_cur.execute(
             "INSERT INTO editsniper(message_before, message_after, author_id, channel_id) VALUES (?,?,?,?)",
