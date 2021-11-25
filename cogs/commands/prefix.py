@@ -53,14 +53,14 @@ class Prefix(commands.Cog):
             await self.bot.db_cur.execute(
                 "INSERT INTO custompfx(prefix, guild_id)",
                 (
-                    self.bot.config["default_prefix"],
+                    self.bot.config["defaults"]["prefix"],
                     guild.id,
                 ),
             )
         else:
             await self.bot.db_cur.execute(
                 "UPDATE custompfx SET prefix = ? WHERE guild_id = ?",
-                (self.bot.config["default_prefix"], guild.id),
+                (self.bot.config["defaults"]["prefix"], guild.id),
             )
         await self.bot.db_cxn.commit()
 
@@ -69,7 +69,7 @@ class Prefix(commands.Cog):
         if message.content == f"<@!{self.bot.user.id}>":
             await self.bot.db_cur.execute("SELECT prefix FROM custompfx WHERE guild_id = ?", (message.guild.id,))
             result = await self.bot.db_cur.fetchone()
-            prefix = self.bot.config["default_prefix"] if result is None else str(result[0])
+            prefix = self.bot.config["defaults"]["prefix"] if result is None else str(result[0])
             await message.channel.send(f"Prefix for this guild is `{prefix}`")
 
 
