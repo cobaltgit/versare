@@ -33,4 +33,11 @@ CREATE TABLE IF NOT EXISTS editsniper(
 CREATE TABLE IF NOT EXISTS sniper_optout(
     guild_id INTEGER,
     user_id INTEGER
+);
+
+--TAGS!
+CREATE TABLE IF NOT EXISTS tags(
+    tag TEXT NOT NULL,
+    content TEXT NOT NULL,
+    guild_id INTEGER NOT NULL
 )
