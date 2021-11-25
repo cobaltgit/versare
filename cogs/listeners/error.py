@@ -17,7 +17,7 @@ class ErrorHandler(commands.Cog):
         elif isinstance(error, commands.ConversionError):
             await ctx.send(f"Conversion error: {error}")
         elif isinstance(error, commands.BotMissingPermissions):
-            missing = [perm.replace("_", " ").replace("guild", "server").title() for perm in error.missing_perms]
+            missing = [perm.replace("_", " ").replace("guild", "server").title() for perm in error.missing_permissions]
             fmt = (
                 "{}, and {}".format("**, **".join(missing[:-1]), missing[-1])
                 if len(missing) > 2
@@ -25,7 +25,7 @@ class ErrorHandler(commands.Cog):
             )
             await ctx.send(f"I am missing **{fmt}** permission(s) needed to run this command.")
         elif isinstance(error, commands.MissingPermissions):
-            missing = [perm.replace("_", " ").replace("guild", "server").title() for perm in error.missing_perms]
+            missing = [perm.replace("_", " ").replace("guild", "server").title() for perm in error.missing_permissions]
             fmt = (
                 "{}, and {}".format("**, **".join(missing[:-1]), missing[-1])
                 if len(missing) > 2
