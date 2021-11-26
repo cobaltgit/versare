@@ -22,6 +22,9 @@ class Tags(commands.Cog):
     ):
         """Call a server tag or use the group commands"""
 
+        if calltag is None:
+            return
+
         if calltag not in [cmd.name for cmd in self.tag.commands]:
             await self.bot.db_cur.execute("SELECT * FROM tags WHERE guild_id = ?", (ctx.guild.id,))
             result = await self.bot.db_cur.fetchall()
