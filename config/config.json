@@ -7,7 +7,9 @@
     "intents": {
         "members": true,
         "messages": true,
-        "guilds": true
+        "guilds": true,
+        "bans": true
+
     },
     "memes": {
         "retry_limit": 5,

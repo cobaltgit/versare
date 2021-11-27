@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 import discord
 from discord.ext import commands
@@ -100,6 +101,57 @@ class Moderation(commands.Cog):
         embed.set_author(name=author, icon_url=author.avatar.url)
         embed.set_footer(text=f"Message sniped from #{channel}")
         await ctx.send(embed=embed)
+
+    @commands.command(
+        name="ban", brief="Ban members from the server", description="Ban one or more users from the server"
+    )
+    @commands.has_permissions(ban_members=True)
+    async def ban(
+        self,
+        ctx,
+        members: commands.Greedy[discord.Member],
+        delete_message_days: Optional[int] = commands.Option(
+            description="How many days of messages from the member should be deleted?", default=0
+        ),
+        *,
+        reason: Optional[str] = commands.Option(
+            description="Why are you banning these members?", default="No reason specified"
+        ),
+    ):
+        for member in members:
+            if member.top_role.position > ctx.guild.me.top_role.position or member.guild_permissions.administrator:
+                await ctx.send(f"You do not have permission to ban `{member}`")
+            else:
+                try:
+                    await member.send(f"You have been banned from {ctx.guild}.\nReason: {reason}")
+                except (discord.errors.Forbidden, discord.errors.HTTPException):
+                    await ctx.send(f"I could not DM member `{member}`")
+                await member.ban(delete_message_days=delete_message_days, reason=reason)
+                await ctx.send(f"Banned member `{member}`.\nReason: {reason}")
+
+    @commands.command(
+        name="kick", brief="Kick members from the server", description="Kick one or more users from the server"
+    )
+    @commands.has_permissions(kick_members=True)
+    async def kick(
+        self,
+        ctx,
+        members: commands.Greedy[discord.Member],
+        *,
+        reason: Optional[str] = commands.Option(
+            description="Why are you kicking these members?", default="No reason specified"
+        ),
+    ):
+        for member in members:
+            if member.top_role.position > ctx.guild.me.top_role.position or member.guild_permissions.administrator:
+                await ctx.send(f"You do not have permission to kick `{member}`")
+            else:
+                try:
+                    await member.send(f"You have been kicked from {ctx.guild}\nReason: {reason}")
+                except (discord.errors.Forbidden, discord.errors.HTTPException):
+                    await ctx.send(f"I could not DM member `{member}`")
+                await member.kick(reason=reason)
+                await ctx.send(f"Kicked member `{member}`\nReason: {reason}")
 
 
 def setup(bot):
