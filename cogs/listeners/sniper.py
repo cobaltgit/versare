@@ -61,7 +61,7 @@ class Sniper(commands.Cog):
         await self.bot.db_cur.execute("DELETE FROM editsniper")
         await self.bot.db_cxn.commit()
         del self.encrypted_msg_before
-        del del self.encrypted_msg_after
+        del self.encrypted_msg_after
 
 
 def setup(bot):
