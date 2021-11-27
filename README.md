@@ -1,8 +1,7 @@
 # Versare
 
 A general-purpose **WORK-IN-PROGRESS - INCOMPLETE** Discord bot for the masses  
-The main instance of Versare will be up when the bot is in a more complete state.  
-At that point, you can just invite the bot to your server if you don't want to create your own instance.
+Invite the main instance [here](https://discord.com/api/oauth2/authorize?client_id=857348750477361172&permissions=8&scope=bot%20applications.commands) or create your own with the setup instructions below
 
 ### Requirements
 
