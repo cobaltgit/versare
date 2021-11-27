@@ -89,11 +89,7 @@ class Versare(commands.AutoShardedBot):
         print(f"[{start_time}]")
         print(f"Logged into Discord as {self.user}")
         print(f"-> Client ID: {self.user.id}")
-        print(
-            f"-> Default Prefix: Ping or {self.config['defaults']['prefix']}"
-            if self.config.get("ping_prefix", False)
-            else f"-> Default Prefix: {self.config['defaults']['prefix']}"
-        )
+        print(f"-> Default Prefix: Ping or {self.config['defaults']['prefix']}")
 
     async def close(self):
         await self.httpsession.close()
