@@ -1,5 +1,5 @@
 from datetime import datetime
-from random import choice, randint
+from random import randint
 from typing import Optional
 
 import discord
@@ -25,7 +25,7 @@ class Fun(commands.Cog):
         ),
     ):
         person = person or ctx.author
-        size = "8" + "".join(["=" for _ in range(randint(0, 20))]) + "D"
+        size = "8" + ("=" * randint(1, 20)) + "D"
         embed = discord.Embed(
             title="PP Size",
             description=f"{person.mention}'s PP Size\n{size} ({len(size)}cm)",
