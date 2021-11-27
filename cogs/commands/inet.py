@@ -75,14 +75,16 @@ class Internet(commands.Cog):
             )
         except wikipedia.DisambiguationError as e:
 
-            def check(msg):
-                return msg.author == ctx.author and msg.channel == ctx.channel and msg.content in e.options
-
-            await ctx.send(f"Disambiguation: choose one of the following:")
+            await ctx.send("Disambiguation: choose one of the following:")
             await ctx.send("```\n" + ", ".join(e.options) + "\n```")
 
             try:
-                msg = await self.bot.wait_for("message", check=check)
+                msg = await self.bot.wait_for(
+                    "message",
+                    check=lambda msg: msg.author == ctx.author
+                    and msg.channel == ctx.channel
+                    and msg.content in e.options,
+                )
             except ValueError:
                 await ctx.send(f":x: | Invalid choice")
                 return

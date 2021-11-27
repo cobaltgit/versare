@@ -42,10 +42,10 @@ class Tags(commands.Cog):
     @tag.command(name="make", brief="Interactively make a tag")
     async def make(self, ctx):
         """Interactively create a tag"""
-        await ctx.send("Enter the name of the tag")
 
-        def check(msg):
-            return (msg.author, msg.channel) == (ctx.author, ctx.channel)
+        check = lambda msg: (msg.author, msg.channel) == (ctx.author, ctx.channel)
+
+        await ctx.send("Enter the name of the tag")
 
         tname = await self.bot.wait_for("message", check=check)
 
