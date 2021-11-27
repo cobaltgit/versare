@@ -8,5 +8,9 @@
         "members": true,
         "messages": true,
         "guilds": true
+    },
+    "memes": {
+        "retry_limit": 5,
+        "default_subreddits": ["memes", "dankmemes", "wholesomememes", "me_irl"]
     }
 }

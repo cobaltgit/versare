@@ -1,5 +1,5 @@
 from datetime import datetime
-from random import randint
+from random import choice, randint
 from typing import Optional
 
 import discord
@@ -11,6 +11,10 @@ class Fun(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+
+    async def get_meme(self, subreddit):
+        async with self.bot.httpsession.get(f"https://meme-api.herokuapp.com/gimme/{subreddit}") as r:
+            return await r.json()
 
     @commands.command(
         name="pp",
@@ -32,6 +36,48 @@ class Fun(commands.Cog):
             color=person.color,
             timestamp=datetime.utcnow(),
         )
+        await ctx.send(embed=embed)
+
+    @commands.command(
+        name="meme",
+        brief="Fetch a random meme from Reddit",
+        description="Fetch a random meme using D3vd's Meme API from a subreddit of your choice or a random subreddit",
+    )
+    async def meme(
+        self, ctx, subreddit: Optional[str] = commands.Option(description="Choose a subreddit (OPTIONAL)", default=None)
+    ):
+        """Fetch a random meme from a subreddit of your choice or a random one with D3vd's Meme API"""
+        meme_subs = self.bot.config["memes"]["default_subreddits"]
+        resp = await self.get_meme(subreddit or choice(meme_subs))
+
+        retries = 0
+        retry_limit = self.bot.config["memes"]["retry_limit"] or 5
+        while (resp["nsfw"] or resp["spoiler"]) and (retries < retry_limit):
+            retries += 1
+            resp = await self.get_meme(subreddit or choice(meme_subs))
+            if not resp["nsfw"] and not resp["spoiler"]:
+                break
+        if retries == retry_limit:
+            await ctx.send(f":underage: | {retry_limit} failed attempts to find an SFW meme. Please try again.")
+            return
+
+        embed = discord.Embed(
+            title=resp["title"],
+            url=resp["postLink"],
+            color=ctx.guild.get_member(ctx.author.id).top_role.color,
+            timestamp=datetime.utcnow(),
+        )
+
+        embed.set_image(url=resp["url"])
+
+        fields = [
+            ("Author", f"u/{resp['author']}", True),
+            ("Subreddit", f"r/{resp['subreddit']}", True),
+            ("Upvotes", resp["ups"], True),
+        ]
+        for name, value, inline in fields:
+            embed.add_field(name=name, value=value, inline=inline)
+
         await ctx.send(embed=embed)
 
 
