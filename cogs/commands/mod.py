@@ -1,4 +1,5 @@
 from datetime import datetime
+from re import A
 from typing import Optional
 
 import discord
@@ -152,6 +153,19 @@ class Moderation(commands.Cog):
                     await ctx.send(f"I could not DM member `{member}`")
                 await member.kick(reason=reason)
                 await ctx.send(f"Kicked member `{member}`\nReason: {reason}")
+
+    @commands.command(
+        name="purge",
+        aliases=["clear", "clean", "prune"],
+        brief="Purge up to 300 messages at a time",
+        description="Purge messages from a channel, up to 300 at a time",
+    )
+    async def purge(
+        self, ctx, amount: Optional[int] = commands.Option(description="How many messages to purge?", default=1)
+    ):
+        amount = min(amount, 300)
+        await ctx.channel.purge(limit=amount)
+        await ctx.send(f"Purged {amount} messages")
 
 
 def setup(bot):
