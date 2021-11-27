@@ -1,5 +1,4 @@
 from datetime import datetime
-from re import A
 from typing import Optional
 
 import discord
