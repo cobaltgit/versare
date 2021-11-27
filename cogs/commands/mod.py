@@ -165,7 +165,7 @@ class Moderation(commands.Cog):
     ):
         amount = min(amount, 300)
         await ctx.channel.purge(limit=amount)
-        await ctx.send(f"Purged {amount} messages")
+        await ctx.send(f"Purged {amount} messages", delete_after=5)
 
 
 def setup(bot):
