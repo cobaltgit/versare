@@ -119,6 +119,7 @@ class Moderation(commands.Cog):
             description="Why are you banning these members?", default="No reason specified"
         ),
     ):
+        """Ban members from the server"""
         for member in members:
             if member.top_role.position > ctx.guild.me.top_role.position or member.guild_permissions.administrator:
                 await ctx.send(f"You do not have permission to ban `{member}`")
@@ -143,6 +144,7 @@ class Moderation(commands.Cog):
             description="Why are you kicking these members?", default="No reason specified"
         ),
     ):
+        """Kick members from the server"""
         for member in members:
             if member.top_role.position > ctx.guild.me.top_role.position or member.guild_permissions.administrator:
                 await ctx.send(f"You do not have permission to kick `{member}`")
