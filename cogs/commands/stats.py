@@ -73,23 +73,18 @@ class Stats(commands.Cog):
             ("\u200B", "\u200B", True),
             ("Boosts", ctx.guild.premium_subscription_count, True),
             ("Boost Level", ctx.guild.premium_tier, True),
-        ]
-        if ctx.guild.premium_subscriber_role is not None:
-            fields.append(
-                (
-                    "Boosters",
-                    "\n".join(
-                        str(booster)
-                        for booster in discord.utils.get(
-                            ctx.guild.roles, name=ctx.guild.premium_subscriber_role
-                        ).members
-                    ),
-                    False,
-                )
+            (
+                "Boosters",
+                "\n".join(
+                    str(m) for m in discord.utils.get(ctx.guild.roles, name=ctx.guild.premium_subscriber_role).members
+                ),
+                False,
             )
+            if ctx.guild.premium_subscriber_role
+            else ("\u200B", "\u200B", True),
+        ]
         if ctx.guild.features:
-            fields.append(("\u200B", "\u200B", True))
-            fields.append(("Features", "✅" + "\n✅".join(ctx.guild.features), True))
+            fields.extend(("\u200B", "\u200B", True), ("Features", "✅" + "\n✅".join(ctx.guild.features), True))
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
         if ctx.guild.banner:
@@ -117,9 +112,15 @@ class Stats(commands.Cog):
             ("Account Register Date", user.created_at.strftime("%b %d, %Y at %H:%M:%S"), True),
             ("\u200B", "\u200B", True),
             ("Bot", user.bot, True),
-            ("Nickname", user.nick, True),
+            ("Nickname", user.nick, True) if user.nick else ("\u200B", "\u200B", True),
             ("\u200B", "\u200B", True),
-            (f"Roles [{len(user.roles) - 1}]", " ".join(str(role.mention) for role in user.roles[1:]), False),
+            (
+                f"Roles [{len(user.roles) - 1}]",
+                " ".join(str(role.mention) for role in user.roles[1:])
+                if (len(user.roles) - 1)
+                else ("\u200B", "\u200B", True),
+                False,
+            ),
             (
                 "Moderation Permissions",
                 ", ".join(
@@ -130,9 +131,6 @@ class Stats(commands.Cog):
                 False,
             ),
         ]
-        for field in fields[3:4]:
-            if not field[1]:
-                del field
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
         embed.set_author(name=user, icon_url=user.avatar.url)
