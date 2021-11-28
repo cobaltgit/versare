@@ -88,7 +88,7 @@ class Stats(commands.Cog):
                 )
             )
         else:
-            fields.append("\u200B", "\u200B", True)
+            fields.append(("\u200B", "\u200B", True))
         if ctx.guild.features:
             fields.extend(("\u200B", "\u200B", True), ("Features", "✅" + "\n✅".join(ctx.guild.features), True))
         for name, value, inline in fields:
