@@ -70,7 +70,23 @@ class Stats(commands.Cog):
             ("\u200B", "\u200B", True),
             ("Text Channels", len(ctx.guild.text_channels), True),
             ("Voice Channels", len(ctx.guild.voice_channels), True),
+            ("\u200B", "\u200B", True),
+            ("Boosts", ctx.guild.premium_subscription_count, True),
+            ("Boost Level", ctx.guild.premium_tier, True),
         ]
+        if ctx.guild.premium_subscriber_role is not None:
+            fields.append(
+                (
+                    "Boosters",
+                    "\n".join(
+                        str(booster)
+                        for booster in discord.utils.get(
+                            ctx.guild.roles, name=ctx.guild.premium_subscriber_role
+                        ).members
+                    ),
+                    False,
+                )
+            )
         if ctx.guild.features:
             fields.append(("\u200B", "\u200B", True))
             fields.append(("Features", "✅" + "\n✅".join(ctx.guild.features), True))
@@ -111,16 +127,14 @@ class Stats(commands.Cog):
                 False,
             ),
         ]
-        if not fields[4][1]:
-            del fields[4]
-        if not fields[3][1]:
-            del fields[3]
+        for field in fields[3:4]:
+            if not field[1]:
+                del field
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
         embed.set_author(name=user, icon_url=user.avatar.url)
         embed.set_thumbnail(url=user.avatar.url)
         embed.set_footer(text=f"User ID: {user.id}")
-        print(fields)
         await ctx.send(embed=embed)
 
 
