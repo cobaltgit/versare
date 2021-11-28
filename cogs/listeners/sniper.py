@@ -33,7 +33,10 @@ class Sniper(commands.Cog):
         await aiosleep(60)
         await self.bot.db_cur.execute("DELETE FROM sniper")
         await self.bot.db_cxn.commit()
-        del self.encrypted_msg
+        try:
+            del self.encrypted_msg
+        except AttributeError:
+            pass
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
@@ -60,8 +63,11 @@ class Sniper(commands.Cog):
         await aiosleep(60)
         await self.bot.db_cur.execute("DELETE FROM editsniper")
         await self.bot.db_cxn.commit()
-        del self.encrypted_msg_before
-        del self.encrypted_msg_after
+        try:
+            del self.encrypted_msg_before
+            del self.encrypted_msg_after
+        except AttributeError:
+            pass
 
 
 def setup(bot):
