@@ -43,6 +43,7 @@ class Prefix(commands.Cog):
                 ),
             )
         await self.bot.db_cxn.commit()
+        self.bot.prefixes[str(ctx.guild.id)] = prefix
         await ctx.send(f"Prefix for this guild is now `{prefix}`")
 
     @commands.Cog.listener()
@@ -63,6 +64,7 @@ class Prefix(commands.Cog):
                 (self.bot.config["defaults"]["prefix"], guild.id),
             )
         await self.bot.db_cxn.commit()
+        self.bot.prefixes[str(guild.id)] = self.bot.config["defaults"]["prefix"]
 
     @commands.Cog.listener()
     async def on_message(self, message):

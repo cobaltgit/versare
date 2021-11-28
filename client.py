@@ -47,11 +47,14 @@ class Versare(commands.AutoShardedBot):
             help_command=commands.MinimalHelpCommand(),
         )
 
-    async def _get_prefix(self, bot, message):
-        await self.db_cur.execute("SELECT prefix FROM custompfx WHERE guild_id = ?", (message.guild.id,))
-        result = await self.db_cur.fetchone()
-        self.guildpfx = self.config["defaults"]["prefix"] if result is None else str(result[0])
-        return commands.when_mentioned_or(self.guildpfx)(bot, message)
+    async def setup(self):
+        await self.db_cur.execute("SELECT * FROM custompfx")
+        result = await self.db_cur.fetchall()
+        self.prefixes = {str(guild_id): pfx for guild_id, pfx in result}
+        await super().setup()
+
+    def _get_prefix(self, bot, message):
+        return commands.when_mentioned_or(self.prefixes[str(message.guild.id)])(bot, message)
 
     def run(self, token: str = None) -> None:
         if not token:
