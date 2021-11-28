@@ -74,7 +74,7 @@ class Stats(commands.Cog):
             ("Boosts", ctx.guild.premium_subscription_count, True),
             ("Boost Level", ctx.guild.premium_tier, True),
         ]
-        if ctx.guild.premium_subscriber_role:
+        if ctx.guild.premium_subscriber_role is not None:
             fields.append(
                 (
                     "Boosters",
