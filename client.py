@@ -57,7 +57,7 @@ class Versare(commands.AutoShardedBot):
         return commands.when_mentioned_or(
             self.prefixes[str(message.guild.id)]
             if self.prefixes.get(str(message.guild.id))
-            else self.bot.config["defaults"]["prefix"]
+            else self.config["defaults"]["prefix"]
         )(bot, message)
 
     def run(self, token: str = None) -> None:
