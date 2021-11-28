@@ -111,6 +111,8 @@ class Stats(commands.Cog):
                 False,
             ),
         ]
+        if not fields[4][1]:
+            del fields[4]
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
         embed.set_author(name=user, icon_url=user.avatar.url)
