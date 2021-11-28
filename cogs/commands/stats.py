@@ -100,7 +100,7 @@ class Stats(commands.Cog):
             ("Server Join Date", user.joined_at.strftime("%b %d, %Y at %H:%M:%S"), True),
             ("Account Register Date", user.created_at.strftime("%b %d, %Y at %H:%M:%S"), True),
             ("\u200B", "\u200B", True),
-            (f"Roles [{len(user.roles)}]", " ".join(str(role.mention) for role in user.roles[1:]), False),
+            (f"Roles [{len(user.roles) - 1}]", " ".join(str(role.mention) for role in user.roles[1:]), False),
             (
                 "Moderation Permissions",
                 ", ".join(
@@ -113,11 +113,14 @@ class Stats(commands.Cog):
         ]
         if not fields[4][1]:
             del fields[4]
+        if not fields[3][1]:
+            del fields[3]
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
         embed.set_author(name=user, icon_url=user.avatar.url)
         embed.set_thumbnail(url=user.avatar.url)
         embed.set_footer(text=f"User ID: {user.id}")
+        print(fields)
         await ctx.send(embed=embed)
 
 
