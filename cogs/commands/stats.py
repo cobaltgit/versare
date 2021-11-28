@@ -73,16 +73,22 @@ class Stats(commands.Cog):
             ("\u200B", "\u200B", True),
             ("Boosts", ctx.guild.premium_subscription_count, True),
             ("Boost Level", ctx.guild.premium_tier, True),
-            (
-                "Boosters",
-                "\n".join(
-                    str(m) for m in discord.utils.get(ctx.guild.roles, name=ctx.guild.premium_subscriber_role).members
-                ),
-                False,
-            )
-            if ctx.guild.premium_subscriber_role
-            else ("\u200B", "\u200B", True),
         ]
+        if ctx.guild.premium_subscriber_role:
+            fields.append(
+                (
+                    "Boosters",
+                    "\n".join(
+                        (
+                            str(A)
+                            for A in discord.utils.get(ctx.guild.roles, name=ctx.guild.premium_subscriber_role).members
+                        )
+                    ),
+                    False,
+                )
+            )
+        else:
+            fields.append("\u200B", "\u200B", True)
         if ctx.guild.features:
             fields.extend(("\u200B", "\u200B", True), ("Features", "✅" + "\n✅".join(ctx.guild.features), True))
         for name, value, inline in fields:
