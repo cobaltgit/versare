@@ -46,6 +46,37 @@ class Stats(commands.Cog):
         )
         await ctx.send(embed=embed)
 
+    @commands.command(
+        name="serverinfo",
+        brief="Get information about the server",
+        description="Collect stats for the server (members, roles, categories, channels, etc.)",
+    )
+    async def serverinfo(self, ctx):
+        """Display information about the server (members, roles, categories, channels, etc.)"""
+        embed = discord.Embed(title=f"Server Info for {ctx.guild}", color=ctx.guild.roles[-1].color)
+        fields = [
+            ("Guild ID", ctx.guild.id, True),
+            ("Guild Owner", ctx.guild.owner, True),
+            ("\u200B", "\u200B", True),
+            ("Members", len(list(filter(lambda m: not m.bot, ctx.guild.members))), True),
+            ("Bots", len(list(filter(lambda m: m.bot, ctx.guild.members))), True),
+            ("\u200B", "\u200B", True),
+            ("Roles", len(ctx.guild.roles), True),
+            ("Categories", len(ctx.guild.categories), True),
+            ("\u200B", "\u200B", True),
+            ("Text Channels", len(ctx.guild.text_channels), True),
+            ("Voice Channels", len(ctx.guild.voice_channels), True),
+        ]
+        if ctx.guild.features:
+            fields.append(("\u200B", "\u200B", True))
+            fields.append(("Features", "✅" + "\n✅".join(ctx.guild.features), True))
+        for name, value, inline in fields:
+            embed.add_field(name=name, value=value, inline=inline)
+        if ctx.guild.banner:
+            embed.set_image(url=ctx.guild.banner.url)
+        embed.set_thumbnail(url=ctx.guild.icon.url)
+        await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Stats(bot))
