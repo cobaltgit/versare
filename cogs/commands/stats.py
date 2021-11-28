@@ -116,10 +116,8 @@ class Stats(commands.Cog):
             ("\u200B", "\u200B", True),
             (
                 f"Roles [{len(user.roles) - 1}]",
-                " ".join(str(role.mention) for role in user.roles[1:])
-                if (len(user.roles) - 1)
-                else ("\u200B", "\u200B", True),
-                False,
+                " ".join(str(role.mention) for role in user.roles[1:]),
+                False if (len(user.roles) - 1) else ("\u200B", "\u200B", True),
             ),
             (
                 "Moderation Permissions",
