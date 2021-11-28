@@ -31,7 +31,7 @@ class Sniper(commands.Cog):
         )
         await self.bot.db_cxn.commit()
         await aiosleep(60)
-        await self.bot.db_cur.execute("DELETE FROM sniper")
+        await self.bot.db_cur.execute("DELETE FROM sniper WHERE channel_id = ?", (message.channel.id,))
         await self.bot.db_cxn.commit()
         try:
             del self.encrypted_msg
@@ -61,7 +61,7 @@ class Sniper(commands.Cog):
         )
         await self.bot.db_cxn.commit()
         await aiosleep(60)
-        await self.bot.db_cur.execute("DELETE FROM editsniper")
+        await self.bot.db_cur.execute("DELETE FROM editsniper WHERE channel_id = ?", (before.channel.id,))
         await self.bot.db_cxn.commit()
         try:
             del self.encrypted_msg_before
