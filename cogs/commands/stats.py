@@ -116,6 +116,9 @@ class Stats(commands.Cog):
             ("Server Join Date", user.joined_at.strftime("%b %d, %Y at %H:%M:%S"), True),
             ("Account Register Date", user.created_at.strftime("%b %d, %Y at %H:%M:%S"), True),
             ("\u200B", "\u200B", True),
+            ("Bot", user.bot, True),
+            ("Nickname", user.nick, True),
+            ("\u200B", "\u200B", True),
             (f"Roles [{len(user.roles) - 1}]", " ".join(str(role.mention) for role in user.roles[1:]), False),
             (
                 "Moderation Permissions",
