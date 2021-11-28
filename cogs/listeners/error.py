@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 from thefuzz import fuzz
 
@@ -54,6 +55,12 @@ Maybe you meant `{closest_match}`?"""
         else:
             raise error
         return
+
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if isinstance(message.channel, discord.DMChannel):
+            await message.channel.send("Commands cannot be used in DMs")
+            return
 
 
 def setup(bot):
