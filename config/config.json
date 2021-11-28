@@ -6,10 +6,9 @@
     "db_dump_path": "",
     "intents": {
         "members": true,
-        "messages": true,
+        "guild_messages": true,
         "guilds": true,
         "bans": true
-
     },
     "memes": {
         "retry_limit": 5,
