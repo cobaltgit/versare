@@ -61,7 +61,7 @@ class Versare(commands.AutoShardedBot):
             self.db_cur = await self.db_cxn.cursor()
             await self.db_cur.executescript(open("db/init.sql", "r").read())
 
-        self.loop.run_until_complete(db_init())
+        await db_init()
 
         await self.db_cur.execute("SELECT * FROM custompfx")
         result = await self.db_cur.fetchall()
