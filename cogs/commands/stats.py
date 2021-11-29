@@ -62,6 +62,8 @@ class Stats(commands.Cog):
             ("Guild ID", ctx.guild.id, True),
             ("Guild Owner", ctx.guild.owner, True),
             ("\u200B", "\u200B", True),
+            ("Server Creation Date", ctx.guild.created_at.strftime("%b %d, %Y at %H:%M:%S"), True),
+            ("\u200B", "\u200B", True),
             ("Members", len(list(filter(lambda m: not m.bot, ctx.guild.members))), True),
             ("Bots", len(list(filter(lambda m: m.bot, ctx.guild.members))), True),
             ("\u200B", "\u200B", True),
@@ -74,23 +76,27 @@ class Stats(commands.Cog):
             ("Boosts", ctx.guild.premium_subscription_count, True),
             ("Boost Level", ctx.guild.premium_tier, True),
         ]
-        if ctx.guild.premium_subscriber_role is not None:
+        if ctx.guild.premium_subscriber_role:
             fields.append(
                 (
                     "Boosters",
-                    "\n".join(
-                        (
-                            str(A)
-                            for A in discord.utils.get(ctx.guild.roles, name=ctx.guild.premium_subscriber_role).members
-                        )
-                    ),
+                    "\n".join((str(A) for A in ctx.guild.premium_subscriber_role.members)),
                     False,
                 )
             )
         else:
             fields.append(("\u200B", "\u200B", True))
         if ctx.guild.features:
-            fields.extend(("\u200B", "\u200B", True), ("Features", "✅" + "\n✅".join(ctx.guild.features), True))
+            fields.extend(
+                (
+                    ("\u200B", "\u200B", True),
+                    (
+                        "Features",
+                        "✅" + "\n✅".join(str(feature).replace("_", " ").title() for feature in ctx.guild.features),
+                        False,
+                    ),
+                )
+            )
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
         if ctx.guild.banner:
