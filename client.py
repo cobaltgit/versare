@@ -12,14 +12,6 @@ import discord
 from cryptography.fernet import Fernet
 from discord.ext import commands
 
-if os.name != "nt":
-    try:
-        import uvloop
-    except (ImportError, ModuleNotFoundError):
-        pass
-    else:
-        uvloop.install()
-
 
 class Versare(commands.AutoShardedBot):
     def __init__(self):
