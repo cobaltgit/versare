@@ -20,8 +20,7 @@ class Moderation(commands.Cog):
             await self.bot.db_cur.execute("SELECT * FROM sniper WHERE channel_id = ?", (ctx.message.channel.id,))
             result = await self.bot.db_cur.fetchone()
             if not result:
-                await ctx.send(":envelope: | No message to snipe")
-                return
+                return await ctx.send(":envelope: | No message to snipe")
             author = ctx.message.guild.get_member(result[1])
             channel = ctx.message.guild.get_channel(result[0])
             embed = discord.Embed(
@@ -43,8 +42,7 @@ class Moderation(commands.Cog):
                 "INSERT INTO sniper_optout(user_id, guild_id) VALUES (?, ?)", (ctx.author.id, ctx.guild.id)
             )
             await self.bot.db_cxn.commit()
-            await ctx.send(":envelope: | You have successfully opted out of being sniped.")
-            return
+            return await ctx.send(":envelope: | You have successfully opted out of being sniped.")
 
         if ctx.author.id in result:
             await ctx.send(":envelope: | You are already opted out of being sniped.")
@@ -68,8 +66,7 @@ class Moderation(commands.Cog):
                 ),
             )
             await self.bot.db_cxn.commit()
-            await ctx.send(":envelope: | You have successfully opted back in being sniped.")
-            return
+            return await ctx.send(":envelope: | You have successfully opted back in being sniped.")
 
         if not result or ctx.author.id not in result:
             await ctx.send(":envelope: | You are already opted in to being sniped.")
@@ -165,7 +162,10 @@ class Moderation(commands.Cog):
         self, ctx, amount: Optional[int] = commands.Option(description="How many messages to purge?", default=1)
     ):
         amount = min(amount, 300)
-        await ctx.channel.purge(limit=amount)
+        try:
+            await ctx.channel.purge(limit=amount)
+        except discord.errors.Forbidden:
+            return await ctx.send("You do not have permission to purge messages")
         await ctx.send(f"Purged {amount} messages", delete_after=5)
 
 

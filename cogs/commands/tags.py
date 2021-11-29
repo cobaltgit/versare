@@ -29,8 +29,7 @@ class Tags(commands.Cog):
             await self.bot.db_cur.execute("SELECT * FROM tags WHERE guild_id = ?", (ctx.guild.id,))
             result = await self.bot.db_cur.fetchall()
             if not result:
-                await ctx.send("There are no tags here.")
-                return
+                return await ctx.send("There are no tags here.")
 
             try:
                 wanted_tag = [list(row) for row in result if calltag in row][0][1]
@@ -84,8 +83,7 @@ class Tags(commands.Cog):
         )
         result = await self.bot.db_cur.fetchone()
         if not result:
-            await ctx.send(f"`{tag}`: no such tag")
-            return
+            return await ctx.send(f"`{tag}`: no such tag")
         await self.bot.db_cur.execute(
             "DELETE FROM tags WHERE tag = ? AND guild_id = ?",
             (

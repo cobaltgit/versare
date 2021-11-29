@@ -86,12 +86,10 @@ class Internet(commands.Cog):
                     and msg.content in e.options,
                 )
             except ValueError:
-                await ctx.send(f":x: | Invalid choice")
-                return
+                return await ctx.send(f":x: | Invalid choice")
 
             if msg.content not in e.options:
-                await ctx.send(":x: | Invalid choice")
-                return
+                return await ctx.send(":x: | Invalid choice")
 
             query = e.options[e.options.index(msg.content)]
 
@@ -106,15 +104,12 @@ class Internet(commands.Cog):
             except wikipedia.DisambiguationError as e:
                 pass
 
-            await ctx.send(embed=embed)
-
-            return
+            return await ctx.send(embed=embed)
 
         except wikipedia.PageError:
-            await ctx.send(
+            return await ctx.send(
                 f":globe_with_meridians: | Page ID `{query}` doesn't match any pages - maybe that page doesn't exist? Try another."
             )
-            return
 
         await ctx.send(embed=embed)
 

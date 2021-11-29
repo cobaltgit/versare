@@ -58,8 +58,7 @@ class Fun(commands.Cog):
             if not resp["nsfw"] and not resp["spoiler"]:
                 break
         if retries == retry_limit:
-            await ctx.send(f":underage: | {retry_limit} failed attempts to find an SFW meme. Please try again.")
-            return
+            return await ctx.send(f":underage: | {retry_limit} failed attempts to find an SFW meme. Please try again.")
 
         embed = discord.Embed(
             title=resp["title"],

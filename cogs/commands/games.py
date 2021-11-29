@@ -55,8 +55,7 @@ class Games(commands.Cog):
     ):
         """Flip a coin, or up to 100"""
         if amount > 100:
-            await ctx.send("You can't flip more than 100 coins at once.")
-            return
+            return await ctx.send("You can't flip more than 100 coins at once.")
 
         flips = [choice(["Heads", "Tails"]) for _ in range(amount)]
         flipstr = ", ".join(flips)
