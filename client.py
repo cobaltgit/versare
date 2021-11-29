@@ -16,9 +16,6 @@ from discord.ext import commands
 class Versare(commands.AutoShardedBot):
     def __init__(self):
 
-        if not os.path.exists("./logs"):
-            os.makedirs("./logs")
-
         with open("config/config.json", "r") as config_file:
             self.config = json.load(config_file)
 
@@ -37,6 +34,7 @@ class Versare(commands.AutoShardedBot):
                 exit(1)
 
         self.init_exts = (cog.replace("/", ".")[2:-3] for cog in glob("./cogs/**/*.py"))
+        self.httpsession = aiohttp.ClientSession()
 
         super().__init__(
             slash_commands=True,
@@ -48,6 +46,23 @@ class Versare(commands.AutoShardedBot):
         )
 
     async def setup(self):
+        if not os.path.exists("./logs"):
+            os.makedirs("./logs")
+
+        self.logpath = f'logs/discord-{datetime.now().strftime("%d-%m-%Y-%H:%M:%S")}.log'
+        self.logger = logging.getLogger("discord")
+        self.logger.setLevel(logging.DEBUG)
+        handler = logging.FileHandler(filename=self.logpath, encoding="utf-8", mode="w")
+        handler.setFormatter(logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s"))
+        self.logger.addHandler(handler)
+
+        async def db_init():
+            self.db_cxn = await asqlite.connect("db/versare.db")
+            self.db_cur = await self.db_cxn.cursor()
+            await self.db_cur.executescript(open("db/init.sql", "r").read())
+
+        self.loop.run_until_complete(db_init())
+
         await self.db_cur.execute("SELECT * FROM custompfx")
         result = await self.db_cur.fetchall()
         self.prefixes = {str(guild_id): pfx for guild_id, pfx in result}
@@ -64,13 +79,6 @@ class Versare(commands.AutoShardedBot):
         if not token:
             raise ValueError("Please provide a valid Discord bot token")
 
-        self.logpath = f'logs/discord-{datetime.now().strftime("%d-%m-%Y-%H:%M:%S")}.log'
-        self.logger = logging.getLogger("discord")
-        self.logger.setLevel(logging.DEBUG)
-        handler = logging.FileHandler(filename=self.logpath, encoding="utf-8", mode="w")
-        handler.setFormatter(logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s"))
-        self.logger.addHandler(handler)
-
         self.loaded_cogs = []
 
         for cog in self.init_exts:
@@ -80,15 +88,7 @@ class Versare(commands.AutoShardedBot):
             except Exception as e:
                 print(f"[ERR] Cog `{cog}` raised an exception while loading:\n-> {type(e).__name__}: {e}")
 
-        self.httpsession = aiohttp.ClientSession()
         self.load_extension("jishaku")
-
-        async def db_init():
-            self.db_cxn = await asqlite.connect("db/versare.db")
-            self.db_cur = await self.db_cxn.cursor()
-            await self.db_cur.executescript(open("db/init.sql", "r").read())
-
-        self.loop.run_until_complete(db_init())
         super().run(token)
 
     async def on_ready(self):
