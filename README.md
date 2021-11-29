@@ -23,6 +23,7 @@ thefuzz
 python-Levenshtein
 cryptography
 asqlite
+uvloop (on unix-like systems)
 ```
 
 ### TO-DO LIST
