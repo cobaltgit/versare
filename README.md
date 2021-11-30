@@ -24,6 +24,7 @@ python-Levenshtein
 cryptography
 asqlite
 uvloop (on unix-like systems)
+psutil
 ```
 
 ### TO-DO LIST
