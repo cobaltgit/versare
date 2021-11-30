@@ -6,6 +6,7 @@ from time import time
 from typing import Optional
 
 import discord
+import psutil
 from discord.ext import commands
 from pkg_resources import get_distribution
 
@@ -15,10 +16,11 @@ class Stats(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.proc = psutil.Process()
 
     @commands.Cog.listener()
     async def on_ready(self):
-        self.start_time = time()
+        self.bot.start_time = time()
 
     @commands.command(name="ping", brief="Get the latency between you and the bot")
     async def ping(self, ctx):
@@ -159,7 +161,7 @@ class Stats(commands.Cog):
     )
     async def about(self, ctx):
         """Get the version of the bot and"""
-        embed = discord.Embed(title="Versions", color=0x0047AB, timestamp=datetime.utcnow())
+        embed = discord.Embed(title="About Me", color=0x0047AB, timestamp=datetime.utcnow())
         fields = [
             (
                 "<:Versare:914949604078927912> Versare",
@@ -168,6 +170,18 @@ class Stats(commands.Cog):
             ),
             ("<:Python:914950534887243776> Python", f"`{python_version()}`", True),
             ("<:Discordpy:914951096974323793> Discord.py", f"`{get_distribution('discord.py').version}`", True),
+            (
+                ":computer: Process Usage",
+                f"RAM: {self.proc.memory_full_info().uss / 1024**2:.2f}MB\nCPU: {self.proc.cpu_percent() / psutil.cpu_count():.2f}%",
+                False,
+            ),
+            (":stopwatch: Uptime", str(timedelta(seconds=int(round(time() - self.bot.start_time)))), True),
+            (
+                ":busts_in_silhouette: Guild Count",
+                len([guild for guild in self.bot.guilds if not guild.unavailable]),
+                True,
+            ),
+            (":robot: Bot Owner", await self.bot.fetch_user(self.bot.config["owner_id"]), True),
         ]
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)

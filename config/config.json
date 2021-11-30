@@ -1,4 +1,5 @@
 {
+    "owner_id": "700661710696087562",
     "defaults": {
         "prefix": "$",
         "welcome_msg": "Welcome to {0}, {1}!"
