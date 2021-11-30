@@ -45,7 +45,7 @@ class Stats(commands.Cog):
         """Get how long the bot has been running"""
         embed = discord.Embed(
             title="Uptime",
-            description=f"The bot has been up {timedelta(seconds=int(round(time()-self.start_time)))}",
+            description=f"The bot has been up {timedelta(seconds=int(round(time()-self.bot.start_time)))}",
             color=ctx.author.color,
         )
         embed.set_thumbnail(
