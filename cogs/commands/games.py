@@ -10,6 +10,28 @@ class Games(commands.Cog):
     def __init__(self, bot):
         """Games to play"""
         self.bot = bot
+        self.ball_responses = (
+            "It is certain.",
+            "It is decidedly so.",
+            "Without a doubt.",
+            "Yes, definitely.",
+            "You may rely on it.",
+            "As I see it, yes.",
+            "Most likely.",
+            "Outlook good.",
+            "Yes.",
+            "Signs point to yes.",
+            "Reply hazy, try again.",
+            "Ask again later.",
+            "Better not tell you now.",
+            "Cannot predict now.",
+            "Concentrate and ask again.",
+            "Don't count on it.",
+            "My reply is no.",
+            "My sources say no.",
+            "Outlook not so good.",
+            "Very doubtful.",
+        )
 
     @commands.command(name="dice", brief="Roll some dice", description="Roll up to 100 dice with 20 sides")
     async def dice(
@@ -81,31 +103,8 @@ class Games(commands.Cog):
     )
     async def eightball(self, ctx, *, question: str = commands.Option(description="Ask the Magic 8 Ball")):
         """Ask the Magic 8-Ball and get an answer to your question"""
-        responses = [
-            "It is certain.",
-            "It is decidedly so.",
-            "Without a doubt.",
-            "Yes, definitely.",
-            "You may rely on it.",
-            "As I see it, yes.",
-            "Most likely.",
-            "Outlook good.",
-            "Yes.",
-            "Signs point to yes.",
-            "Reply hazy, try again.",
-            "Ask again later.",
-            "Better not tell you now.",
-            "Cannot predict now.",
-            "Concentrate and ask again.",
-            "Don't count on it.",
-            "My reply is no.",
-            "My sources say no.",
-            "Outlook not so good.",
-            "Very doubtful.",
-        ]
-
         embed = discord.Embed(title="The Magic 8-Ball", color=0x000080, timestamp=datetime.utcnow())
-        fields = [("You asked:", question, True), ("Magic 8-Ball says:", choice(responses), True)]
+        fields = [("You asked:", question, True), ("Magic 8-Ball says:", choice(self.ball_responses), True)]
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
         embed.set_thumbnail(
