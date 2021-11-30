@@ -1,10 +1,13 @@
 import re
 from datetime import datetime, timedelta
+from platform import python_version
+from subprocess import check_output
 from time import time
 from typing import Optional
 
 import discord
 from discord.ext import commands
+from pkg_resources import get_distribution
 
 
 class Stats(commands.Cog):
@@ -146,6 +149,29 @@ class Stats(commands.Cog):
         embed.set_author(name=user, icon_url=user.avatar.url)
         embed.set_thumbnail(url=user.avatar.url)
         embed.set_footer(text=f"User ID: {user.id}")
+        await ctx.send(embed=embed)
+
+    @commands.command(
+        name="about",
+        aliases=["version", "aboutme"],
+        brief="Get the version of the bot",
+        description="Get the version of the bot, Python and discord.py",
+    )
+    async def about(self, ctx):
+        """Get the version of the bot and"""
+        embed = discord.Embed(title="Versions", color=0x0047AB, timestamp=datetime.utcnow())
+        fields = [
+            (
+                "<:Versare:914949604078927912> Versare",
+                f"`git-{check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('utf-8')}`",
+                True,
+            ),
+            ("<:Python:914950534887243776> Python", f"`{python_version()}`", True),
+            ("<:Discordpy:914951096974323793> Discord.py", f"`{get_distribution('discord.py').version}`", True),
+        ]
+        for name, value, inline in fields:
+            embed.add_field(name=name, value=value, inline=inline)
+        embed.set_thumbnail(url=self.bot.user.avatar.url)
         await ctx.send(embed=embed)
 
 
