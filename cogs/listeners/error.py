@@ -40,16 +40,11 @@ class ErrorHandler(commands.Cog):
                 f"Permissions check for command `{ctx.command}` failed - this command may only work if you are the bot owner or have administrator permissions."
             )
         elif isinstance(error, commands.CommandNotFound):
-            prefix = (
-                self.bot.prefixes.get(str(ctx.guild.id))
-                if not self.bot.user.mentioned_in(ctx.message)
-                else f"<@!{self.bot.user.id}>"
-            )
             available_commands = [command.name for command in self.bot.commands]
-            ratios = [fuzz.ratio(ctx.message.content[len(prefix) :], command) for command in available_commands]
+            ratios = [fuzz.ratio(ctx.message.content[len(ctx.prefix) :], command) for command in available_commands]
             closest_match = available_commands[ratios.index(max(ratios))]
             await ctx.send(
-                f""":x: | Command `{ctx.message.content[len(prefix):].split()[0]}` not found.
+                f""":x: | Command `{ctx.message.content[len(ctx.prefix):].split()[0]}` not found.
 Maybe you meant `{closest_match}`?"""
             )
         elif isinstance(error, commands.UserInputError):
