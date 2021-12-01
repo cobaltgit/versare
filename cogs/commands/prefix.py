@@ -11,9 +11,7 @@ class Prefix(commands.Cog):
     async def prefix(self, ctx):
         """Get the prefix for this server"""
         if ctx.invoked_subcommand is None:
-            await self.bot.db_cur.execute("SELECT prefix FROM custompfx WHERE guild_id = ?", (ctx.guild.id,))
-            result = await self.bot.db_cur.fetchone()
-            prefix = self.bot.config["defaults"]["prefix"] if result is None else str(result[0])
+            prefix = self.bot.prefixes.get(str(ctx.guild.id)) or self.bot.config["defaults"]["prefix"]
             await ctx.send(f"Prefix for this guild is `{prefix}`")
 
     @prefix.command(name="set", brief="Set the prefix for the guild you are in")
