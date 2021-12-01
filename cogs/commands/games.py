@@ -10,6 +10,7 @@ from discord.ui import View, button
 class RPSView(View):
     def __init__(self, ctx):
         self.ctx = ctx
+        self.user = self.ctx.author
         super().__init__(timeout=15)
 
     async def process(self, rps_user: str):
@@ -47,14 +48,20 @@ class RPSView(View):
 
     @button(label="Rock", style=discord.ButtonStyle.red, emoji="🪨")
     async def callback1(self, button: discord.ui.Button, interaction: discord.Interaction):
+        if interaction.user != self.user:
+            return
         return await self.process("rock")
 
     @button(label="Paper", style=discord.ButtonStyle.green, emoji="📄")
     async def callback2(self, button: discord.ui.Button, interaction: discord.Interaction):
+        if interaction.user != self.user:
+            return
         return await self.process("paper")
 
     @button(label="Scissors", style=discord.ButtonStyle.blurple, emoji="✂️")
     async def callback3(self, button: discord.ui.Button, interaction: discord.Interaction):
+        if interaction.user != self.user:
+            return
         return await self.process("scissors")
 
     async def on_timeout(self):
