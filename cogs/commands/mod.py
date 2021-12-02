@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Union
 
 import discord
 from discord.ext import commands
@@ -106,9 +106,9 @@ class Moderation(commands.Cog):
     async def ban(
         self,
         ctx,
-        members: commands.Greedy[discord.Member],
+        members: commands.Greedy[Union[discord.Member, discord.User]],
         delete_message_days: Optional[int] = commands.Option(
-            description="How many days of messages from the member should be deleted?", default=0
+            description="How many days of messages from the members should be deleted?", default=0
         ),
         *,
         reason: Optional[str] = commands.Option(
@@ -117,15 +117,19 @@ class Moderation(commands.Cog):
     ):
         """Ban members from the server"""
         for member in members:
-            if member.top_role.position > ctx.guild.me.top_role.position or member.guild_permissions.administrator:
-                await ctx.send(f"You do not have permission to ban `{member}`")
+            if isinstance(member, discord.Member):
+                if member.top_role.position > ctx.guild.me.top_role.position or member.guild_permissions.administrator:
+                    await ctx.send(f"You do not have permission to ban `{member}`")
+                else:
+                    try:
+                        await member.send(f"You have been banned from {ctx.guild}.\nReason: {reason}")
+                    except (discord.errors.Forbidden, discord.errors.HTTPException):
+                        await ctx.send(f"I could not DM member `{member}`")
+                    await member.ban(delete_message_days=delete_message_days, reason=reason)
+                    await ctx.send(f"Banned member `{member}`\nReason: {reason}")
             else:
-                try:
-                    await member.send(f"You have been banned from {ctx.guild}.\nReason: {reason}")
-                except (discord.errors.Forbidden, discord.errors.HTTPException):
-                    await ctx.send(f"I could not DM member `{member}`")
-                await member.ban(delete_message_days=delete_message_days, reason=reason)
-                await ctx.send(f"Banned member `{member}`.\nReason: {reason}")
+                await ctx.guild.ban(await self.bot.fetch_user(int(member)), reason=reason)
+                await ctx.send(f"Banned member `{member.name}#{member.discriminator}`\nReason: {reason}")
 
     @commands.command(
         name="kick", brief="Kick members from the server", description="Kick one or more users from the server"
