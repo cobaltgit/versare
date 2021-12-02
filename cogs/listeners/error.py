@@ -12,6 +12,8 @@ class ErrorHandler(commands.Cog):
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(f"Required argument `{error.param}` missing.")
         elif isinstance(error, commands.CommandOnCooldown):
+            if ctx.author.id == self.bot.config["owner_id"]:
+                return await ctx.reinvoke()
             await ctx.send(
                 f":hourglass: | Cooldown - you can run command `{ctx.command}` after {round(error.retry_after, 1)} seconds."
             )
