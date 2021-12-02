@@ -26,7 +26,12 @@ class Internet(commands.Cog):
         """Let me Google that for you - pass a query and get your link"""
         await ctx.send(f"https://lmgtfy.app/?q={quote_plus(query)}")
 
-    @commands.command(name="isgd", aliases=["vgd", "urlshort"])
+    @commands.command(
+        name="isgd",
+        aliases=["vgd", "urlshort"],
+        brief="Shorten multiple URLS",
+        description="Use the is.gd API to batch shorten URLs - rate limits apply!",
+    )
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def isgd(
         self,
