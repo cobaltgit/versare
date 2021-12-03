@@ -17,8 +17,8 @@ class Moderation(commands.Cog):
     async def snipe(self, ctx):
         """Get the last deleted message from a channel"""
         if ctx.invoked_subcommand is None:
-            await self.bot.db_cur.execute("SELECT * FROM sniper WHERE channel_id = ?", (ctx.message.channel.id,))
-            result = await self.bot.db_cur.fetchone()
+            await self.bot.snipe_cur.execute("SELECT * FROM sniper WHERE channel_id = ?", (ctx.message.channel.id,))
+            result = await self.bot.snipe_cur.fetchone()
             if not result:
                 return await ctx.send(":envelope: | No message to snipe")
             author = ctx.message.guild.get_member(result[1])
@@ -35,13 +35,13 @@ class Moderation(commands.Cog):
     @snipe.command(name="optout", brief="Opt out of being sniped or editsniped")
     async def optout(self, ctx):
         """Opt out of being sniped or editsniped"""
-        await self.bot.db_cur.execute("SELECT user_id FROM sniper_optout WHERE guild_id = ?", (ctx.guild.id,))
-        result = await self.bot.db_cur.fetchone()
+        await self.bot.snipe_cur.execute("SELECT user_id FROM sniper_optout WHERE guild_id = ?", (ctx.guild.id,))
+        result = await self.bot.snipe_cur.fetchone()
         if result is None:
-            await self.bot.db_cur.execute(
+            await self.bot.snipe_cur.execute(
                 "INSERT INTO sniper_optout(user_id, guild_id) VALUES (?, ?)", (ctx.author.id, ctx.guild.id)
             )
-            await self.bot.db_cxn.commit()
+            await self.bot.snipe_cxn.commit()
             return await ctx.send(":envelope: | You have successfully opted out of being sniped.")
 
         if ctx.author.id in result:
@@ -54,18 +54,18 @@ class Moderation(commands.Cog):
     )
     async def optin(self, ctx):
         """Opt back in to being sniped"""
-        await self.bot.db_cur.execute("SELECT user_id FROM sniper_optout WHERE guild_id = ?", (ctx.guild.id,))
-        result = await self.bot.db_cur.fetchone()
+        await self.bot.snipe_cur.execute("SELECT user_id FROM sniper_optout WHERE guild_id = ?", (ctx.guild.id,))
+        result = await self.bot.snipe_cur.fetchone()
 
         if result and ctx.author.id in result:
-            await self.bot.db_cur.execute(
+            await self.bot.snipe_cur.execute(
                 "DELETE FROM sniper_optout WHERE user_id = ? AND guild_id = ?",
                 (
                     ctx.author.id,
                     ctx.guild.id,
                 ),
             )
-            await self.bot.db_cxn.commit()
+            await self.bot.snipe_cxn.commit()
             return await ctx.send(":envelope: | You have successfully opted back in being sniped.")
 
         if not result or ctx.author.id not in result:
@@ -78,8 +78,8 @@ class Moderation(commands.Cog):
         description="Get the contents of the last edited message before and after - some users may opt out, so if they edit a message and you try to snipe it, nothing is returned.",
     )
     async def editsnipe(self, ctx):
-        await self.bot.db_cur.execute("SELECT * FROM editsniper WHERE channel_id = ?", (ctx.message.channel.id,))
-        result = await self.bot.db_cur.fetchone()
+        await self.bot.snipe_cur.execute("SELECT * FROM editsniper WHERE channel_id = ?", (ctx.message.channel.id,))
+        result = await self.bot.snipe_cur.fetchone()
         if not result:
             await ctx.send(":envelope: | No message to editsnipe")
             return

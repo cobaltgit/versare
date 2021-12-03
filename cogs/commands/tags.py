@@ -26,8 +26,8 @@ class Tags(commands.Cog):
             return
 
         if calltag not in [cmd.name for cmd in self.tag.commands]:
-            await self.bot.db_cur.execute("SELECT * FROM tags WHERE guild_id = ?", (ctx.guild.id,))
-            result = await self.bot.db_cur.fetchall()
+            await self.bot.tags_cur.execute("SELECT * FROM tags WHERE guild_id = ?", (ctx.guild.id,))
+            result = await self.bot.tags_cur.fetchall()
             if not result:
                 return await ctx.send("There are no tags here.")
 
@@ -52,7 +52,7 @@ class Tags(commands.Cog):
 
         contents = await self.bot.wait_for("message", check=check)
 
-        await self.bot.db_cur.execute(
+        await self.bot.tags_cur.execute(
             "INSERT INTO tags(guild_id, tag, content) VALUES (?, ?, ?)",
             (
                 ctx.guild.id,
@@ -60,7 +60,7 @@ class Tags(commands.Cog):
                 str(contents),
             ),
         )
-        await self.bot.db_cxn.commit()
+        await self.bot.tags_cxn.commit()
 
         await ctx.send(f"Tag `{tname}` successfully created")
 
@@ -74,24 +74,24 @@ class Tags(commands.Cog):
         self, ctx, *, tag: str = commands.Option(description="Enter the name of the tag you would like to remove")
     ):
         """Remove a tag from the database"""
-        await self.bot.db_cur.execute(
+        await self.bot.tags_cur.execute(
             "SELECT tag FROM tags WHERE tag = ? AND guild_id = ?",
             (
                 tag,
                 ctx.guild.id,
             ),
         )
-        result = await self.bot.db_cur.fetchone()
+        result = await self.bot.tags_cur.fetchone()
         if not result:
             return await ctx.send(f"`{tag}`: no such tag")
-        await self.bot.db_cur.execute(
+        await self.bot.tags_cur.execute(
             "DELETE FROM tags WHERE tag = ? AND guild_id = ?",
             (
                 tag,
                 ctx.guild.id,
             ),
         )
-        await self.bot.db_cxn.commit()
+        await self.bot.tags_cxn.commit()
 
         await ctx.send(f"Tag `{tag}` successfully removed")
 

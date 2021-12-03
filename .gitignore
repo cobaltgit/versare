@@ -14,7 +14,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/
@@ -138,7 +137,7 @@ dmypy.json
 cython_debug/
 
 # Versare SQLite Database
-db/versare.db*
+db/*.db*
 
 # Bot token file
 config/auth.json

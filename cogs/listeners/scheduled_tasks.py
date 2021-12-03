@@ -10,46 +10,46 @@ from discord.ext import commands, tasks
 class ScheduledTasks(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.dbs = [db for db in os.listdir("db") if db.endswith(".db")]
         self.tasks = [self.backupdb_scheduled]
 
     def db_dump(self, dump_path):
         """
-        asqlite has no iterdump function, so we have to convert this function to async with loop.run_in_executor (see line 48)
+        asqlite has no iterdump function, so we have to convert this function to async with loop.run_in_executor (see line 50)
         Dumps the database with a temporary connection and compresses it with gzip
         """
+        for db in self.dbs:
+            with open(dump_path, "w") as dump:
+                dump.writelines(connect(db).iterdump())
 
-        with open(dump_path, "w") as dump:
-            dump.writelines(connect("db/versare.db").iterdump())
-
-        with open(dump_path, "rb") as dump:
-            with gzopen(dump_path + ".gz", "wb") as gzipped_dump:
-                cp(dump, gzipped_dump)
-        os.remove(dump_path)
+            with open(dump_path, "rb") as dump:
+                with gzopen(dump_path + ".gz", "wb") as gzipped_dump:
+                    cp(dump, gzipped_dump)
+            os.remove(dump_path)
 
     @tasks.loop(hours=24)
     async def backupdb_scheduled(self):
         """Back up the bot's database"""
 
         if not self.bot.config.get("db_dump_path", False):
-            print(
+            return print(
                 f"[{datetime.now().strftime('%d-%M-%Y %H:%M:%S')}] Scheduled database backup skipped due to dump path being unset.\n-> Set the database dump path in the bot's config.json file, located in the config directory."
             )
-            return
 
-        dump_path = os.path.join(
-            self.bot.config["db_dump_path"],
-            f"versare-{datetime.now().strftime('%d-%m-%Y')}.sql",
+        full_path = os.path.abspath(
+            os.path.join(self.bot.config.get("db_dump_path"), datetime.now().strftime("%d-%m-%Y"))
         )
+        if not os.path.exists(full_path):
+            os.makedirs(full_path)
 
-        if not os.path.exists(dump_path.rsplit("/", 1)[0]):
-            os.makedirs(dump_path.rsplit("/", 1)[0])
+        await self.bot.snipe_cur.execute("DELETE FROM sniper")
+        await self.bot.snipe_cur.execute("DELETE FROM editsniper")
+        await self.bot.snipe_cxn.commit()
 
-        await self.bot.db_cur.execute("DELETE FROM sniper")
-        await self.bot.db_cur.execute("DELETE FROM editsniper")
-        await self.bot.db_cxn.commit()
-
-        self.bot.loop.run_in_executor(None, self.db_dump, dump_path)
-
+        dump_paths = [os.path.join(full_path, db[:-3] + ".sql") for db in self.dbs]
+        for dump_path in dump_paths:
+            self.bot.loop.run_in_executor(None, self.db_dump, dump_path)
+        print(dump_paths)
         print(f"[{datetime.now().strftime('%d-%M-%Y %H:%M:%S')}] Scheduled database backup completed")
 
     @commands.Cog.listener()

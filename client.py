@@ -12,12 +12,20 @@ import discord
 from cryptography.fernet import Fernet
 from discord.ext import commands
 
+from lib.help import VersareHelp
+
 
 class Versare(commands.AutoShardedBot):
     def __init__(self):
 
         with open("config/config.json", "r") as config_file:
             self.config = json.load(config_file)
+
+        self.databases = {
+            "guild": {"sql": "db/guild.sql", "db": "db/guild.db"},
+            "snipe": {"sql": "db/snipe.sql", "db": "db/snipe.db"},
+            "tags": {"sql": "db/tags.sql", "db": "db/tags.db"},
+        }
 
         with open("config/auth.json", "r") as auth_file:
             self.auth = json.load(auth_file)
@@ -42,7 +50,7 @@ class Versare(commands.AutoShardedBot):
             intents=discord.Intents(**self.config["intents"]),
             case_insensitive=True,
             strip_after_prefix=True,
-            help_command=commands.MinimalHelpCommand(),
+            help_command=VersareHelp(),
         )
 
     async def setup(self):
@@ -57,14 +65,23 @@ class Versare(commands.AutoShardedBot):
         self.logger.addHandler(handler)
 
         async def db_init():
-            self.db_cxn = await asqlite.connect("db/versare.db")
-            self.db_cur = await self.db_cxn.cursor()
-            await self.db_cur.executescript(open("db/init.sql", "r").read())
+            self.snipe_cxn = await asqlite.connect(self.databases["snipe"]["db"])
+            self.tags_cxn = await asqlite.connect(self.databases["tags"]["db"])
+            self.guild_cxn = await asqlite.connect(self.databases["guild"]["db"])
+
+            self.snipe_cur = await self.snipe_cxn.cursor()
+            self.tags_cur = await self.tags_cxn.cursor()
+            self.guild_cur = await self.guild_cxn.cursor()
+
+            for k, v in self.databases.items():
+                for cursor in (self.snipe_cur, self.tags_cur, self.guild_cur):
+                    with open(v["sql"], "r") as sql:
+                        await cursor.executescript(sql.read())
 
         await db_init()
 
-        await self.db_cur.execute("SELECT * FROM custompfx")
-        result = await self.db_cur.fetchall()
+        await self.guild_cur.execute("SELECT * FROM custompfx")
+        result = await self.guild_cur.fetchall()
         self.prefixes = {str(guild_id): pfx for guild_id, pfx in result}
         await super().setup()
 
@@ -106,13 +123,6 @@ class Versare(commands.AutoShardedBot):
                 self.unload_extension(cog)
             except Exception as e:
                 print(f"[ERR] Cog `{cog}` raised an exception while unloading:\n-> {type(e).__name__}: {e}")
-
-        if os.path.exists("db/versare.db"):
-            await self.db_cur.execute("DELETE FROM sniper")
-            await self.db_cur.execute("DELETE FROM editsniper")
-            await self.db_cxn.commit()
-            await self.db_cur.close()
-            await self.db_cxn.close()
 
         try:
             with open(self.logpath, "rb") as log:

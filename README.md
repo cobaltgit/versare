@@ -30,7 +30,8 @@ psutil
 ### TO-DO LIST
 A list of things that need to be implemented next
 * ADD MORE COMMANDS!!!
-* Silence BeautifulSoup `GuessedAtParserWarning` when `wikipedia` command is executed for the first time
+* Economy system
+* Add mute system with timings
 
 
 ## Setup
