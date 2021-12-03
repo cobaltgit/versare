@@ -17,6 +17,7 @@ class Stats(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.proc = psutil.Process()
+        self.git_hash = check_output(["git", "rev-parse", "--short", "HEAD"]).decode("utf-8")
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -165,7 +166,7 @@ class Stats(commands.Cog):
         fields = [
             (
                 "<:Versare:914949604078927912> Versare",
-                f"`git-{check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('utf-8')}`",
+                f"`git-{self.git_hash}`",
                 True,
             ),
             ("<:Python:914950534887243776> Python", f"`{python_version()}`", True),
