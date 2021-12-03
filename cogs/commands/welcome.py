@@ -138,7 +138,7 @@ The welcome message for this guild is '{welcome_message}'"""
                 "INSERT INTO welcome(welcome_message, welcome_channel_id, guild_id)",
                 (
                     self.bot.config["welcome_msg"],
-                    welcome_channel,
+                    welcome_channel.id,
                     guild.id,
                 ),
             )
