@@ -162,6 +162,9 @@ class Stats(commands.Cog):
     )
     async def about(self, ctx):
         """Get the version of the bot and"""
+        ping_start = time()
+        msg = await ctx.send("Obtaining ping...")
+        ping_end = time()
         embed = discord.Embed(title="About Me", color=0x0047AB, timestamp=datetime.utcnow())
         fields = [
             (
@@ -171,10 +174,12 @@ class Stats(commands.Cog):
             ),
             ("<:Python:914950534887243776> Python", f"`{python_version()}`", True),
             ("<:Discordpy:914951096974323793> Discord.py", f"`{get_distribution('discord.py').version}`", True),
+            (":globe_with_meridians: WS Latency", f"{round(self.bot.latency * 1000)}ms", True),
+            (":envelope: REST Latency", f"{round((ping_end - ping_start) * 1000)}ms", True),
             (
                 ":computer: Process Usage",
                 f"RAM: {self.proc.memory_full_info().uss / 1024**2:.2f}MB\nCPU: {self.proc.cpu_percent() / psutil.cpu_count():.2f}%",
-                False,
+                True,
             ),
             (":stopwatch: Uptime", str(timedelta(seconds=int(round(time() - self.bot.start_time)))), True),
             (
@@ -187,7 +192,7 @@ class Stats(commands.Cog):
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
         embed.set_thumbnail(url=self.bot.user.avatar.url)
-        await ctx.send(embed=embed)
+        await msg.edit(content=None, embed=embed)
 
 
 def setup(bot):
