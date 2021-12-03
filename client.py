@@ -132,4 +132,13 @@ class Versare(commands.AutoShardedBot):
         except FileNotFoundError:
             pass
 
+        for cursor, connection in [
+            (self.snipe_cur, self.snipe_cxn),
+            (self.tags_cur, self.tags_cxn),
+            (self.guild_cur, self.guild_cxn),
+        ]:
+            await connection.commit()
+            await cursor.close()
+            await connection.close()
+
         await super().close()
