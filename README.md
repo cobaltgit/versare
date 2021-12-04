@@ -32,6 +32,7 @@ A list of things that need to be implemented next
 * ADD MORE COMMANDS!!!
 * Economy system
 * Add mute system with timings
+* Finish custom help command
 
 
 ## Setup
