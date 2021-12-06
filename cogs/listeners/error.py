@@ -51,7 +51,6 @@ Maybe you meant `{closest_match}`?"""
             )
         elif isinstance(error, commands.UserInputError):
             await ctx.send("Invalid user input")
-            await self.send_command_help(ctx)
 
         else:
             raise error
