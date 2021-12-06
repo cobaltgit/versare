@@ -75,7 +75,7 @@ class Internet(commands.Cog):
                 title=page.title,
                 url=page.url,
                 description=wikipedia.summary(query, sentences=3, auto_suggest=False, redirect=True, chars=1000),
-                color=ctx.author.color,
+                color=ctx.author.color or ctx.guild.me.color,
                 timestamp=datetime.utcnow(),
             )
         except wikipedia.DisambiguationError as e:
@@ -104,7 +104,7 @@ class Internet(commands.Cog):
                     title=page.title,
                     url=page.url,
                     description=wikipedia.summary(query, sentences=3, auto_suggest=False, redirect=True, chars=1000),
-                    color=ctx.author.color,
+                    color=ctx.author.color or ctx.guild.me.color,
                 )
             except wikipedia.DisambiguationError as e:
                 pass

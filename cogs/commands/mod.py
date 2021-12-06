@@ -25,7 +25,7 @@ class Moderation(commands.Cog):
             channel = ctx.message.guild.get_channel(result[0])
             embed = discord.Embed(
                 description=self.bot.fernet.decrypt(result[2]).decode("utf-8"),
-                color=author.color,
+                color=author.color or ctx.guild.me.color,
                 timestamp=datetime.utcnow(),
             )
             embed.set_author(name=author, icon_url=author.avatar.url)
@@ -86,7 +86,7 @@ class Moderation(commands.Cog):
         author = ctx.message.guild.get_member(result[1])
         channel = ctx.message.guild.get_channel(result[0])
         embed = discord.Embed(
-            color=author.color,
+            color=author.color or ctx.guild.me.color,
             timestamp=datetime.utcnow(),
         )
         fields = [

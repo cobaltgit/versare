@@ -63,7 +63,7 @@ class Fun(commands.Cog):
         embed = discord.Embed(
             title=resp["title"],
             url=resp["postLink"],
-            color=ctx.guild.get_member(ctx.author.id).top_role.color,
+            color=ctx.author.color or ctx.guild.me.color,
             timestamp=datetime.utcnow(),
         )
 

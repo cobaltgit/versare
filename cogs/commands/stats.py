@@ -29,7 +29,7 @@ class Stats(commands.Cog):
         api_start = time()
         msg = await ctx.send("Ping...")
         api_end = time()
-        embed = discord.Embed(title="Pong!", color=ctx.author.color, timestamp=datetime.utcnow())
+        embed = discord.Embed(title="Pong!", color=ctx.author.color or ctx.guild.me.color, timestamp=datetime.utcnow())
         fields = [
             ("Websocket Latency", str(round(self.bot.latency * 1000)) + "ms", True),
             ("API Latency", str(round((api_end - api_start) * 1000)) + "ms", True),
@@ -47,7 +47,7 @@ class Stats(commands.Cog):
         embed = discord.Embed(
             title="Uptime",
             description=f"The bot has been up {timedelta(seconds=int(round(time()-self.bot.start_time)))}",
-            color=ctx.author.color,
+            color=ctx.author.color or ctx.guild.me.color,
         )
         embed.set_thumbnail(
             url="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/twitter/282/stopwatch_23f1-fe0f.png"
@@ -124,7 +124,9 @@ class Stats(commands.Cog):
         ),
     ):
         user = user or ctx.author
-        embed = discord.Embed(description=user.mention, color=ctx.author.color, timestamp=datetime.utcnow())
+        embed = discord.Embed(
+            description=user.mention, color=ctx.author.color or ctx.guild.me.color, timestamp=datetime.utcnow()
+        )
         fields = [
             ("Server Join Date", user.joined_at.strftime("%b %d, %Y at %H:%M:%S"), True),
             ("Account Register Date", user.created_at.strftime("%b %d, %Y at %H:%M:%S"), True),
