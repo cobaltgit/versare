@@ -108,6 +108,10 @@ class Internet(commands.Cog):
                 )
             except wikipedia.DisambiguationError as e:
                 pass
+            except wikipedia.PageError:
+                return await ctx.send(
+                    f":globe_with_meridians: | Page ID `{query}` doesn't match any pages - maybe that page doesn't exist? Try another."
+                )
 
             return await ctx.send(embed=embed)
 
