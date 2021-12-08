@@ -44,11 +44,9 @@ class Games(commands.Cog):
     ):
         """Roll a dice, up to 100 D20s actually"""
         if amount > 100:
-            await ctx.send("You can't roll more than 100 dice at once.")
-            return
+            return await ctx.send("You can't roll more than 100 dice at once.")
         if sides > 20:
-            await ctx.send("There's nothing bigger than a D20, right?")
-            return
+            return await ctx.send("There's nothing bigger than a D20, right?")
         rolls = [randint(1, sides) for _ in range(amount)]
         sumofrolls = sum(rolls)
         rollstr = ", ".join(str(roll) for roll in rolls)
