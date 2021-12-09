@@ -50,7 +50,7 @@ class Prefix(commands.Cog):
         result = await self.bot.guild_cur.fetchone()
         if not result:
             await self.bot.guild_cur.execute(
-                "INSERT INTO custompfx(prefix, guild_id)",
+                "INSERT INTO custompfx(prefix, guild_id) VALUES (?,?)",
                 (
                     self.bot.config["defaults"]["prefix"],
                     guild.id,
