@@ -125,7 +125,7 @@ The welcome message for this guild is '{welcome_message}'"""
                 for channel in guild.text_channels:
                     if channel.permissions_for(guild.me).send_messages:
                         await channel.send(
-                            f"Welcome channel not set! Enter command `{self.bot.config['default_prefix']}welcome setchn <channel>` to set it."
+                            f"Welcome channel not set! Enter command `{self.bot.config['defaults']['prefix']}welcome setchn <channel>` to set it."
                         )
                     break
                 return
