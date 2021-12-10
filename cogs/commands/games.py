@@ -132,15 +132,15 @@ class Games(commands.Cog):
         view.message = await ctx.send(embed=embed, view=view)
 
     @commands.command(
-        name="choices",
-        aliases=["choice"],
+        name="choice",
+        aliases=["choices"],
         brief="Get a random choice from a list of arguments",
         description="Get a random choice from a list of arguments provided by the user",
     )
-    async def choices(self, ctx, *_choices):
+    async def choice(self, ctx, *choices):
         """Get a random choice from a list of arguments"""
         embed = discord.Embed(title="Choices", color=ctx.author.color or ctx.guild.me.color or ctx.guild.me.color)
-        fields = [("Your Choices", ", ".join(_choices), True), ("Bot's Pick", choice(_choices), True)]
+        fields = [("Your Choices", ", ".join(choices), True), ("Bot's Pick", choice(choices), True)]
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
         await ctx.send(embed=embed)
