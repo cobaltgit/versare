@@ -50,10 +50,10 @@ $ git clone https://github.com/cobaltgit/versare.git
 ### Installing the dependencies
 
 Next, we need to install the dependencies so the code can run  
-You'll need `pipenv` for this. If you don't have Python 3.9.7 installed on your system, use [`pyenv`](https://github.com/pyenv/pyenv).  
-Follow the setup instructions from there and install 3.9.7
+You'll need `pipenv` for this. If you don't have Python 3.9 installed on your system, use [`pyenv`](https://github.com/pyenv/pyenv).  
+Follow the setup instructions from there and install 3.9(.9)  
 
-* Assuming you've installed Python 3.9.7 properly if you haven't already, install `pipenv` with this command in the terminal
+* Assuming you've installed Python 3.9 properly if you haven't already, install `pipenv` with this command in the terminal
 ```bash
 $ python3 -m pip install pipenv
 ```
