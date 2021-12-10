@@ -143,6 +143,7 @@ class Games(commands.Cog):
         fields = [("Your Choices", ", ".join(choices), True), ("Bot's Pick", choice(choices), True)]
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
+        embed.set_thumbnail(url="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/twitter/282/question-mark_2753.png")
         await ctx.send(embed=embed)
 
 
