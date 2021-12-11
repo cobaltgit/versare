@@ -49,7 +49,6 @@ class ScheduledTasks(commands.Cog):
         dump_paths = [os.path.join(full_path, db[:-3] + ".sql") for db in self.dbs]
         for dump_path in dump_paths:
             self.bot.loop.run_in_executor(None, self.db_dump, dump_path)
-        print(dump_paths)
         print(f"[{datetime.now().strftime('%d-%M-%Y %H:%M:%S')}] Scheduled database backup completed")
 
     @commands.Cog.listener()
