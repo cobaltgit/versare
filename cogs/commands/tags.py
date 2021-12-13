@@ -1,6 +1,7 @@
 from typing import Optional
 
 import discord
+import datetime
 from discord.ext import commands
 
 
@@ -53,11 +54,13 @@ class Tags(commands.Cog):
         contents = await self.bot.wait_for("message", check=check)
 
         await self.bot.tags_cur.execute(
-            "INSERT INTO tags(guild_id, tag, content) VALUES (?, ?, ?)",
+            "INSERT INTO tags(guild_id, owner_id, tag, content, creation_dt) VALUES (?, ?, ?, ?, ?)",
             (
                 ctx.guild.id,
+                ctx.author.id,
                 str(tname),
                 str(contents),
+                datetime.datetime.utcnow().timestamp()
             ),
         )
         await self.bot.tags_cxn.commit()
@@ -94,6 +97,24 @@ class Tags(commands.Cog):
         await self.bot.tags_cxn.commit()
 
         await ctx.send(f"Tag `{tag}` successfully removed")
+        
+    @tag.command(name="owner", brief="Get the owner of a tag", description="Get the owner of a tag from the database")
+    async def owner(self, ctx, *, tag: str = commands.Option(description="Enter the name of the tag")):
+        await self.bot.tags_cur.execute("SELECT owner_id, creation_dt, content FROM tags WHERE tag = ? AND guild_id = ?", (tag,ctx.guild.id,))
+        result = await self.bot.tags_cur.fetchone()
+        author = ctx.guild.get_member(result[0])
+        if not result:
+            return await ctx.send(f"`{tag}`: no such tag")
+        embed = discord.Embed(title=tag, timestamp=datetime.datetime.fromtimestamp(result[1]), color=author.color)
+        embed.set_author(name=author, icon_url=author.avatar.url)
+        embed.set_footer(text="Date of tag creation")
+        fields = [
+            ("Owner", author.mention, True),
+            ("Tag Contents", result[2], True),
+        ]
+        for name, value, inline in fields:
+            embed.add_field(name=name, value=value, inline=inline)
+        await ctx.send(embed=embed)
 
 
 def setup(bot):
