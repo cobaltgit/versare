@@ -13,7 +13,7 @@ class Fun(commands.Cog):
         self.bot = bot
 
     async def get_meme(self, subreddit):
-        async with self.bot.httpsession.get(f"https://meme-api.herokuapp.com/gimme/{subreddit}") as r:
+        async with self.bot.httpsession.get(f"https://meme-api.herokuapp.com/gimme/{subreddit}", headers=self.bot.config.get("aiohttp_base_headers")) as r:
             return await r.json()
 
     @commands.command(

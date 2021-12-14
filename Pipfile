@@ -36,6 +36,7 @@ urllib3 = "==1.26.7"
 yarl = "==1.7.2"
 uvloop = "*"
 psutil = "*"
+youtube-dl = "*"
 
 [dev-packages]
 pre-commit = "*"
