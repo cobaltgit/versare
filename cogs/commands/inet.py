@@ -60,7 +60,7 @@ class Internet(commands.Cog):
             return
 
         for url in urls.split():
-            async with self.bot.httpsession.get(f"https://is.gd/create.php?format=json&url={url}") as r:
+            async with self.bot.httpsession.get(f"https://is.gd/create.php?format=json&url={url}", headers=self.bot.config.get("aiohttp_base_headers")) as r:
                 resp = await r.json(content_type="text/javascript")
             if resp.get("errorcode", False):
                 if resp["errorcode"] == 1:
