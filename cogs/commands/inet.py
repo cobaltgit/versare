@@ -2,11 +2,11 @@ from datetime import datetime
 from io import BytesIO
 from urllib.parse import quote_plus
 
-import asyncio
+from urllib.parse import unquote_plus
 import discord
 import sys
 import wikipedia
-from yt_dlp import YoutubeDL
+from pytube import YouTube
 from discord.ext import commands
 
 
@@ -15,15 +15,11 @@ class Internet(commands.Cog):
         """Internet related commands"""
         self.bot = bot
         
-    async def get_youtube(self, url):
-        ydl_opts = {
-            "format": "best",
-            "outtmpl": "mp4",
-            "forceurl": True,
-            "quiet": True
-        }
-        with YoutubeDL(ydl_opts) as ydl:
-            return ydl.extract_info(url, download=False)["formats"][-1]["url"]
+    def get_youtube(self, url: str):
+        buffer = BytesIO()
+        yt = YouTube(url)
+        yt.streams.get_highest_resolution().stream_to_buffer(buffer)
+        return buffer
             
 
     @commands.command(
@@ -139,14 +135,8 @@ class Internet(commands.Cog):
         
     @commands.command(name="ytdl", aliases=["youtube", "downloadvideo"], brief="Download YouTube videos", description="Download videos from YouTube with youtube_dl")
     async def ytdl(self, ctx, url: str = commands.Option(description="Enter the URL of the video")):
-        buffer = BytesIO()
         
-        url = await self.get_youtube(url)
-        
-        async with self.bot.httpsession.get(url, headers=self.bot.config.get("aiohttp_base_headers")) as vid:
-            r = await vid.read()
-            buffer.write(r)
-        
+        buffer = await self.bot.loop.run_in_executor(None, self.get_youtube, url)
         buffer.seek(0)
             
         if sys.getsizeof(buffer) > 8000000:
