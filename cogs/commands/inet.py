@@ -6,7 +6,7 @@ import asyncio
 import discord
 import sys
 import wikipedia
-import youtube_dl
+from yt_dlp import YoutubeDL
 from discord.ext import commands
 
 
@@ -22,7 +22,7 @@ class Internet(commands.Cog):
             "forceurl": True,
             "quiet": True
         }
-        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        with YoutubeDL(ydl_opts) as ydl:
             return ydl.extract_info(url, download=False)["formats"][-1]["url"]
             
 
