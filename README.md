@@ -25,7 +25,7 @@ cryptography
 asqlite
 uvloop (on unix-like systems)
 psutil
-youtube-dl
+yt-dlp
 ```
 
 ### TO-DO LIST
