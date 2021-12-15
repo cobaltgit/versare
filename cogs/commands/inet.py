@@ -1,8 +1,6 @@
 from datetime import datetime
 from io import BytesIO
-from urllib.parse import quote_plus
 
-from urllib.parse import unquote_plus
 import discord
 import sys
 import wikipedia
