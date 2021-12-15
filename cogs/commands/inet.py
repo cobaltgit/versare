@@ -1,5 +1,6 @@
 from datetime import datetime
 from io import BytesIO
+from urllib.parse import quote_plus
 
 import discord
 import sys
@@ -136,9 +137,16 @@ class Internet(commands.Cog):
         
         buffer = await self.bot.loop.run_in_executor(None, self.get_youtube, url)
         buffer.seek(0)
+        
+        if ctx.guild.premium_tier < 2:
+            filesize_limit_megabytes = 8
+        elif ctx.guild.premium_tier == 2:
+            filesize_limit_megabytes = 50
+        elif ctx.guild.premium_tier == 3:
+            filesize_limit_megabytes = 100
             
-        if sys.getsizeof(buffer) > 8000000:
-            return await ctx.send("Output file is bigger than 8MB")
+        if sys.getsizeof(buffer) > (filesize_limit_megabytes * 1_000_000):
+            return await ctx.send(f"Output file is larger than this server's filesize limit ({filesize_limit_megabytes}MB)")
         
         await ctx.send(file=discord.File(buffer, filename="download.mp4"))
 
