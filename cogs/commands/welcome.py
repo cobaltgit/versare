@@ -16,22 +16,23 @@ class Welcome(commands.Cog):
         if ctx.invoked_subcommand is not None:
             return
 
-        await self.bot.guild_cur.execute("SELECT welcome_message FROM welcome WHERE guild_id = ?", (ctx.guild.id,))
-        result = await self.bot.guild_cur.fetchone()
-        if result is None:
-            welcome_message = self.bot.config["defaults"]["welcome_msg"]
-        else:
-            welcome_message = str(result[0])
-
-        await self.bot.guild_cur.execute("SELECT welcome_channel_id FROM welcome WHERE guild_id = ?", (ctx.guild.id,))
-        result = await self.bot.guild_cur.fetchone()
-        if result is None:
-            if ctx.guild.system_channel is None:
-                welcome_channel = None
+        async with self.bot.guild_cxn.cursor() as cur:
+            await cur.execute("SELECT welcome_message FROM welcome WHERE guild_id = ?", (ctx.guild.id,))
+            result = await cur.fetchone()
+            if result is None:
+                welcome_message = self.bot.config["defaults"]["welcome_msg"]
             else:
-                welcome_channel = ctx.guild.system_channel.id
-        else:
-            welcome_channel = result[0]
+                welcome_message = str(result[0])
+
+            await cur.execute("SELECT welcome_channel_id FROM welcome WHERE guild_id = ?", (ctx.guild.id,))
+            result = await cur.fetchone()
+            if result is None:
+                if ctx.guild.system_channel is None:
+                    welcome_channel = None
+                else:
+                    welcome_channel = ctx.guild.system_channel.id
+            else:
+                welcome_channel = result[0]
 
         await ctx.send(
             f"""**WELCOME**
@@ -51,16 +52,18 @@ The welcome message for this guild is '{welcome_message}'"""
         channel: discord.TextChannel = commands.Option(description="Specify the channel you would like to use"),
     ):
         """Set the welcome message channel for this guild"""
-        await self.bot.guild_cur.execute("SELECT welcome_channel_id FROM welcome WHERE guild_id = ?", (ctx.guild.id,))
-        result = await self.bot.guild_cur.fetchone()
-        if result is None:
-            sql = "INSERT INTO welcome (guild_id,welcome_channel_id) VALUES (?,?)"
-            val = (ctx.guild.id, channel.id)
-        else:
-            sql = "UPDATE welcome SET welcome_channel_id = ? WHERE guild_id = ?"
-            val = (channel.id, ctx.guild.id)
-        await self.bot.guild_cur.execute(sql, val)
-        await self.bot.guild_cxn.commit()
+        async with self.bot.guild_cxn.cursor() as cur:
+            await cur.execute("SELECT welcome_channel_id FROM welcome WHERE guild_id = ?", (ctx.guild.id,))
+            result = await cur.fetchone()
+            if result is None:
+                sql = "INSERT INTO welcome (guild_id,welcome_channel_id) VALUES (?,?)"
+                val = (ctx.guild.id, channel.id)
+            else:
+                sql = "UPDATE welcome SET welcome_channel_id = ? WHERE guild_id = ?"
+                val = (channel.id, ctx.guild.id)
+            await cur.execute(sql, val)
+            await self.bot.guild_cxn.commit()
+            await cur.close()
         await ctx.send(f"Welcome channel is now `{channel}`")
 
     @welcome.command(
@@ -78,16 +81,18 @@ The welcome message for this guild is '{welcome_message}'"""
         ),
     ):
         """Set the welcome message for this guild - {0} denotes the guild name, {1} denotes the member name"""
-        await self.bot.guild_cur.execute("SELECT welcome_message FROM welcome WHERE guild_id = ?", (ctx.guild.id,))
-        result = await self.bot.guild_cur.fetchone()
-        if result is None:
-            sql = "INSERT INTO welcome (guild_id,welcome_message) VALUES (?,?)"
-            val = (ctx.guild.id, msg)
-        else:
-            sql = "UPDATE welcome SET welcome_message = ? WHERE guild_id = ?"
-            val = (msg, ctx.guild.id)
-        await self.bot.guild_cur.execute(sql, val)
-        await self.bot.guild_cxn.commit()
+        async with self.bot.guild_cxn.cursor() as cur:
+            await cur.execute("SELECT welcome_message FROM welcome WHERE guild_id = ?", (ctx.guild.id,))
+            result = cur.fetchone()
+            if result is None:
+                sql = "INSERT INTO welcome (guild_id,welcome_message) VALUES (?,?)"
+                val = (ctx.guild.id, msg)
+            else:
+                sql = "UPDATE welcome SET welcome_message = ? WHERE guild_id = ?"
+                val = (msg, ctx.guild.id)
+            await cur.execute(sql, val)
+            await self.bot.guild_cxn.commit()
+            await cur.close()
         await ctx.send(f"Welcome message for this guild is now '{msg}'")
 
     @commands.Cog.listener()
