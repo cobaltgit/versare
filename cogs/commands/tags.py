@@ -28,8 +28,8 @@ class Tags(commands.Cog):
 
         if calltag not in [cmd.name for cmd in self.tag.commands]:
             async with self.bot.tags_cxn.cursor() as cur:
-                await self.bot.tags_cur.execute("SELECT * FROM tags WHERE guild_id = ?", (ctx.guild.id,))
-                result = await self.bot.tags_cur.fetchall()
+                await cur.execute("SELECT * FROM tags WHERE guild_id = ?", (ctx.guild.id,))
+                result = await cur.fetchall()
                 await cur.close()
             if not result:
                 return await ctx.send("There are no tags here.")
@@ -82,14 +82,15 @@ class Tags(commands.Cog):
     ):
         """Remove a tag from the database"""
         async with self.bot.tags_cxn.cursor() as cur:
-            await self.bot.tags_cur.execute(
+            await cur.execute(
                 "SELECT tag FROM tags WHERE tag = ? AND guild_id = ?",
                 (
                     tag,
                     ctx.guild.id,
                 ),
             )
-            result = await self.bot.tags_cur.fetchone()
+            result = await cur.fetchone()
+            await cur.close()
             
         if not result:
             return await ctx.send(f"`{tag}`: no such tag")
@@ -109,8 +110,10 @@ class Tags(commands.Cog):
         
     @tag.command(name="owner", brief="Get the owner of a tag", description="Get the owner of a tag from the database")
     async def owner(self, ctx, *, tag: str = commands.Option(description="Enter the name of the tag")):
-        await self.bot.tags_cur.execute("SELECT owner_id, creation_dt, content FROM tags WHERE tag = ? AND guild_id = ?", (tag,ctx.guild.id,))
-        result = await self.bot.tags_cur.fetchone()
+        async with self.bot.tags_cxn.cursor() as cur:
+            await cur.execute("SELECT owner_id, creation_dt, content FROM tags WHERE tag = ? AND guild_id = ?", (tag,ctx.guild.id,))
+            result = await cur.fetchone()
+            await cur.close()
         author = ctx.guild.get_member(result[0])
         if not result:
             return await ctx.send(f"`{tag}`: no such tag")
