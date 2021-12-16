@@ -83,7 +83,7 @@ The welcome message for this guild is '{welcome_message}'"""
         """Set the welcome message for this guild - {0} denotes the guild name, {1} denotes the member name"""
         async with self.bot.guild_cxn.cursor() as cur:
             await cur.execute("SELECT welcome_message FROM welcome WHERE guild_id = ?", (ctx.guild.id,))
-            result = cur.fetchone()
+            result = await cur.fetchone()
             if result is None:
                 sql = "INSERT INTO welcome (guild_id,welcome_message) VALUES (?,?)"
                 val = (ctx.guild.id, msg)
