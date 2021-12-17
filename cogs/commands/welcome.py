@@ -26,13 +26,14 @@ class Welcome(commands.Cog):
 
             await cur.execute("SELECT welcome_channel_id FROM welcome WHERE guild_id = ?", (ctx.guild.id,))
             result = await cur.fetchone()
-            if result is None:
-                if ctx.guild.system_channel is None:
-                    welcome_channel = None
-                else:
-                    welcome_channel = ctx.guild.system_channel.id
+            await cur.close()
+        if result is None:
+            if ctx.guild.system_channel is None:
+                welcome_channel = None
             else:
-                welcome_channel = result[0]
+                welcome_channel = ctx.guild.system_channel.id
+        else:
+            welcome_channel = result[0]
 
         await ctx.send(
             f"""**WELCOME**

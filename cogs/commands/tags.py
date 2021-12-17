@@ -1,7 +1,8 @@
 from typing import Optional
 
+import asyncio
 import discord
-import datetime
+from datetime import datetime
 from discord.ext import commands
 
 
@@ -49,11 +50,17 @@ class Tags(commands.Cog):
 
         await ctx.send("Enter the name of the tag")
 
-        tname = await self.bot.wait_for("message", check=check)
+        try:
+            tname = await self.bot.wait_for("message", check=check)
+        except asyncio.TimeoutError:
+            return await ctx.send("Command timed out")
 
         await ctx.send("Enter the contents of the tag")
 
-        contents = await self.bot.wait_for("message", check=check)
+        try:
+            contents = await self.bot.wait_for("message", check=check)
+        except asyncio.TimeoutError:
+            return await ctx.send("Command timed out")
 
         async with self.bot.tags_cxn.cursor() as cur:
             await cur.execute(
@@ -63,7 +70,7 @@ class Tags(commands.Cog):
                     ctx.author.id,
                     str(tname),
                     str(contents),
-                    datetime.datetime.utcnow().timestamp()
+                    datetime.utcnow().timestamp()
                 ),
             )
             await self.bot.tags_cxn.commit()
@@ -117,7 +124,7 @@ class Tags(commands.Cog):
         author = ctx.guild.get_member(result[0])
         if not result:
             return await ctx.send(f"`{tag}`: no such tag")
-        embed = discord.Embed(title=tag, timestamp=datetime.datetime.fromtimestamp(result[1]), color=author.color)
+        embed = discord.Embed(title=tag, timestamp=datetime.fromtimestamp(result[1]), color=author.color)
         embed.set_author(name=author, icon_url=author.avatar.url)
         embed.set_footer(text="Date of tag creation")
         fields = [
