@@ -65,4 +65,5 @@ class RPSView(View):
 
     async def on_timeout(self):
         await self.ctx.send("Game timeout reached", ephemeral=True)
+        await self.message.delete()
         self.stop()
