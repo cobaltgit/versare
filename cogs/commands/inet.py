@@ -106,12 +106,12 @@ class Internet(commands.Cog):
                     and msg.content in e.options,
                 )
             except ValueError:
-                return await ctx.send(f":x: | Invalid choice")
+                return await ctx.send(f"Invalid choice")
             except asyncio.TimeoutError:
-                return await ctx.send("Command timed out")
+                return await ctx.send("Command timed out", ephemeral=True)
 
             if msg.content not in e.options:
-                return await ctx.send(":x: | Invalid choice")
+                return await ctx.send("Invalid choice")
 
             query = e.options[e.options.index(msg.content)]
 

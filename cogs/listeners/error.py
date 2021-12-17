@@ -46,7 +46,7 @@ class ErrorHandler(commands.Cog):
             ratios = [fuzz.ratio(ctx.message.content[len(ctx.prefix) :], command) for command in available_commands]
             closest_match = available_commands[ratios.index(max(ratios))]
             await ctx.send(
-                f""":x: | Command `{ctx.message.content[len(ctx.prefix):].split()[0]}` not found.
+                f"""Command `{ctx.message.content[len(ctx.prefix):].split()[0]}` not found.
 Maybe you meant `{closest_match}`?"""
             )
         elif isinstance(error, commands.UserInputError):
