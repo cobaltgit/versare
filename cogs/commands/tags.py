@@ -53,14 +53,14 @@ class Tags(commands.Cog):
         try:
             tname = await self.bot.wait_for("message", check=check)
         except asyncio.TimeoutError:
-            return await ctx.send("Command timed out")
+            return await ctx.send("Command timed out", ephemeral=True)
 
         await ctx.send("Enter the contents of the tag")
 
         try:
             contents = await self.bot.wait_for("message", check=check)
         except asyncio.TimeoutError:
-            return await ctx.send("Command timed out")
+            return await ctx.send("Command timed out", ephemeral=True)
 
         async with self.bot.tags_cxn.cursor() as cur:
             await cur.execute(

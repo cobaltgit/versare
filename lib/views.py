@@ -64,5 +64,5 @@ class RPSView(View):
         return await self.process("scissors")
 
     async def on_timeout(self):
-        await self.ctx.send("Game timeout reached")
+        await self.ctx.send("Game timeout reached", ephemeral=True)
         self.stop()

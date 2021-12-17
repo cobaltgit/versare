@@ -108,7 +108,7 @@ class Internet(commands.Cog):
             except ValueError:
                 return await ctx.send(f"Invalid choice")
             except asyncio.TimeoutError:
-                return await ctx.send("Command timed out")
+                return await ctx.send("Command timed out", ephemeral=True)
 
             if msg.content not in e.options:
                 return await ctx.send("Invalid choice")
