@@ -54,6 +54,14 @@ class Tags(commands.Cog):
             tname = await self.bot.wait_for("message", check=check)
         except asyncio.TimeoutError:
             return await ctx.send("Command timed out", ephemeral=True)
+        
+        async with self.bot.tags_cxn.cursor() as cur:
+            await cur.execute("SELECT * FROM tags WHERE tag = ? AND guild_id = ?", (str(tname), ctx.guild.id))
+            result = await cur.fetchone()
+            await cur.close()
+            
+        if result:
+            return await ctx.send(f"Tag `{tname}` already exists")
 
         await ctx.send("Enter the contents of the tag")
 
