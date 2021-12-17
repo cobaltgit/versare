@@ -4,7 +4,6 @@
         "prefix": "$",
         "welcome_msg": "Welcome to {0}, {1}!"
     },
-    "db_dump_path": "",
     "intents": {
         "members": true,
         "guild_messages": true,
@@ -14,5 +13,8 @@
     "memes": {
         "retry_limit": 5,
         "default_subreddits": ["memes", "dankmemes", "wholesomememes", "me_irl"]
+    },
+    "aiohttp_base_headers": {
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:10.0) Gecko/20100101 Firefox/10.0"
     }
 }

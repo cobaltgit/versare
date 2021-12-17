@@ -69,19 +69,19 @@ class Versare(commands.AutoShardedBot):
             self.tags_cxn = await asqlite.connect(self.databases["tags"]["db"])
             self.guild_cxn = await asqlite.connect(self.databases["guild"]["db"])
 
-            self.snipe_cur = await self.snipe_cxn.cursor()
-            self.tags_cur = await self.tags_cxn.cursor()
-            self.guild_cur = await self.guild_cxn.cursor()
-
             for k, v in self.databases.items():
-                for cursor in (self.snipe_cur, self.tags_cur, self.guild_cur):
-                    with open(v["sql"], "r") as sql:
-                        await cursor.executescript(sql.read())
+                for connection in (self.snipe_cxn, self.tags_cxn, self.guild_cxn):
+                    async with connection.cursor() as tempcursor:
+                        with open(v["sql"], "r") as sql:
+                            await tempcursor.executescript(sql.read())
+                            await tempcursor.close()
 
         await db_init()
 
-        await self.guild_cur.execute("SELECT * FROM custompfx")
-        result = await self.guild_cur.fetchall()
+        async with self.guild_cxn.cursor() as prefix_cur:
+            await prefix_cur.execute("SELECT * FROM custompfx")
+            result = await prefix_cur.fetchall()
+            await prefix_cur.close()
         self.prefixes = {str(guild_id): pfx for guild_id, pfx in result}
         await super().setup()
 
@@ -132,13 +132,8 @@ class Versare(commands.AutoShardedBot):
         except FileNotFoundError:
             pass
 
-        for cursor, connection in [
-            (self.snipe_cur, self.snipe_cxn),
-            (self.tags_cur, self.tags_cxn),
-            (self.guild_cur, self.guild_cxn),
-        ]:
+        for connection in (self.snipe_cxn, self.tags_cxn, self.guild_cxn):
             await connection.commit()
-            await cursor.close()
             await connection.close()
 
         await super().close()

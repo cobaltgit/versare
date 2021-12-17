@@ -25,6 +25,7 @@ cryptography
 asqlite
 uvloop (on unix-like systems)
 psutil
+PyTube
 ```
 
 ### TO-DO LIST

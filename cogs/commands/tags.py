@@ -1,6 +1,8 @@
 from typing import Optional
 
+import asyncio
 import discord
+from datetime import datetime
 from discord.ext import commands
 
 
@@ -26,8 +28,10 @@ class Tags(commands.Cog):
             return
 
         if calltag not in [cmd.name for cmd in self.tag.commands]:
-            await self.bot.tags_cur.execute("SELECT * FROM tags WHERE guild_id = ?", (ctx.guild.id,))
-            result = await self.bot.tags_cur.fetchall()
+            async with self.bot.tags_cxn.cursor() as cur:
+                await cur.execute("SELECT * FROM tags WHERE guild_id = ?", (ctx.guild.id,))
+                result = await cur.fetchall()
+                await cur.close()
             if not result:
                 return await ctx.send("There are no tags here.")
 
@@ -46,21 +50,39 @@ class Tags(commands.Cog):
 
         await ctx.send("Enter the name of the tag")
 
-        tname = await self.bot.wait_for("message", check=check)
+        try:
+            tname = await self.bot.wait_for("message", check=check)
+        except asyncio.TimeoutError:
+            return await ctx.send("Command timed out", ephemeral=True)
+        
+        async with self.bot.tags_cxn.cursor() as cur:
+            await cur.execute("SELECT * FROM tags WHERE tag = ? AND guild_id = ?", (str(tname), ctx.guild.id))
+            result = await cur.fetchone()
+            await cur.close()
+            
+        if result:
+            return await ctx.send(f"Tag `{tname}` already exists")
 
         await ctx.send("Enter the contents of the tag")
 
-        contents = await self.bot.wait_for("message", check=check)
+        try:
+            contents = await self.bot.wait_for("message", check=check)
+        except asyncio.TimeoutError:
+            return await ctx.send("Command timed out", ephemeral=True)
 
-        await self.bot.tags_cur.execute(
-            "INSERT INTO tags(guild_id, tag, content) VALUES (?, ?, ?)",
-            (
-                ctx.guild.id,
-                str(tname),
-                str(contents),
-            ),
-        )
-        await self.bot.tags_cxn.commit()
+        async with self.bot.tags_cxn.cursor() as cur:
+            await cur.execute(
+                "INSERT INTO tags(guild_id, owner_id, tag, content, creation_dt) VALUES (?, ?, ?, ?, ?)",
+                (
+                    ctx.guild.id,
+                    ctx.author.id,
+                    str(tname),
+                    str(contents),
+                    datetime.utcnow().timestamp()
+                ),
+            )
+            await self.bot.tags_cxn.commit()
+            await cur.close()
 
         await ctx.send(f"Tag `{tname}` successfully created")
 
@@ -74,26 +96,55 @@ class Tags(commands.Cog):
         self, ctx, *, tag: str = commands.Option(description="Enter the name of the tag you would like to remove")
     ):
         """Remove a tag from the database"""
-        await self.bot.tags_cur.execute(
-            "SELECT tag FROM tags WHERE tag = ? AND guild_id = ?",
-            (
-                tag,
-                ctx.guild.id,
-            ),
-        )
-        result = await self.bot.tags_cur.fetchone()
+        async with self.bot.tags_cxn.cursor() as cur:
+            await cur.execute(
+                "SELECT tag FROM tags WHERE tag = ? AND guild_id = ?",
+                (
+                    tag,
+                    ctx.guild.id,
+                ),
+            )
+            result = await cur.fetchone()
+            await cur.close()
+            
         if not result:
             return await ctx.send(f"`{tag}`: no such tag")
-        await self.bot.tags_cur.execute(
-            "DELETE FROM tags WHERE tag = ? AND guild_id = ?",
-            (
-                tag,
-                ctx.guild.id,
-            ),
-        )
-        await self.bot.tags_cxn.commit()
+            
+        if int(result[1]) != ctx.author.id or not ctx.author.guild_permissions.administrator:
+            return await ctx.send(f"Either you don't own tag `{tag}` or you lack administrator permissions to remove it otherwise")
+        
+        async with self.bot.tags_cxn.cursor() as cur:
+            await cur.execute(
+                "DELETE FROM tags WHERE tag = ? AND guild_id = ?",
+                (
+                    tag,
+                    ctx.guild.id,
+                ),
+            )
+            await self.bot.tags_cxn.commit()
+            await cur.close()
 
         await ctx.send(f"Tag `{tag}` successfully removed")
+        
+    @tag.command(name="owner", brief="Get the owner of a tag", description="Get the owner of a tag from the database")
+    async def owner(self, ctx, *, tag: str = commands.Option(description="Enter the name of the tag")):
+        async with self.bot.tags_cxn.cursor() as cur:
+            await cur.execute("SELECT owner_id, creation_dt, content FROM tags WHERE tag = ? AND guild_id = ?", (tag,ctx.guild.id,))
+            result = await cur.fetchone()
+            await cur.close()
+        author = ctx.guild.get_member(result[0])
+        if not result:
+            return await ctx.send(f"`{tag}`: no such tag")
+        embed = discord.Embed(title=tag, timestamp=datetime.fromtimestamp(result[1]), color=author.color)
+        embed.set_author(name=author, icon_url=author.avatar.url)
+        embed.set_footer(text="Date of tag creation")
+        fields = [
+            ("Owner", author.mention, True),
+            ("Tag Contents", result[2], True),
+        ]
+        for name, value, inline in fields:
+            embed.add_field(name=name, value=value, inline=inline)
+        await ctx.send(embed=embed)
 
 
 def setup(bot):

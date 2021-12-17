@@ -1,8 +1,12 @@
 from datetime import datetime
+from io import BytesIO
 from urllib.parse import quote_plus
 
+import asyncio
 import discord
+import sys
 import wikipedia
+import youtube_dl
 from discord.ext import commands
 
 
@@ -10,6 +14,17 @@ class Internet(commands.Cog):
     def __init__(self, bot):
         """Internet related commands"""
         self.bot = bot
+        
+    def get_youtube(self, url: str):
+        ydl_opts = {
+            "format": "best",
+            "outtmpl": "mp4",
+            "forceurl": True,
+            "quiet": True
+        }
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            return ydl.extract_info(url, download=False)["formats"][-1]["url"]
+            
 
     @commands.command(
         name="lmgtfy",
@@ -45,7 +60,7 @@ class Internet(commands.Cog):
             return
 
         for url in urls.split():
-            async with self.bot.httpsession.get(f"https://is.gd/create.php?format=json&url={url}") as r:
+            async with self.bot.httpsession.get(f"https://is.gd/create.php?format=json&url={url}", headers=self.bot.config.get("aiohttp_base_headers")) as r:
                 resp = await r.json(content_type="text/javascript")
             if resp.get("errorcode", False):
                 if resp["errorcode"] == 1:
@@ -91,10 +106,12 @@ class Internet(commands.Cog):
                     and msg.content in e.options,
                 )
             except ValueError:
-                return await ctx.send(f":x: | Invalid choice")
+                return await ctx.send(f"Invalid choice")
+            except asyncio.TimeoutError:
+                return await ctx.send("Command timed out", ephemeral=True)
 
             if msg.content not in e.options:
-                return await ctx.send(":x: | Invalid choice")
+                return await ctx.send("Invalid choice")
 
             query = e.options[e.options.index(msg.content)]
 
@@ -121,6 +138,24 @@ class Internet(commands.Cog):
             )
 
         await ctx.send(embed=embed)
+        
+    @commands.command(name="ytdl", aliases=["youtube", "downloadvideo"], brief="Download YouTube videos", description="Download videos from YouTube with youtube_dl")
+    async def ytdl(self, ctx, url: str = commands.Option(description="Enter the URL of the video")):
+        
+        buffer = BytesIO()
+        
+        url = await self.bot.loop.run_in_executor(None, self.get_youtube, url)
+        
+        async with self.bot.httpsession.get(url, headers=self.bot.config.get("aiohttp_base_headers")) as vid:
+            r = await vid.read()
+            buffer.write(r)
+        
+        buffer.seek(0)
+            
+        if sys.getsizeof(buffer) > ctx.guild.filesize_limit:
+            return await ctx.send(f"Output file is larger than this server's filesize limit ({ctx.guild.filesize_limit/float(1<<20):,.0f}MB)")
+        
+        await ctx.send(file=discord.File(buffer, filename="download.mp4"))
 
 
 def setup(bot):
