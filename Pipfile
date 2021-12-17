@@ -36,7 +36,7 @@ urllib3 = "==1.26.7"
 yarl = "==1.7.2"
 uvloop = "*"
 psutil = "*"
-pytube = "*"
+youtube-dl = "*"
 
 [dev-packages]
 pre-commit = "*"

@@ -5,7 +5,7 @@ from urllib.parse import quote_plus
 import discord
 import sys
 import wikipedia
-from pytube import YouTube
+import youtube_dl
 from discord.ext import commands
 
 
@@ -15,10 +15,14 @@ class Internet(commands.Cog):
         self.bot = bot
         
     def get_youtube(self, url: str):
-        buffer = BytesIO()
-        yt = YouTube(url)
-        yt.streams.get_highest_resolution().stream_to_buffer(buffer)
-        return buffer
+        ydl_opts = {
+            "format": "best",
+            "outtmpl": "mp4",
+            "forceurl": True,
+            "quiet": True
+        }
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            return ydl.extract_info(url, download=False)["formats"][-1]["url"]
             
 
     @commands.command(
@@ -135,18 +139,18 @@ class Internet(commands.Cog):
     @commands.command(name="ytdl", aliases=["youtube", "downloadvideo"], brief="Download YouTube videos", description="Download videos from YouTube with youtube_dl")
     async def ytdl(self, ctx, url: str = commands.Option(description="Enter the URL of the video")):
         
-        buffer = await self.bot.loop.run_in_executor(None, self.get_youtube, url)
-        buffer.seek(0)
+        buffer = BytesIO()
         
-        if ctx.guild.premium_tier < 2:
-            filesize_limit_megabytes = 8
-        elif ctx.guild.premium_tier == 2:
-            filesize_limit_megabytes = 50
-        elif ctx.guild.premium_tier == 3:
-            filesize_limit_megabytes = 100
+        url = await self.bot.loop.run_in_executor(None, self.get_youtube, url)
+        
+        async with self.bot.httpsession.get(url, headers=self.bot.config.get("aiohttp_base_headers")) as vid:
+            r = await vid.read()
+            buffer.write(r)
+        
+        buffer.seek(0)
             
-        if sys.getsizeof(buffer) > (filesize_limit_megabytes * 1_000_000):
-            return await ctx.send(f"Output file is larger than this server's filesize limit ({filesize_limit_megabytes}MB)")
+        if sys.getsizeof(buffer) > ctx.guild.filesize_limit:
+            return await ctx.send(f"Output file is larger than this server's filesize limit ({ctx.guild.filesize_limit/float(1<<20):,.0f}MB)")
         
         await ctx.send(file=discord.File(buffer, filename="download.mp4"))
 
