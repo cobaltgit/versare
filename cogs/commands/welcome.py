@@ -111,7 +111,7 @@ The welcome message for this guild is '{welcome_message}'"""
                 welcome_channel = self.bot.get_channel(result[0])
 
             await cur.execute("SELECT welcome_message FROM welcome WHERE guild_id = ?", (member.guild.id,))
-            result = await self.bot.guild_cur.fetchone()
+            result = await cur.fetchone()
             await cur.close()
         welcome_message = str(result[0]) if result else self.bot.config["defaults"]["welcome_msg"]
 
@@ -139,10 +139,10 @@ The welcome message for this guild is '{welcome_message}'"""
         else:
             welcome_channel = guild.system_channel
         async with self.bot.guild_cxn.cursor() as cur:
-            await self.bot.guild_cur.execute("SELECT * FROM welcome WHERE guild_id = ?", (guild.id,))
-            result = await self.bot.guild_cur.fetchone()
+            await cur.execute("SELECT * FROM welcome WHERE guild_id = ?", (guild.id,))
+            result = await cur.fetchone()
             if not result:
-                await self.bot.guild_cur.execute(
+                await cur.execute(
                     "INSERT INTO welcome(welcome_message, welcome_channel_id, guild_id)",
                     (
                         self.bot.config["welcome_msg"],
@@ -151,11 +151,11 @@ The welcome message for this guild is '{welcome_message}'"""
                     ),
                 )
             else:
-                await self.bot.guild_cur.execute(
+                await cur.execute(
                     "UPDATE welcome SET welcome_message = ? WHERE guild_id = ?",
                     (self.bot.config["welcome_msg"], guild.id),
                 )
-                await self.bot.guild_cur.execute(
+                await cur.execute(
                     "UPDATE welcome SET welcome_channel_id = ? WHERE guild_id = ?",
                     (welcome_channel, guild.id),
                 )
