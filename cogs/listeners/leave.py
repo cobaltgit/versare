@@ -14,7 +14,9 @@ class LeaveListener(commands.Cog):
             self.bot.prefixes.pop(str(guild.id))
         except KeyError:
             pass
-        await self.bot.guild_cur.execute("DELETE FROM custompfx WHERE guild_id = ?", (guild.id,))
+        async with self.bot.guild_cxn.cursor() as cur:
+            await cur.execute("DELETE FROM custompfx WHERE guild_id = ?", (guild.id,))
+            await cur.close()
         await self.bot.guild_cxn.commit()
 
 
