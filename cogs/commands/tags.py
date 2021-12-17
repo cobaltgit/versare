@@ -102,6 +102,9 @@ class Tags(commands.Cog):
         if not result:
             return await ctx.send(f"`{tag}`: no such tag")
             
+        if int(result[1]) != ctx.author.id or not ctx.author.guild_permissions.administrator:
+            return await ctx.send(f"Either you don't own tag `{tag}` or you lack administrator permissions to remove it otherwise")
+        
         async with self.bot.tags_cxn.cursor() as cur:
             await cur.execute(
                 "DELETE FROM tags WHERE tag = ? AND guild_id = ?",
