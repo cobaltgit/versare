@@ -2,6 +2,7 @@ from datetime import datetime
 from io import BytesIO
 from urllib.parse import quote_plus
 
+import asyncio
 import discord
 import sys
 import wikipedia
@@ -106,6 +107,8 @@ class Internet(commands.Cog):
                 )
             except ValueError:
                 return await ctx.send(f":x: | Invalid choice")
+            except asyncio.TimeoutError:
+                return await ctx.send("Command timed out")
 
             if msg.content not in e.options:
                 return await ctx.send(":x: | Invalid choice")
