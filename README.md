@@ -82,15 +82,17 @@ Next, we'll need to initialise our bot on Discord's side
 
 ### Authenticating the bot and launching
 
-* Scroll up to the top, and click **Copy** underneath the *TOKEN* section.  
-* Create a file in the config directory with your favourite text editor.  
+* Scroll up to the top, and click **Copy** underneath the *TOKEN* section.
+* Also create a GitHub personal access token for the bot to use to invalidate tokens
+* Create a file in the config directory with your favourite text editor.
 ```bash
 $ nano config/auth.json
 ```
--> The file should look something like this - paste your token in the `token` key-value pair:  
+-> The file should look something like this:  
 ```json
 {
-    "token": "bot-token-here"
+    "token": "bot-token-here",
+    "github_token": "github-token-here"
 }
 ```
 * Save the file and exit your editor.  

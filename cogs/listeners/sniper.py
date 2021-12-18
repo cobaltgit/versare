@@ -17,8 +17,8 @@ class Sniper(commands.Cog):
 
             await cur.execute("SELECT user_id FROM sniper_optout WHERE guild_id = ?", (message.guild.id,))
             optout_uids = await cur.fetchone()
-            if optout_uids is not None and message.author.id in optout_uids:
-                return
+            if optout_uids is not None and (message.author.id in optout_uids or message.author.bot):
+                return await cur.close()
 
             self.encrypted_msg = self.bot.fernet.encrypt(message.content.encode())
 
@@ -49,8 +49,8 @@ class Sniper(commands.Cog):
 
             await cur.execute("SELECT user_id FROM sniper_optout WHERE guild_id = ?", (before.guild.id,))
             optout_uids = await cur.fetchone()
-            if optout_uids is not None and before.author.id in optout_uids:
-                return
+            if optout_uids is not None and (before.author.id in optout_uids or before.author.bot):
+                return await cur.close()
 
             self.encrypted_msg_before = self.bot.fernet.encrypt(before.content.encode())
             self.encrypted_msg_after = self.bot.fernet.encrypt(after.content.encode())
@@ -66,7 +66,7 @@ class Sniper(commands.Cog):
             )
             await self.bot.snipe_cxn.commit()
             await cur.close()
-            await aiosleep(60)
+        await aiosleep(60)
         async with self.bot.snipe_cxn.cursor() as cur:
             await cur.execute("DELETE FROM editsniper WHERE channel_id = ?", (before.channel.id,))
             await self.bot.snipe_cxn.commit()
