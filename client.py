@@ -109,8 +109,7 @@ class Versare(commands.AutoShardedBot):
         super().run(token)
 
     async def on_ready(self):
-        start_time = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-        print(f"[{start_time}]")
+        print(f"[{datetime.now().strftime('%d-%m-%Y %H:%M:%S')}] Bot is online")
         print(f"Logged into Discord as {self.user}")
         print(f"-> Client ID: {self.user.id}")
         print(f"-> Default Prefix: Ping or {self.config['defaults']['prefix']}")
