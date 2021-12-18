@@ -1,6 +1,6 @@
+import re
 from asyncio import sleep as aiosleep
 
-import discord
 from discord.ext import commands
 
 
@@ -9,6 +9,7 @@ class Sniper(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.SENSITIVE_REGEXPS = [r"([a-zA-Z0-9]{24}\.[a-zA-Z0-9]{6}\.[a-zA-Z0-9_\-]{27}|mfa\.[a-zA-Z0-9_\-]{84})"]
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
@@ -17,7 +18,11 @@ class Sniper(commands.Cog):
 
             await cur.execute("SELECT user_id FROM sniper_optout WHERE guild_id = ?", (message.guild.id,))
             optout_uids = await cur.fetchone()
-            if optout_uids is not None and (message.author.id in optout_uids or message.author.bot):
+            if (
+                (optout_uids is not None and message.author.id in optout_uids)
+                or message.author.bot
+                or any(re.search(regex, message.content) for regex in self.SENSITIVE_REGEXPS)
+            ):
                 return await cur.close()
 
             self.encrypted_msg = self.bot.fernet.encrypt(message.content.encode())
@@ -49,7 +54,11 @@ class Sniper(commands.Cog):
 
             await cur.execute("SELECT user_id FROM sniper_optout WHERE guild_id = ?", (before.guild.id,))
             optout_uids = await cur.fetchone()
-            if optout_uids is not None and (before.author.id in optout_uids or before.author.bot):
+            if (
+                (optout_uids is not None and before.author.id in optout_uids)
+                or before.author.bot
+                or any(re.search(regex, before.content) for regex in self.SENSITIVE_REGEXPS)
+            ):
                 return await cur.close()
 
             self.encrypted_msg_before = self.bot.fernet.encrypt(before.content.encode())

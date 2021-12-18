@@ -21,13 +21,13 @@ class Moderation(commands.Cog):
                 await cur.execute("SELECT * FROM sniper WHERE channel_id = ?", (ctx.message.channel.id,))
                 result = await cur.fetchone()
                 await cur.close()
-                
+
             if not result:
                 return await ctx.send(":envelope: | No message to snipe")
-            
+
             author = ctx.message.guild.get_member(result[1])
             channel = ctx.message.guild.get_channel(result[0])
-            
+
             embed = discord.Embed(
                 description=self.bot.fernet.decrypt(result[2]).decode("utf-8"),
                 color=author.color or ctx.guild.me.color,
@@ -50,7 +50,7 @@ class Moderation(commands.Cog):
                 await self.bot.snipe_cxn.commit()
                 await cur.close()
                 return await ctx.send(":envelope: | You have successfully opted out of being sniped.")
-                
+
             if ctx.author.id in result:
                 return await ctx.send(":envelope: | You are already opted out of being sniped.")
 
@@ -90,10 +90,10 @@ class Moderation(commands.Cog):
             await cur.execute("SELECT * FROM editsniper WHERE channel_id = ?", (ctx.message.channel.id,))
             result = await cur.fetchone()
             await cur.close()
-            
+
         if not result:
             return await ctx.send(":envelope: | No message to editsnipe")
-                
+
         author = ctx.message.guild.get_member(result[1])
         channel = ctx.message.guild.get_channel(result[0])
         embed = discord.Embed(
