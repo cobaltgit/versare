@@ -35,6 +35,8 @@ yarl = "==1.7.2"
 uvloop = "*"
 psutil = "*"
 youtube-dl = "*"
+thefuzz = "*"
+python-levenshtein = "*"
 
 [dev-packages]
 pre-commit = "*"

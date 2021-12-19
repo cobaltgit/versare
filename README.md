@@ -114,4 +114,4 @@ $ pipenv run start
 * An invite link should appear underneath the *SCOPES* section. Copy that and paste it into a new browser tab, invite the bot to a server you own or moderate and Bob's your uncle. You've successfully set up an instance of Versare!
 
 # CREDITS
-[NextChai](https://github.com/NextChai) - [BaseButtonPaginator](https://github.com/cobaltgit/versare/tree/main/lib/views.py#L71-L204)
+[NextChai](https://github.com/NextChai) - [BaseButtonPaginator](https://github.com/cobaltgit/versare/tree/main/lib/views.py#L73-L207)
