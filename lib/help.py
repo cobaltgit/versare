@@ -40,7 +40,8 @@ class VersareHelp(commands.MinimalHelpCommand):
             name="Subcommands",
             value="\n".join(
                 [f"{self.context.prefix}{command.name} - {command.brief}" for idx, command in enumerate(group.commands)]
-            ),
+            )
+            or "No subcommands",
             inline=False,
         )
         await self.context.send(embed=embed)
