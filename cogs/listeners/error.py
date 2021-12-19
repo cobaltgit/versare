@@ -1,5 +1,4 @@
 from discord.ext import commands
-from thefuzz import fuzz
 
 
 class ErrorHandler(commands.Cog):
@@ -37,20 +36,7 @@ class ErrorHandler(commands.Cog):
         elif isinstance(error, commands.DisabledCommand):
             await ctx.send(f"`{ctx.command}` has been disabled.")
         elif isinstance(error, commands.CheckFailure):
-            await ctx.send(
-                f"Permissions check for command `{ctx.command}` failed - this command may only work if you are the bot owner or have administrator permissions."
-            )
-        elif isinstance(error, commands.CommandNotFound):
-            available_commands = [command.name for command in self.bot.commands]
-            ratios = [fuzz.ratio(ctx.message.content[len(ctx.prefix) :], command) for command in available_commands]
-            closest_match = available_commands[ratios.index(max(ratios))]
-            await ctx.send(
-                f"""Command `{ctx.message.content[len(ctx.prefix):].split()[0]}` not found.
-Maybe you meant `{closest_match}`?"""
-            )
-        elif isinstance(error, commands.UserInputError):
-            await ctx.send("Invalid user input")
-
+            return
         else:
             raise error
         return

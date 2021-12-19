@@ -19,13 +19,11 @@ enhanced-discord.py
 wikipedia
 lxml
 jishaku
-thefuzz
-python-Levenshtein
 cryptography
 asqlite
 uvloop (on unix-like systems)
 psutil
-PyTube
+youtube-dl
 ```
 
 ### TO-DO LIST
@@ -33,6 +31,7 @@ A list of things that need to be implemented next
 * ADD MORE COMMANDS!!!
 * Economy system
 * Add mute system with timings
+* Finish logging system
 * Finish custom help command
 
 

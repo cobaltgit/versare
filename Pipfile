@@ -8,8 +8,6 @@ name = "pypi"
 jishaku = "==2.3.2"
 wikipedia = "==1.4.0"
 lxml = "==4.6.4"
-python-levenshtein = "==0.12.2"
-thefuzz = "==0.19.0"
 cryptography = "==36.0.0"
 asqlite = {ref = "ffc55a5b3d1b5e9c440c01620148be7fa6493ef5", git = "https://github.com/Rapptz/asqlite"}
 aiohttp = "==3.8.1"
