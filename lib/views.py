@@ -199,9 +199,8 @@ class TagSearchPaginator(BaseButtonPaginator):
         super().__init__(entries=entries, per_page=per_page)
 
     async def format_page(self, entries):
-        embed = discord.Embed(title="Tag Search")
-        embed.description = ""
-        for index, entry in enumerate(entries):
-            embed.description += f"{index}. {entry}\n"
-
-        return embed
+        return discord.Embed(
+            title="Tag Search",
+            description="\n".join([f"{idx}. {entry}" for idx, entry in enumerate(entries)]),
+            timestamp=datetime.utcnow(),
+        )
