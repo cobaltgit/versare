@@ -13,3 +13,9 @@ CREATE TABLE IF NOT EXISTS custompfx(
     guild_id INTEGER,
     prefix TEXT DEFAULT "$" NOT NULL
 );
+
+--Enable logging features
+CREATE TABLE IF NOT EXISTS logging(
+    guild_id INTEGER,
+    log_channel_id INTEGER
+)
