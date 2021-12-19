@@ -1,5 +1,5 @@
 {
-    "owner_id": "700661710696087562",
+    "owner_id": 700661710696087562,
     "defaults": {
         "prefix": "$",
         "welcome_msg": "Welcome to {0}, {1}!"
@@ -9,6 +9,12 @@
         "guild_messages": true,
         "guilds": true,
         "bans": true
+    },
+    "allowed_mentions": {
+        "users": true,
+        "replied_user": true,
+        "roles": false,
+        "everyone": false
     },
     "memes": {
         "retry_limit": 5,

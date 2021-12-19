@@ -48,6 +48,7 @@ class Versare(commands.AutoShardedBot):
             slash_commands=True,
             command_prefix=self._get_prefix,
             intents=discord.Intents(**self.config["intents"]),
+            allowed_mentions=discord.AllowedMentions(**self.config["allowed_mentions"]),
             case_insensitive=True,
             strip_after_prefix=True,
             help_command=VersareHelp(),
