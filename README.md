@@ -8,7 +8,7 @@ The public instance is currently unavailable, please follow the instructions to 
 This is what you'll need to run your bot:  
 ```
 GCC
-Python 3.9.7 installed on system - if you haven't already, use pyenv
+Python 3.9 installed on system - if you haven't already, use pyenv
 SQLite3
 Pipenv
 ```
@@ -24,6 +24,8 @@ asqlite
 uvloop (on unix-like systems)
 psutil
 youtube-dl
+thefuzz
+python-Levenshtein
 ```
 
 ### TO-DO LIST
