@@ -11,7 +11,9 @@ class Utilities(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="restart", brief="Restart the bot", description="Restart the bot with exec [ OWNER ONLY ]")
+    @commands.command(
+        name="restart", brief="Restart the bot", description="Restart the bot with exec [ OWNER ONLY ]", hidden=True
+    )
     @commands.is_owner()
     async def restart(self, ctx):
         await ctx.send("Restarting bot...")
