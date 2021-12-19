@@ -4,6 +4,9 @@ from typing import Optional
 
 import discord
 from discord.ext import commands
+from thefuzz import process
+
+from lib.views import TagSearchPaginator
 
 
 class Tags(commands.Cog):
@@ -147,6 +150,15 @@ class Tags(commands.Cog):
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
         await ctx.send(embed=embed)
+
+    @tag.command(
+        name="search", description="Search for tags using fuzzy ratio matching", brief="Search for tags on the server"
+    )
+    async def search(self, ctx, *, query: str = None):
+        async with self.bot.tags_cxn.cursor() as cur:
+            await cur.execute("SELECT tag FROM tags WHERE guild_id = ?", (ctx.guild.id,))
+            sorted_tags = [tag[0] for tag in process.extract(query, [row[0] for row in await cur.fetchall()])]
+        await TagSearchPaginator.start(ctx, entries=sorted_tags, per_page=20)
 
 
 def setup(bot):

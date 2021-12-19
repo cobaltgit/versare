@@ -1,7 +1,9 @@
 from datetime import datetime
 from random import choice
+from typing import TYPE_CHECKING, Any, Generator, List
 
 import discord
+from discord.ext import commands
 from discord.ui import View, button
 
 
@@ -66,3 +68,140 @@ class RPSView(View):
         await self.ctx.send("Game timeout reached", ephemeral=True)
         await self.message.delete()
         self.stop()
+
+
+class BaseButtonPaginator(discord.ui.View):
+    """
+    The Base Button Paginator class. Will handle all page switching without
+    you having to do anything.
+
+    Attributes
+    ----------
+    entries: List[Any]
+        A list of entries to get spread across pages.
+    per_page: :class:`int`
+        The number of entries that get passed onto one page.
+    pages: List[List[Any]]
+        A list of pages which contain all entries for that page.
+    """
+
+    if TYPE_CHECKING:
+        ctx: commands.Context
+
+    def __init__(self, *, entries: List[Any], per_page: int = 6) -> None:
+        super().__init__(timeout=180)
+        self.entries = entries
+        self.per_page = per_page
+
+        self._min_page = 1
+        self._current_page = 1
+        self.pages = list(self._format_pages(entries, per_page))
+        self._max_page = len(self.pages)
+
+    @property
+    def max_page(self) -> int:
+        """:class:`int`: The max page count for this paginator."""
+        return self._max_page
+
+    @property
+    def min_page(self) -> int:
+        """:class:`int`: The min page count for this paginator."""
+        return self._min_page
+
+    @property
+    def current_page(self) -> int:
+        """:class:`int`: The current page the user is on."""
+        return self._current_page
+
+    @property
+    def total_pages(self) -> int:
+        """:class:`int`: Returns the total amount of pages."""
+        return len(self.pages)
+
+    async def format_page(self, entries: List[Any]) -> discord.Embed:
+        """|coro|
+
+        Used to make the embed that the user sees.
+
+        Parameters
+        ----------
+        entries: List[Any]
+            A list of entries for the current page.
+
+        Returns
+        -------
+        :class:`discord.Embed`
+            The embed for this page.
+        """
+        raise NotImplementedError("Subclass did not overwrite format_page coro.")
+
+    def _format_pages(self, entries, total_pgs) -> Generator[List[Any], None, None]:
+        for i in range(0, len(entries), total_pgs):
+            yield entries[i : i + total_pgs]
+
+    def _get_entries(self, *, up: bool = True, increment: bool = True) -> List[Any]:
+        if increment:
+            if up:
+                self._current_page += 1
+                if self._current_page > self._max_page:
+                    self._current_page = self._min_page
+            else:
+                self._current_page -= 1
+                if self._current_page < self._min_page:
+                    self._current_page = self.max_page
+
+        return self.pages[self._current_page - 1]
+
+    @discord.ui.button(emoji="\U000025c0", style=discord.ButtonStyle.blurple)
+    async def on_arrow_backward(self, button: discord.ui.Button, interaction: discord.Interaction) -> None:
+        entries = self._get_entries(up=False)
+        embed = await self.format_page(entries=entries)
+        return await interaction.response.edit_message(embed=embed)
+
+    @discord.ui.button(emoji="\U000025b6", style=discord.ButtonStyle.blurple)
+    async def on_arrow_forward(self, button: discord.ui.Button, interaction: discord.Interaction) -> None:
+        entries = self._get_entries(up=True)
+        embed = await self.format_page(entries=entries)
+        return await interaction.response.edit_message(embed=embed)
+
+    @discord.ui.button(emoji="\U000023f9", style=discord.ButtonStyle.blurple)
+    async def on_stop(self, button: discord.ui.Button, interaction: discord.Interaction) -> None:
+        self.clear_items()
+        self.stop()
+        return await interaction.response.edit_message(view=self)
+
+    @classmethod
+    async def start(cls, context: commands.Context, *, entries: List[Any], per_page: int = 6):
+        """|coro|
+
+        Used to start the paginator.
+
+        Parameters
+        ----------
+        context: :class:`commands.Context`
+            The context to send to. This could also be discord.abc.Messageable as `ctx.send` is the only method
+            used.
+        entries: List[Any]
+            A list of entries to pass onto the paginator.
+        per_page: :class:`int`
+            A number of how many entries you want per page.
+        """
+        new = cls(entries=entries, per_page=per_page)
+        new.ctx = context
+
+        entries = new._get_entries(increment=False)
+        embed = await new.format_page(entries=entries)
+        await context.send(embed=embed, view=new)
+
+
+class TagSearchPaginator(BaseButtonPaginator):
+    def __init__(self, entries: List[Any], *, per_page: int = 6):
+        super().__init__(entries=entries, per_page=per_page)
+
+    async def format_page(self, entries):
+        embed = discord.Embed(title="Tag Search")
+        embed.description = ""
+        for index, entry in enumerate(entries):
+            embed.description += f"{index}. {entry}\n"
+
+        return embed
