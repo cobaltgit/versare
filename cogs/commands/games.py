@@ -86,8 +86,8 @@ class Games(commands.Cog):
             ("Amount of Coins", amount, True),
             ("Results", flipstr, True),
             ("\u200B", "\u200B", True),
-            ("Amount of Heads", len(list(filter(lambda x: x == "Heads", flips))), True),
-            ("Amount of Tails", len(list(filter(lambda y: y == "Tails", flips))), True),
+            ("Amount of Heads", flips.count("Heads"), True),
+            ("Amount of Tails", flips.count("Tails"), True),
         ]
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
