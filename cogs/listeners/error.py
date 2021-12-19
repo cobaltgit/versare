@@ -35,7 +35,7 @@ class ErrorHandler(commands.Cog):
             await ctx.send(f"You are missing **{fmt}** permission(s) needed to run this command.")
         elif isinstance(error, commands.DisabledCommand):
             await ctx.send(f"`{ctx.command}` has been disabled.")
-        elif isinstance(error, commands.CheckFailure):
+        elif isinstance(error, (commands.CheckFailure, commands.CommandNotFound)):
             return
         else:
             raise error
