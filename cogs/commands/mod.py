@@ -130,7 +130,7 @@ class Moderation(commands.Cog):
     ):
         """Ban members from the server"""
 
-        log_channel = await get_log_channel(ctx)
+        log_channel = await get_log_channel(ctx.guild)
 
         for user in members:
             if isinstance(user, discord.Member):
@@ -185,7 +185,7 @@ class Moderation(commands.Cog):
     ):
         """Kick members from the server"""
 
-        log_channel = await get_log_channel(ctx)
+        log_channel = await get_log_channel(ctx.guild)
 
         for member in members:
             if member.top_role.position > ctx.guild.me.top_role.position:
