@@ -4,6 +4,8 @@ from typing import Optional, Union
 import discord
 from discord.ext import commands
 
+from lib.functions import get_log_channel
+
 
 class Moderation(commands.Cog):
     def __init__(self, bot):
@@ -127,20 +129,46 @@ class Moderation(commands.Cog):
         ),
     ):
         """Ban members from the server"""
-        for member in members:
-            if isinstance(member, discord.Member):
-                if member.top_role.position > ctx.guild.me.top_role.position:
-                    await ctx.send(f"You do not have permission to ban `{member}`")
+
+        log_channel = await get_log_channel(ctx)
+
+        for user in members:
+            if isinstance(user, discord.Member):
+                if user.top_role.position > ctx.author.top_role.position:
+                    await ctx.send(f":hammer: You do not have permission to ban {user}")
                 else:
                     try:
-                        await member.send(f"You have been banned from {ctx.guild}.\nReason: {reason}")
+                        await user.send(f"You have been banned from {ctx.guild}.\nReason: {reason}")
                     except (discord.errors.Forbidden, discord.errors.HTTPException):
-                        await ctx.send(f"I could not DM member `{member}`")
-                    await member.ban(delete_message_days=delete_message_days, reason=reason)
-                    await ctx.send(f"Banned member `{member}`\nReason: {reason}")
+                        await ctx.send(f"I could not DM user `{user}`")
+                    await user.ban(delete_message_days=delete_message_days, reason=reason)
+                    embed = discord.Embed(title="Member Banned", color=user.color, timestamp=datetime.utcnow())
+                    fields = [
+                        ("Member", user, True),
+                        ("ID", user.id, True),
+                        ("\u200B", "\u200B", True),
+                        ("Moderator", ctx.author, True),
+                        ("Reason", reason, True),
+                    ]
+                    embed.set_thumbnail(url=user.avatar.url)
             else:
-                await ctx.guild.ban(await self.bot.fetch_user(int(member)), reason=reason)
-                await ctx.send(f"Banned member `{member.name}#{member.discriminator}`\nReason: {reason}")
+                user = await self.bot.fetch_user(int(user))
+                await ctx.guild.ban(user, reason=reason)
+                embed = discord.Embed(title="User ID-Banned", color=ctx.author.color, timestamp=datetime.utcnow())
+                user = await self.bot.fetch_user(user.id)
+                fields = [
+                    ("User", user, True),
+                    ("ID", user.id, True),
+                    ("\u200B", "\u200B", True),
+                    ("Moderator", ctx.author, True),
+                    ("Reason", reason, True),
+                ]
+                embed.set_thumbnail(url=user.avatar.url)
+            for name, value, inline in fields:
+                embed.add_field(name=name, value=value, inline=inline)
+            if log_channel:
+                await self.bot.get_channel(log_channel).send(embed=embed)
+            return await ctx.send(f":hammer: Banned {user}")
 
     @commands.command(
         name="kick", brief="Kick members from the server", description="Kick one or more users from the server"
@@ -156,16 +184,31 @@ class Moderation(commands.Cog):
         ),
     ):
         """Kick members from the server"""
+
+        log_channel = await get_log_channel(ctx)
+
         for member in members:
             if member.top_role.position > ctx.guild.me.top_role.position:
-                await ctx.send(f"You do not have permission to kick `{member}`")
+                await ctx.send(f"You do not have permission to kick {member}")
             else:
                 try:
                     await member.send(f"You have been kicked from {ctx.guild}\nReason: {reason}")
                 except (discord.errors.Forbidden, discord.errors.HTTPException):
                     await ctx.send(f"I could not DM member `{member}`")
                 await member.kick(reason=reason)
-                await ctx.send(f"Kicked member `{member}`\nReason: {reason}")
+                embed = discord.Embed(title="Member Kicked", color=member.color, timestamp=datetime.utcnow())
+                fields = [
+                    ("Member", member, True),
+                    ("ID", member.id, True),
+                    ("\u200B", "\u200B", True),
+                    ("Moderator", ctx.author, True),
+                    ("Reason", reason, True),
+                ]
+                for name, value, inline in fields:
+                    embed.add_field(name=name, value=value, inline=inline)
+                if log_channel:
+                    await self.bot.get_channel(log_channel).send(embed=embed)
+                return await ctx.send(f":boot: Kicked {member}")
 
     @commands.command(
         name="purge",
