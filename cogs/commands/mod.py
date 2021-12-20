@@ -130,7 +130,7 @@ class Moderation(commands.Cog):
     ):
         """Ban members from the server"""
 
-        log_channel = await get_log_channel(ctx.guild)
+        await get_log_channel(ctx.guild)
 
         for user in members:
             if isinstance(user, discord.Member):
@@ -142,32 +142,10 @@ class Moderation(commands.Cog):
                     except (discord.errors.Forbidden, discord.errors.HTTPException):
                         await ctx.send(f"I could not DM user `{user}`")
                     await user.ban(delete_message_days=delete_message_days, reason=reason)
-                    embed = discord.Embed(title="Member Banned", color=user.color, timestamp=datetime.utcnow())
-                    fields = [
-                        ("Member", user, True),
-                        ("ID", user.id, True),
-                        ("\u200B", "\u200B", True),
-                        ("Moderator", ctx.author, True),
-                        ("Reason", reason, True),
-                    ]
-                    embed.set_thumbnail(url=user.avatar.url)
             else:
                 user = await self.bot.fetch_user(int(user))
                 await ctx.guild.ban(user, reason=reason)
-                embed = discord.Embed(title="User ID-Banned", color=ctx.author.color, timestamp=datetime.utcnow())
-                user = await self.bot.fetch_user(user.id)
-                fields = [
-                    ("User", user, True),
-                    ("ID", user.id, True),
-                    ("\u200B", "\u200B", True),
-                    ("Moderator", ctx.author, True),
-                    ("Reason", reason, True),
-                ]
-                embed.set_thumbnail(url=user.avatar.url)
-            for name, value, inline in fields:
-                embed.add_field(name=name, value=value, inline=inline)
-            if log_channel:
-                await self.bot.get_channel(log_channel).send(embed=embed)
+
             return await ctx.send(f":hammer: Banned {user}")
 
     @commands.command(
@@ -184,9 +162,6 @@ class Moderation(commands.Cog):
         ),
     ):
         """Kick members from the server"""
-
-        log_channel = await get_log_channel(ctx.guild)
-
         for member in members:
             if member.top_role.position > ctx.guild.me.top_role.position:
                 await ctx.send(f"You do not have permission to kick {member}")
@@ -196,18 +171,6 @@ class Moderation(commands.Cog):
                 except (discord.errors.Forbidden, discord.errors.HTTPException):
                     await ctx.send(f"I could not DM member `{member}`")
                 await member.kick(reason=reason)
-                embed = discord.Embed(title="Member Kicked", color=member.color, timestamp=datetime.utcnow())
-                fields = [
-                    ("Member", member, True),
-                    ("ID", member.id, True),
-                    ("\u200B", "\u200B", True),
-                    ("Moderator", ctx.author, True),
-                    ("Reason", reason, True),
-                ]
-                for name, value, inline in fields:
-                    embed.add_field(name=name, value=value, inline=inline)
-                if log_channel:
-                    await self.bot.get_channel(log_channel).send(embed=embed)
                 return await ctx.send(f":boot: Kicked {member}")
 
     @commands.command(
