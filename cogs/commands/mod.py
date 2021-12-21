@@ -10,6 +10,39 @@ from lib.functions import get_log_channel
 class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.timeout_seconds = {
+            "30s": 30,
+            "1m": 60,
+            "5m": 300,
+            "10m": 600,
+            "30m": 1800,
+            "1h": 3600,
+            "2h": 7200,
+            "6h": 21600,
+            "12h": 43200,
+            "24h": 86400,
+            "2d": 172800,
+            "3d": 259200,
+            "1w": 604800,
+            "2w": 1210000,
+            "3w": 1814400,
+            "4w": 2419200,
+        }
+        self.slowmode_seconds = {
+            "5s": 5,
+            "10s": 10,
+            "15s": 15,
+            "30s": 30,
+            "1m": 60,
+            "2m": 120,
+            "5m": 300,
+            "10m": 600,
+            "15m": 900,
+            "30m": 1800,
+            "1h": 3600,
+            "2h": 7200,
+            "6h": 21600,
+        }
 
     @commands.group(
         name="snipe",
@@ -226,37 +259,44 @@ class Moderation(commands.Cog):
             description="Why are you muting these members?", default="No reason specified"
         ),
     ):
-        seconds = {
-            "30s": 30,
-            "1m": 60,
-            "5m": 300,
-            "10m": 600,
-            "30m": 1800,
-            "1h": 3600,
-            "2h": 7200,
-            "6h": 21600,
-            "12h": 43200,
-            "24h": 86400,
-            "2d": 172800,
-            "3d": 259200,
-            "1w": 604800,
-            "2w": 1210000,
-            "3w": 1814400,
-            "4w": 2419200,
-        }
         for member in members:
             if duration == "Unmute":
                 if not member.timeout_until:
                     return await ctx.send(f":alarm_clock: {member} is not muted")
                 await member.edit(timeout_until=None, reason=reason)
                 return await ctx.send(f":alarm_clock: Unmuted {member}")
-            timeout_until = discord.utils.utcnow() + timedelta(seconds=seconds[duration])
+            timeout_until = discord.utils.utcnow() + timedelta(seconds=self.timeout_seconds[duration])
             await member.edit(timeout_until=timeout_until, reason=reason)
             await ctx.send(f":shushing_face: Muted {member} for {duration}")
             try:
                 await member.send(f"You have been muted from {ctx.guild} for {duration}\nReason: {reason}")
             except discord.errors.Forbidden:
                 await ctx.send(f"I could not DM {member}")
+
+    @commands.command(
+        name="slowmode",
+        aliases=["slow", "sm"],
+        brief="Enable slowmode for a channel",
+        description="Enable slowmode for a text channel with the given duration",
+    )
+    async def slow(
+        self,
+        ctx,
+        duration: Optional[
+            Literal["Off", "5s", "10s", "15s", "30s", "1m", "2m", "5m", "10m", "15m", "30m", "1h", "2h", "6h"]
+        ] = commands.Option(description="How long should the slowmode last? (or turn it off)", default="5s"),
+    ):
+        if duration == "Off":
+            if ctx.channel.slowmode_delay:
+                await ctx.channel.edit(slowmode_delay=None)
+                return await ctx.send(":hedgehog: Slowmode disabled")
+            else:
+                return await ctx.send(":hedgehog: Slowmode is not enabled")
+        if ctx.channel.slowmode_delay == self.slowmode_seconds[duration]:
+            return await ctx.send(":snail: Slowmode duration not changed")
+        else:
+            await ctx.channel.edit(slowmode_delay=self.slowmode_seconds[duration])
+            return await ctx.send(f":snail: Slowmode enabled, duration set to {duration}")
 
 
 def setup(bot):
