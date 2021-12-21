@@ -146,7 +146,7 @@ The welcome message for this guild is '{welcome_message}'"""
                 await cur.execute(
                     "INSERT INTO welcome(welcome_message, welcome_channel_id, guild_id)",
                     (
-                        self.bot.config["welcome_msg"],
+                        self.bot.config["defaults"]["welcome_msg"],
                         welcome_channel.id,
                         guild.id,
                     ),
