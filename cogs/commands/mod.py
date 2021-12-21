@@ -1,5 +1,5 @@
-from datetime import datetime
-from typing import Optional, Union
+from datetime import datetime, timedelta
+from typing import Literal, Optional, Union
 
 import discord
 from discord.ext import commands
@@ -188,6 +188,75 @@ class Moderation(commands.Cog):
         except discord.errors.Forbidden:
             return await ctx.send("You do not have permission to purge messages")
         await ctx.send(f"Purged {amount} messages", delete_after=5)
+
+    @commands.command(
+        name="timeout",
+        aliases=["mute", "silence", "to"],
+        brief="Mute members",
+        description="Mute one or more members from chatting in the server",
+    )
+    @commands.has_permissions(moderate_members=True)
+    async def timeout(
+        self,
+        ctx,
+        members: commands.Greedy[discord.Member],
+        duration: Optional[
+            Literal[
+                "30s",
+                "1m",
+                "5m",
+                "10m",
+                "30m",
+                "1h",
+                "2h",
+                "6h",
+                "12h",
+                "24h",
+                "2d",
+                "3d",
+                "1w",
+                "2w",
+                "3w",
+                "4w",
+                "Unmute",
+            ]
+        ] = commands.Option(description="How long for?", default="5m"),
+        *,
+        reason: Optional[str] = commands.Option(
+            description="Why are you muting these members?", default="No reason specified"
+        ),
+    ):
+        seconds = {
+            "30s": 30,
+            "1m": 60,
+            "5m": 300,
+            "10m": 600,
+            "30m": 1800,
+            "1h": 3600,
+            "2h": 7200,
+            "6h": 21600,
+            "12h": 43200,
+            "24h": 86400,
+            "2d": 172800,
+            "3d": 259200,
+            "1w": 604800,
+            "2w": 1210000,
+            "3w": 1814400,
+            "4w": 2419200,
+        }
+        for member in members:
+            if duration == "Unmute":
+                if not member.timeout_until:
+                    return await ctx.send(f":alarm_clock: {member} is not muted")
+                await member.edit(timeout_until=None, reason=reason)
+                return await ctx.send(f":alarm_clock: Unmuted {member}")
+            timeout_until = discord.utils.utcnow() + timedelta(seconds=seconds[duration])
+            await member.edit(timeout_until=timeout_until, reason=reason)
+            await ctx.send(f":shushing_face: Muted {member} for {duration}")
+            try:
+                await member.send(f"You have been muted from {ctx.guild} for {duration}\nReason: {reason}")
+            except discord.errors.Forbidden:
+                await ctx.send(f"I could not DM {member}")
 
 
 def setup(bot):
