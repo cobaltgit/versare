@@ -1,6 +1,6 @@
 # Versare Rewrite
 
-The rewrite branch of Versare, 
+The rewrite branch of Versare, the in-development versatile(?) Discord bot
 
 ## Setup Instructions
 
@@ -36,7 +36,7 @@ To install development tools, run the following command
 
 #### Authenticating with Discord
 
-In order to run the bot, you must obtain a Discord bot token - Instructions are [here](https://discordpy.readthedocs.io/en/stable/discord.html)
+In order to run the bot, you must obtain a Discord bot token - Instructions are [here](https://discordpy.readthedocs.io/en/stable/discord.html)  
 Rename `config.example.yml` to `config.yml` and paste your token into the `auth` section
 
 #### Launching
