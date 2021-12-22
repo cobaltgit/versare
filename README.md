@@ -45,7 +45,7 @@ Rename `config.example.yml` to `config.yml` and paste your token into the `auth`
 
 Assuming you've followed the above instructions, you should be able to launch your bot.
 ```
-$ python3 runner.py
+(venv) $ python3 runner.py
 Versare is online - logged in as YourBotName#1234
 Client ID: your bot's client ID
 Prefixes: ['v.', '>>>', '$']
