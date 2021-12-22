@@ -29,7 +29,7 @@ $ source venv/bin/activate
 
 To install development tools, run the following command
 ```bash
-(venv) pip install -r requirements-dev.txt
+(venv) $ pip install -r requirements-dev.txt
 ```
 
 ### Running the bot
