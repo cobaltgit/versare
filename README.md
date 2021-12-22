@@ -36,7 +36,7 @@ To install development tools, run the following command
 
 #### Authenticating with Discord
 
-In order to run the bot, you must obtain a Discord bot token - Instructions are [here](https://discordpy.readthedocs.io/en/stable/discord.html)* 
+In order to run the bot, you must obtain a Discord bot token - Instructions are [here](https://discordpy.readthedocs.io/en/stable/discord.html)*  
 Rename `config.example.yml` to `config.yml` and paste your token into the `auth` section
 
 *To enable slash commands, also tick the `applications.commands` scope
