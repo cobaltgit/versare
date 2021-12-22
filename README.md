@@ -7,6 +7,7 @@ The rewrite branch of Versare, the in-development versatile(?) Discord bot
 ### System Requirements
 * Git is required to fetch the repository code
 * Python 3.10 and pip is required with the virtualenv module
+* PostgreSQL is recommended to connect to the database from the command line
 
 Install these with your system package manager
 
