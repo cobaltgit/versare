@@ -8,7 +8,6 @@ class Prefix(commands.Cog):
         self.bot = bot
 
     @commands.group(name="prefix", invoke_without_command=True)
-    @commands.check_any(commands.has_permissions(manage_guild=True), commands.is_owner())
     async def prefix(self, ctx):
         prefix = (
             await self.bot.db.fetchval("SELECT prefix FROM prefixes WHERE guild_id = $1", ctx.guild.id)
@@ -17,6 +16,7 @@ class Prefix(commands.Cog):
         await ctx.send("Prefix for this guild is `%s`" % prefix)
 
     @prefix.command(name="set")
+    @commands.check_any(commands.has_permissions(manage_guild=True), commands.is_owner())
     async def set(self, ctx, prefix: str = commands.Option(description="Prefix for this guild (max 8 characters)")):
         if len(prefix) > 8:
             return ctx.send("Must be no more than 8 characters")
