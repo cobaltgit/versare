@@ -1,0 +1,17 @@
+auth:
+  token: "bot-token-here"
+
+intents:
+  bans: true
+  guilds: true
+  guild_messages: true
+  members: true
+
+allowed-mentions:
+  users: true
+  replied_user: true
+  roles: false
+  everyone: false
+
+defaults:
+  prefixes: ["v.", ">>>", "$"]

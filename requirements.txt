@@ -1,0 +1,15 @@
+aiohttp==3.8.1
+aiosignal==1.2.0
+async-timeout==4.0.2
+attrs==21.2.0
+autoflake==1.4
+black==21.12b0
+charset-normalizer==2.0.9
+discord.py==2.0.0a3676+gfcb2d70
+frozenlist==1.2.0
+idna==3.3
+isort==5.10.1
+multidict==5.2.0
+pre-commit==2.16.0
+uvloop==0.16.0
+yarl==1.7.2
