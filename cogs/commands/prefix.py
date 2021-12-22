@@ -7,11 +7,11 @@ class Prefix(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.group(name="prefix", invoke_without_command=True)
+    @commands.group(name="prefix", brief="Get the prefix for this server", description="Fetch server prefix from database cache" invoke_without_command=True)
     async def prefix(self, ctx):
         await ctx.send("Prefix for this guild is `%s`" % self.bot.prefixes[str(ctx.guild.id)])
 
-    @prefix.command(name="set")
+    @prefix.command(name="set", brief="Set the prefix for this server", description="Add server prefix to the database and cache")
     @commands.check_any(commands.has_permissions(manage_guild=True), commands.is_owner())
     async def set(self, ctx, prefix: str = commands.Option(description="Prefix for this guild (max 8 characters)")):
         if len(prefix) > 8:
