@@ -8,6 +8,7 @@ class Prefix(commands.Cog):
         self.bot = bot
 
     @commands.group(name="prefix", invoke_without_command=True)
+    @commands.check_any(commands.has_permissions(manage_guild=True), commands.is_owner())
     async def prefix(self, ctx):
         prefix = (
             await self.bot.db.fetchval("SELECT prefix FROM prefixes WHERE guild_id = $1", ctx.guild.id)
