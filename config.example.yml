@@ -1,6 +1,13 @@
 auth:
   token: "bot-token-here"
 
+postgres:
+  database: versare
+  user: pguser
+  password: pgpasswd123
+  host: localhost
+  port: 5432
+
 intents:
   bans: true
   guilds: true
@@ -14,4 +21,4 @@ allowed-mentions:
   everyone: false
 
 defaults:
-  prefixes: ["v.", ">>>", "$"]
+  prefix: "v."

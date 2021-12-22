@@ -9,3 +9,4 @@ idna==3.3
 multidict==5.2.0
 uvloop==0.16.0
 yarl==1.7.2
+asyncpg==0.25.0
