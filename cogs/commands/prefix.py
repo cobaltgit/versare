@@ -9,11 +9,7 @@ class Prefix(commands.Cog):
 
     @commands.group(name="prefix", invoke_without_command=True)
     async def prefix(self, ctx):
-        prefix = (
-            await self.bot.db.fetchval("SELECT prefix FROM prefixes WHERE guild_id = $1", ctx.guild.id)
-            or self.bot.config["defaults"]["prefix"]
-        )
-        await ctx.send("Prefix for this guild is `%s`" % prefix)
+        await ctx.send("Prefix for this guild is `%s`" % self.bot.prefixes[str(ctx.guild.id)])
 
     @prefix.command(name="set")
     @commands.check_any(commands.has_permissions(manage_guild=True), commands.is_owner())
