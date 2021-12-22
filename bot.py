@@ -1,4 +1,5 @@
 import asyncio
+import traceback
 
 import asyncpg
 import discord
@@ -9,13 +10,10 @@ from discord.ext import commands
 class Versare(commands.AutoShardedBot):
     async def get_prefix(self, message):
         if message.guild:
-            prefix = await self.db.fetchval("SELECT prefix FROM prefixes WHERE guild_id = $1", message.guild.id)
+            prefix = self.prefixes.get(str(message.guild.id))
             if not prefix:
-                await self.db.execute(
-                    "INSERT INTO prefixes (guild_id, prefix) VALUES ($1, $2)",
-                    message.guild.id,
-                    self.config["defaults"]["prefix"],
-                )
+                self.prefixes[str(message.guild.id)] = self.config["defaults"]["prefix"]
+                prefix = self.prefixes[str(message.guild.id)]
             return commands.when_mentioned_or(prefix)(self, message)
         else:
             return commands.when_mentioned_or(self.config["defaults"]["prefix"])(self, message)
@@ -40,7 +38,17 @@ class Versare(commands.AutoShardedBot):
             % (self.user, self.user.id, self.config["defaults"]["prefix"])
         )
 
+    def load_extensions(self):
+        initial_extensions = ["cogs.commands.prefix"]
+
+        for ext in initial_extensions:
+            try:
+                self.load_extension(ext)
+            except Exception:
+                print(traceback.format_exc())
+
     async def setup(self):
+        self.load_extensions()
         asyncio.create_task(self.init_db_pool())
         await super().setup()
 
@@ -49,3 +57,8 @@ class Versare(commands.AutoShardedBot):
         self.db = await asyncpg.create_pool(dsn=f"postgres://{pg_user}:{pg_password}@{pg_host}:{pg_port}/{database}")
         with open("db/schema.sql", "r") as init:
             await self.db.execute(init.read())
+        await self.cache_prefixes()
+
+    async def cache_prefixes(self):
+        self.prefixes = await self.db.fetch("SELECT * FROM prefixes")
+        self.prefixes = {str(guild_id): prefix for prefix, guild_id in self.prefixes}
