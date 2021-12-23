@@ -55,7 +55,6 @@ class ErrorHandler(commands.Cog):
         elif isinstance(error, commands.CheckFailure):
             embed.description = (
                 f"Permissions check for command {ctx.command} failed - you may not have the required permissions"
-                % ctx.command
             )
         elif isinstance(error, commands.ConversionError):
             embed.description = str(error)
