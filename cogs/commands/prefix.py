@@ -14,7 +14,7 @@ class Prefix(commands.Cog):
         invoke_without_command=True,
     )
     async def prefix(self, ctx):
-        await ctx.send("Prefix for this guild is `%s`" % self.bot.prefixes[str(ctx.guild.id)])
+        await ctx.send(f"Prefix for this guild is `{self.bot.prefixes[str(ctx.guild.id)]}`")
 
     @prefix.command(
         name="set", brief="Set the prefix for this server", description="Add server prefix to the database and cache"
@@ -30,7 +30,7 @@ class Prefix(commands.Cog):
         else:
             await self.bot.db.execute("UPDATE prefixes SET prefix = $1 WHERE guild_id = $2", prefix, ctx.guild.id)
         self.bot.prefixes[str(ctx.guild.id)] = prefix
-        await ctx.send("Prefix for this guild is now `%s`" % prefix)
+        await ctx.send(f"Prefix for this guild is now `{prefix}`")
 
 
 def setup(bot):

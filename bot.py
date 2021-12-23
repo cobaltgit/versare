@@ -36,8 +36,7 @@ class Versare(commands.AutoShardedBot):
 
     async def on_ready(self):
         print(
-            "Versare is online - logged in as %s\nClient ID: %d\nPrefix: %s"
-            % (self.user, self.user.id, self.config["defaults"]["prefix"])
+            f"Versare is online - logged in as {self.user}\nClient ID: {self.user.id}\nPrefix: {self.config['defaults']['prefix']}"
         )
 
     def load_extensions(self):

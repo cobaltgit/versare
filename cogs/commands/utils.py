@@ -27,11 +27,11 @@ class Utilities(commands.Cog):
 
         embed = discord.Embed(title="Pong!", color=ctx.author.color, timestamp=datetime.utcnow())
         fields = [
-            (":globe_with_meridians: Websocket", "%dms" % round(self.bot.latency * 1000), False),
-            (":desktop: REST API", "%dms" % round((api_end - api_start) * 1000), False),
+            (":globe_with_meridians: Websocket", f"{round(self.bot.latency * 1000)}ms", False),
+            (":desktop: REST API", f"{round((api_end - api_start) * 1000)}ms", False),
             (
                 "<:PostgreSQL:923564294526885918> Database",
-                "%dms" % round((postgres_end - postgres_start) * 1000),
+                f"{round((postgres_end - postgres_start) * 1000)}ms",
                 False,
             ),
         ]

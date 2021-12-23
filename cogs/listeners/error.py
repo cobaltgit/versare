@@ -34,18 +34,18 @@ class ErrorHandler(commands.Cog):
             missing = [perm.replace("_", " ").replace("guild", "server").title() for perm in error.missing_permissions]
             embed.description = "You are missing the following permissions required for this command:\n"
             for perm in missing:
-                embed.description += "**- %s**\n" % perm
+                embed.description += f"**- {perm}**\n"
         elif isinstance(error, commands.BotMissingPermissions):
             missing = [perm.replace("_", " ").replace("guild", "server").title() for perm in error.missing_permissions]
             embed.description = "I am missing the following permissions required for this command:\n"
             for perm in missing:
-                embed.description += "**- %s**\n" % perm
+                embed.description += f"**- {perm}**\n"
         elif isinstance(error, commands.MissingRequiredArgument):
-            embed.description = "Required argument `%s` missing" % error.param.name
+            embed.description = f"Required argument `{error.param.name}` missing"
         elif isinstance(error, commands.CommandOnCooldown):
-            embed.description = "Cooldown - please retry this command in %d seconds" % round(error.retry_after)
+            embed.description = f"Cooldown - please retry this command in {round(error.retry_after)} seconds"
         elif isinstance(error, commands.DisabledCommand):
-            embed.description = "Command %s has been disabled" % ctx.command
+            embed.description = f"Command {ctx.command} has been disabled"
         elif isinstance(error, commands.NoPrivateMessage):
             embed.description = "This command cannot be used in DMs"
             try:
@@ -54,7 +54,8 @@ class ErrorHandler(commands.Cog):
                 return
         elif isinstance(error, commands.CheckFailure):
             embed.description = (
-                "Permissions check for command %s failed - you may not have the required permissions" % ctx.command
+                f"Permissions check for command {ctx.command} failed - you may not have the required permissions"
+                % ctx.command
             )
         elif isinstance(error, commands.ConversionError):
             embed.description = str(error)
