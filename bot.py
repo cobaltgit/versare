@@ -12,9 +12,9 @@ class Versare(commands.AutoShardedBot):
         if message.guild:
             prefix = self.prefixes.get(str(message.guild.id))
             if not prefix:
-                self.prefixes[str(message.guild.id)] = self.config["defaults"]["prefix"]
-                prefix = self.prefixes[str(message.guild.id)]
-            return commands.when_mentioned_or(prefix)(self, message)
+                return commands.when_mentioned_or(self.config["defaults"]["prefix"])(self, message)
+            else:
+                return commands.when_mentioned_or(prefix)(self, message)
         else:
             return commands.when_mentioned_or(self.config["defaults"]["prefix"])(self, message)
 
