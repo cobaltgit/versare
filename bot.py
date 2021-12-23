@@ -6,6 +6,8 @@ import discord
 import yaml
 from discord.ext import commands
 
+from lib.help import VersareHelp
+
 
 class Versare(commands.AutoShardedBot):
     async def get_prefix(self, message):
@@ -29,7 +31,7 @@ class Versare(commands.AutoShardedBot):
             slash_commands=True,
             case_sensitive=True,
             strip_after_prefix=True,
-            help_command=commands.MinimalHelpCommand(),
+            help_command=VersareHelp(),
         )
 
     async def on_ready(self):
