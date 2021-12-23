@@ -6,7 +6,7 @@ The rewrite branch of Versare, the in-development versatile(?) Discord bot
 
 ### System Requirements
 * Git is required to fetch the repository code
-* Python 3.10 and pip is required with the virtualenv module
+* Python 3.10 and pipenv is required to install dependencies
 * PostgreSQL is recommended to connect to the database from the command line
 
 Install these with your system package manager
@@ -23,14 +23,12 @@ $ git clone https://github.com/cobaltgit/versare.git
 
 Create a virtual environment and install dependencies from pip
 ```bash
-$ python3 -m venv venv
-$ source venv/bin/activate
-(venv) $ pip install -r requirements.txt
+$ pipenv install
 ```
 
 To install development tools, run the following command
 ```bash
-(venv) $ pip install -r requirements-dev.txt
+$ pipenv install --dev
 ```
 
 ### Running the bot
@@ -51,7 +49,7 @@ Enter the database name, username, password, IP address and port of your Postgre
 
 Assuming you've followed the above instructions, you should be able to launch your bot.
 ```
-(venv) $ python3 runner.py
+$ pipenv run start
 Versare is online - logged in as YourBotName#1234
 Client ID: your bot's client ID
 Prefix: v.

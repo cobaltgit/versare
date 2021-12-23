@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+"discord.py" = {git = "https://github.com/iDevision/enhanced-discord.py"}
+uvloop = "*"
+asyncpg = "*"
+
+[dev-packages]
+pre-commit = "*"
+black = "*"
+isort = "*"
+autoflake = "*"
+
+[requires]
+python_version = "3.10"
+
+[scripts]
+start = "python3 runner.py
