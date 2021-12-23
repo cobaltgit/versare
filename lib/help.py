@@ -1,7 +1,22 @@
 from datetime import datetime
+from pathlib import Path
 
 import discord
 from discord.ext import commands
+
+
+class HelpEmbed(discord.Embed):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.timestamp = datetime.utcnow()
+        self.set_footer(
+            text="Use help [command|category] for more information | <> denotes a required argument | [] denotes an optional argument"
+        )
+
+    def get_command_signature(self, command):
+        if command.parent:
+            return f"{self.context.prefix}{command.parent} {command.name} {command.signature}"
+        return f"{self.context.prefix}{command.name} {command.signature}"
 
 
 class VersareHelp(commands.MinimalHelpCommand):
@@ -16,11 +31,10 @@ class VersareHelp(commands.MinimalHelpCommand):
         )
 
     async def send_command_help(self, command):
-        embed = discord.Embed(
+        embed = HelpEmbed(
             title=f"Help for command '{command}'",
             color=self.context.guild.me.color,
-            description=command.description,
-            timestamp=datetime.utcnow(),
+            description=command.description or command.brief or "Command not described",
         )
         embed.add_field(name="Usage", value=self.get_command_signature(command), inline=False)
         if command.aliases:
@@ -30,18 +44,19 @@ class VersareHelp(commands.MinimalHelpCommand):
         await self.context.send(embed=embed)
 
     async def send_group_help(self, group):
-        embed = discord.Embed(
+        embed = HelpEmbed(
             title=f"Help for group '{group}'",
             color=self.context.guild.me.color,
-            description=group.description,
-            timestamp=datetime.utcnow(),
+            description=group.description or group.brief or "Group not described",
         )
-        embed.set_footer(text=f"Get help on subcommands by using {self.context.prefix}help [GROUP] [COMMAND]")
         embed.add_field(name="Usage", value=f"{self.context.prefix}{group.name} {group.signature}", inline=False)
         embed.add_field(
             name="Subcommands",
             value="\n".join(
-                [f"{self.context.prefix}{command.name} - {command.brief}" for idx, command in enumerate(group.commands)]
+                [
+                    f"{self.get_command_signature(command)} - {command.brief}"
+                    for idx, command in enumerate(group.commands)
+                ]
             )
             or "No subcommands",
             inline=False,
@@ -51,32 +66,32 @@ class VersareHelp(commands.MinimalHelpCommand):
         await self.context.send(embed=embed)
 
     async def send_cog_help(self, cog):
-        embed = discord.Embed(
-            title=f"Help for cog '{cog.qualified_name}'", color=self.context.guild.me.color, timestamp=datetime.utcnow()
-        )
-        embed.set_footer(text=f"Get help on individual commands by using {self.context.prefix}help [COMMAND]")
+        embed = HelpEmbed(title=f"Help for cog '{cog.qualified_name}'", color=self.context.guild.me.color)
+        embed.description = cog.description or "Cog not described"
         embed.add_field(
             name="Commands",
             value="\n".join(
-                [f"{self.context.prefix}{command.name} - {command.brief}" for command in cog.get_commands()]
+                [f"{self.get_command_signature(command)} - {command.brief}" for command in cog.get_commands()]
             ),
         )
         await self.context.send(embed=embed)
 
     async def send_bot_help(self, mapping):
-        embed = discord.Embed(title="Versare Help", color=self.context.guild.me.color, timestamp=datetime.utcnow())
-        embed.description = f"""To get information on a command, use `{self.context.prefix}help [COMMAND]`
-            For categories (cogs), use `{self.context.prefix}help [CATEGORY]`"""
+        embed = HelpEmbed(title="Versare Help", color=self.context.guild.me.color)
+        embed.description = f""""""
         for cog, commands in mapping.items():
             filtered = await self.filter_commands(commands, sort=True)
+
             commands = [self.get_command_signature(c) + f" - {c.brief}" for c in filtered]
             if commands:
                 cog_name = getattr(cog, "qualified_name", "Uncategorised")
                 embed.add_field(name=cog_name, value="\n".join(commands), inline=False)
 
+            code_lines = sum(1 for pyfile in Path(".").glob("**/*.py") for line in open(pyfile))
+        embed.description = f"""Written in {code_lines} lines of Python source code - this is yet to increase"""
         await self.context.send(embed=embed)
 
     async def send_error_message(self, error):
         await self.context.send(
-            embed=discord.Embed(title="Error Message", description=error, color=0x800000, timestamp=datetime.utcnow())
+            embed=discord.Embed(title="Error", description=error, color=0x800000, timestamp=datetime.utcnow())
         )
