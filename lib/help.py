@@ -15,8 +15,6 @@ class VersareHelp(commands.MinimalHelpCommand):
             },
         )
 
-    get_command_signature = lambda self, command: f"{self.context.prefix}{command.qualified_name} {command.signature}"
-
     async def send_command_help(self, command):
         embed = discord.Embed(
             title=f"Help for command '{command}'",
