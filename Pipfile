@@ -18,4 +18,4 @@ autoflake = "*"
 python_version = "3.10"
 
 [scripts]
-start = "python3 runner.py
+start = "python3 runner.py"
