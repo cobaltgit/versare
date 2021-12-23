@@ -24,7 +24,11 @@ class Prefix(commands.Cog):
         if len(prefix) > 8:
             return ctx.send("Must be no more than 8 characters")
 
-        await self.bot.db.execute("UPDATE prefixes SET prefix = $1 WHERE guild_id = $2", prefix, ctx.guild.id)
+        prefix_exists = await self.bot.db.fetchval("SELECT prefix FROM prefixes WHERE guild_id = $1", ctx.guild.id)
+        if not prefix_exists:
+            await self.bot.db.execute("INSERT INTO prefixes (guild_id, prefix) VALUES ($1, $2)", ctx.guild.id, prefix)
+        else:
+            await self.bot.db.execute("UPDATE prefixes SET prefix = $1 WHERE guild_id = $2", prefix, ctx.guild.id)
         self.bot.prefixes[str(ctx.guild.id)] = prefix
         await ctx.send("Prefix for this guild is now `%s`" % prefix)
 
