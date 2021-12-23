@@ -8,6 +8,8 @@ class VersareHelp(commands.MinimalHelpCommand):
     def __init__(self):
         super().__init__(verify_checks=False)
 
+    get_command_signature = lambda self, command: f"{self.context.prefix}{command.qualified_name} {command.signature}"
+
     async def send_command_help(self, command):
         embed = discord.Embed(
             title=f"Help for command '{command}'",
@@ -15,16 +17,7 @@ class VersareHelp(commands.MinimalHelpCommand):
             description=command.description,
             timestamp=datetime.utcnow(),
         )
-        if command.parent:
-            embed.add_field(
-                name="Usage",
-                value=f"{self.context.prefix}{command.full_parent_name} {command.name} {command.signature}",
-                inline=False,
-            )
-        else:
-            embed.add_field(
-                name="Usage", value=f"{self.context.prefix}{command.name} {command.signature}", inline=False
-            )
+        embed.add_field(name="Usage", value=self.get_command_signature(command), inline=False)
         await self.context.send(embed=embed)
 
     async def send_group_help(self, group):
