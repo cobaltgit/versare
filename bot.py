@@ -39,7 +39,7 @@ class Versare(commands.AutoShardedBot):
         )
 
     def load_extensions(self):
-        initial_extensions = ["cogs.commands.prefix", "cogs.listeners.error"]
+        initial_extensions = ["cogs.commands.prefix", "cogs.listeners.error", "cogs.commands.utils"]
 
         for ext in initial_extensions:
             try:
