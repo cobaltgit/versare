@@ -6,7 +6,7 @@ import discord
 import yaml
 from discord.ext import commands
 
-from lib.help import VersareHelp
+from utils.help import VersareHelp
 
 
 class Versare(commands.AutoShardedBot):

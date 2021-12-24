@@ -5,7 +5,7 @@ from datetime import datetime
 import discord
 from discord.ext import commands
 
-from lib.views import Traceback
+from utils.views import Traceback
 
 
 class ErrorHandler(commands.Cog):
