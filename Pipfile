@@ -7,6 +7,7 @@ name = "pypi"
 "discord.py" = {git = "https://github.com/iDevision/enhanced-discord.py"}
 uvloop = "*"
 asyncpg = "*"
+cryptography = "*"
 
 [dev-packages]
 pre-commit = "*"

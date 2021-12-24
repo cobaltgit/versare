@@ -1,9 +1,11 @@
 import asyncio
+import sys
 import traceback
 
 import asyncpg
 import discord
 import yaml
+from cryptography.fernet import Fernet
 from discord.ext import commands
 
 from utils.help import VersareHelp
@@ -24,6 +26,16 @@ class Versare(commands.AutoShardedBot):
         with open("config.yml", "r") as config_file:
             self.config = yaml.safe_load(config_file)
 
+        if not self.config["auth"].get("db_key"):
+            self.config["auth"]["db_key"] = str(Fernet.generate_key().decode("utf-8"))
+            with open("config.yml", "w") as config_file:
+                yaml.dump(self.config, config_file, sort_keys=False)
+
+        try:
+            self.fernet = Fernet(self.config["auth"]["db_key"])
+        except:
+            sys.exit("Exception caught - Unable to initialise Fernet encryption key\n" + traceback.format_exc())
+
         super().__init__(
             command_prefix=self.get_prefix,
             intents=discord.Intents(**self.config.get("intents")),
@@ -40,7 +52,13 @@ class Versare(commands.AutoShardedBot):
         )
 
     def load_extensions(self):
-        initial_extensions = ["cogs.commands.prefix", "cogs.listeners.error", "cogs.commands.utils"]
+        initial_extensions = [
+            "cogs.commands.prefix",
+            "cogs.listeners.error",
+            "cogs.commands.utils",
+            "cogs.commands.mod",
+            "cogs.listeners.sniper",
+        ]
 
         for ext in initial_extensions:
             try:
