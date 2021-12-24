@@ -40,7 +40,9 @@ class VersareHelp(commands.MinimalHelpCommand):
         if command.aliases:
             embed.add_field(name="Aliases", value=", ".join(command.aliases), inline=False)
         if command._buckets and (cooldown := command._buckets._cooldown):
-            embed.add_field(name="Cooldown", value=f"{cooldown.rate} uses per {cooldown.per:.0f} seconds", inline=False)
+            embed.add_field(
+                name="Cooldown", value=f"{cooldown.rate} use(s) per {cooldown.per:.0f} second(s)", inline=False
+            )
         await self.context.send(embed=embed)
 
     async def send_group_help(self, group):
@@ -78,15 +80,17 @@ class VersareHelp(commands.MinimalHelpCommand):
 
     async def send_bot_help(self, mapping):
         embed = HelpEmbed(title="Versare Help", color=self.context.guild.me.color)
-        embed.description = f""""""
         for cog, commands in mapping.items():
             filtered = await self.filter_commands(commands, sort=True)
 
             commands = [self.get_command_signature(c) + f" - {c.brief}" for c in filtered]
             if commands:
                 cog_name = getattr(cog, "qualified_name", "Uncategorised")
-                embed.add_field(name=cog_name, value="\n".join(commands), inline=False)
-
+                embed.add_field(
+                    name=cog_name + f" [{len(set(cog.walk_commands()))}]" if cog else cog_name,
+                    value="\n".join(commands),
+                    inline=False,
+                )
             code_lines = sum(1 for pyfile in Path(".").glob("**/*.py") for line in open(pyfile))
         embed.description = f"""Written in {code_lines} lines of Python source code - this is yet to increase"""
         await self.context.send(embed=embed)
