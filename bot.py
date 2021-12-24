@@ -81,3 +81,8 @@ class Versare(commands.AutoShardedBot):
     async def cache_prefixes(self):
         self.prefixes = await self.db.fetch("SELECT * FROM prefixes")
         self.prefixes = {str(guild_id): prefix for prefix, guild_id in self.prefixes}
+
+    async def close(self):
+        await self.db.execute("DELETE FROM sniper")
+        await self.db.execute("DELETE FROM editsniper")
+        await super().close()
