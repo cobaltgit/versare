@@ -1,8 +1,8 @@
 from datetime import datetime
+from pathlib import Path
 
 import discord
 from discord.ext import commands
-from pathutils import Path
 
 
 class HelpEmbed(discord.Embed):
