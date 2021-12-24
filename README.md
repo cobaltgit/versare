@@ -26,9 +26,13 @@ Create a virtual environment and install dependencies from pip
 $ pipenv install
 ```
 
-To install development tools, run the following command
+#### Development dependencies
+
+To set up development tools, run the following command
 ```bash
 $ pipenv install --dev
+...
+$ pre-commit install
 ```
 
 ### Running the bot
@@ -56,3 +60,14 @@ Prefix: v.
 ```
 
 Congratulations! You've launched your own instance of Versare!
+
+## CONTRIBUTIONS
+
+The Versare project is welcome for contributions!  
+Feel free to fork and submit pull requests to the repository at any time!
+
+### Requirements
+* You'll need to have the [system requirements](https://github.com/cobaltgit/versare#setup-instructions) installed on your machine
+* Fetch the code and install the base dependencies and development tools - instructions [here](https://github.com/cobaltgit/versare#installing-dependencies)
+* Have a development-ready text editor at hand (VSCode recommended)
+* It's also recommended to run a private instance for testing
