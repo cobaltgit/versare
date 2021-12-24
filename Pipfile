@@ -8,6 +8,7 @@ name = "pypi"
 uvloop = "*"
 asyncpg = "*"
 cryptography = "*"
+jishaku = ">=2.3.0"
 
 [dev-packages]
 pre-commit = "*"

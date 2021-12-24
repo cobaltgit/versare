@@ -66,6 +66,8 @@ class Versare(commands.AutoShardedBot):
             except Exception:
                 print(traceback.format_exc())
 
+        self.load_extension("jishaku")
+
     async def setup(self):
         self.load_extensions()
         asyncio.create_task(self.init_db_pool())
