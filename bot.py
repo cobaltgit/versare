@@ -1,4 +1,5 @@
 import asyncio
+import os
 import sys
 import traceback
 
@@ -66,6 +67,7 @@ class Versare(commands.AutoShardedBot):
             except Exception:
                 print(traceback.format_exc())
 
+        os.environ["JISHAKU_HIDE"] = "true"
         self.load_extension("jishaku")
 
     async def setup(self):
@@ -74,7 +76,7 @@ class Versare(commands.AutoShardedBot):
         await super().setup()
 
     async def init_db_pool(self):
-        database, pg_user, pg_password, pg_host, pg_port = list(self.config.get("postgres").values())
+        database, pg_user, pg_password, pg_host, pg_port = self.config.get("postgres").values()
         self.db = await asyncpg.create_pool(dsn=f"postgres://{pg_user}:{pg_password}@{pg_host}:{pg_port}/{database}")
         with open("db/schema.sql", "r") as init:
             await self.db.execute(init.read())
