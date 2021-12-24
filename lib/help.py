@@ -29,6 +29,7 @@ class VersareHelp(commands.MinimalHelpCommand):
                 "cooldown": commands.CooldownMapping.from_cooldown(2, 5, commands.BucketType.user),
             },
         )
+        self.code_lines = sum(1 for pyfile in Path(".").glob("**/*.py") for line in open(pyfile))
 
     async def send_command_help(self, command):
         embed = HelpEmbed(
@@ -91,8 +92,8 @@ class VersareHelp(commands.MinimalHelpCommand):
                     value="\n".join(commands),
                     inline=False,
                 )
-            code_lines = sum(1 for pyfile in Path(".").glob("**/*.py") for line in open(pyfile))
-        embed.description = f"""Written in {code_lines} lines of Python source code - this is yet to increase"""
+
+        embed.description = f"""Written in {self.code_lines} lines of Python source code - this is yet to increase"""
         await self.context.send(embed=embed)
 
     async def send_error_message(self, error):
