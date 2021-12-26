@@ -22,3 +22,9 @@ allowed-mentions:
 
 defaults:
   prefix: "v."
+
+emojis:
+  versare: <:Versare:914949604078927912>
+  python: <:Python:914950534887243776>
+  discord.py: <:Discordpy:914951096974323793>
+  postgres: <:PostgreSQL:923564294526885918>
