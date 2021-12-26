@@ -24,6 +24,9 @@ class Versare(commands.AutoShardedBot):
             return commands.when_mentioned_or(self.config["defaults"]["prefix"])(self, message)
 
     def __init__(self):
+
+        self.__version__ = "0.2.0-rw"
+
         with open("config.yml", "r") as config_file:
             self.config = yaml.safe_load(config_file)
 
