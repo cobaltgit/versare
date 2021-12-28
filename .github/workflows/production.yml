@@ -16,4 +16,4 @@ jobs:
           type: now
           from_branch: rewrite
           target_branch: production
-          github_token: ${{ secrets.GH_TOKEN }}
+          github_token: ${{ github.token }}
