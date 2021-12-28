@@ -18,6 +18,8 @@ from lib.help import VersareHelp
 class Versare(commands.AutoShardedBot):
     def __init__(self):
 
+        self.__version__ = "0.4.1-legacy-final"
+
         with open("config/config.json", "r") as config_file:
             self.config = json.load(config_file)
 

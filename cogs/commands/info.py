@@ -1,7 +1,6 @@
 import re
 from datetime import datetime, timedelta
 from platform import python_version
-from subprocess import check_output
 from time import time
 from typing import Optional
 
@@ -17,7 +16,6 @@ class Info(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.proc = psutil.Process()
-        self.git_hash = check_output(["git", "rev-parse", "--short", "HEAD"]).decode("utf-8")
 
     @commands.command(
         name="serverinfo",
@@ -136,7 +134,7 @@ class Info(commands.Cog):
         fields = [
             (
                 "<:Versare:914949604078927912> Versare",
-                f"`git-{self.git_hash}`",
+                self.bot.__version__,
                 True,
             ),
             ("<:Python:914950534887243776> Python", f"`{python_version()}`", True),
