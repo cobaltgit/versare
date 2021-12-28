@@ -132,7 +132,7 @@ class Utilities(commands.Cog):
 
     @commands.command(
         name="source",
-        aliases=["code", "command"],
+        aliases=["code", "command", "src", "git", "github"],
         brief="Get source code of a command or the bot",
         description="Fetch and send the source code of a bot command if specified or the GitHub repository",
     )
