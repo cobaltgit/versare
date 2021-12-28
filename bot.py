@@ -2,6 +2,7 @@ import asyncio
 import os
 import sys
 import traceback
+from time import time
 
 import asyncpg
 import discord
@@ -51,6 +52,7 @@ class Versare(commands.AutoShardedBot):
         )
 
     async def on_ready(self):
+        self.start_time = time()
         print(
             f"Versare is online - logged in as {self.user}\nClient ID: {self.user.id}\nPrefix: {self.config['defaults']['prefix']}"
         )

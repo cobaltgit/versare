@@ -1,5 +1,6 @@
 auth:
   token: "bot-token-here"
+  owner_id: 123456789098765432
 
 postgres:
   database: versare

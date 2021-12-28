@@ -9,6 +9,7 @@ asyncpg = "*"
 cryptography = "*"
 jishaku = ">=2.3.0"
 "discord.py" = {extras = ["speed"], git = "https://github.com/iDevision/enhanced-discord.py"}
+psutil = "*"
 
 [dev-packages]
 pre-commit = "*"
