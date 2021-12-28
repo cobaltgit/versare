@@ -1,0 +1,19 @@
+name: Deploy bot to production on release
+on:
+  release:
+    types:
+      - created
+      - published
+jobs:
+  sync-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Merge rewrite and production branches
+        uses: devmasx/merge-branch@master
+        with:
+          type: now
+          from_branch: rewrite
+          target_branch: production
+          github_token: ${{ secrets.GH_TOKEN }}
