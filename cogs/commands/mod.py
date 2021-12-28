@@ -1,7 +1,6 @@
-from datetime import datetime
-
-import discord
 from discord.ext import commands
+
+from utils.objects import BaseEmbed
 
 
 class Moderation(commands.Cog):
@@ -24,10 +23,9 @@ class Moderation(commands.Cog):
         author = ctx.guild.get_member(target[1])
         channel = ctx.guild.get_channel(target[2])
 
-        embed = discord.Embed(
+        embed = BaseEmbed(
             description=self.bot.fernet.decrypt(target[0]).decode("utf-8"),
             color=author.color or ctx.author.color or ctx.guild.me.color,
-            timestamp=datetime.utcnow(),
         )
         embed.set_author(name=author, icon_url=author.avatar.url)
         embed.set_footer(text=f"Message sniped from #{channel}")
@@ -80,7 +78,7 @@ class Moderation(commands.Cog):
         author = ctx.guild.get_member(target[2])
         channel = ctx.guild.get_channel(target[3])
 
-        embed = discord.Embed(color=author.color or ctx.author.color or ctx.guild.me.color, timestamp=datetime.utcnow())
+        embed = BaseEmbed(color=author.color or ctx.author.color or ctx.guild.me.color)
         fields = [
             ("Before", self.bot.fernet.decrypt(target[0]).decode("utf-8"), True),
             ("After", self.bot.fernet.decrypt(target[1]).decode("utf-8"), True),

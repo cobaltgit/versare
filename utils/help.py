@@ -1,14 +1,13 @@
-from datetime import datetime
 from pathlib import Path
 
-import discord
 from discord.ext import commands
 
+from utils.objects import BaseEmbed
 
-class HelpEmbed(discord.Embed):
+
+class HelpEmbed(BaseEmbed):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.timestamp = datetime.utcnow()
         self.set_footer(
             text="Use help [command|category] for more information | <> denotes a required argument | [] denotes an optional argument"
         )
@@ -97,6 +96,4 @@ class VersareHelp(commands.MinimalHelpCommand):
         await self.context.send(embed=embed)
 
     async def send_error_message(self, error):
-        await self.context.send(
-            embed=discord.Embed(title="Error", description=error, color=0x800000, timestamp=datetime.utcnow())
-        )
+        await self.context.send(embed=BaseEmbed(title="Error", description=error, color=0x800000))

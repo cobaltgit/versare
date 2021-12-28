@@ -1,10 +1,10 @@
 import re
 import traceback
-from datetime import datetime
 
 import discord
 from discord.ext import commands
 
+from utils.objects import BaseEmbed
 from utils.views import Traceback
 
 
@@ -19,10 +19,9 @@ class ErrorHandler(commands.Cog):
         if hasattr(ctx.command, "on_error"):
             return
         error = getattr(error, "original", error)
-        embed = discord.Embed(
-            title="Discord Error: %s" % " ".join(re.split("(?=[A-Z])", type(error).__name__)),
+        embed = BaseEmbed(
+            title=f'Discord Error: {" ".join(re.split("(?=[A-Z])", type(error).__name__))}',
             color=0x800000,
-            timestamp=datetime.utcnow(),
         )
 
         if isinstance(error, commands.CommandInvokeError):
