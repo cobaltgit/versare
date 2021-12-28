@@ -1,7 +1,12 @@
+import sys
 from datetime import timedelta
+from inspect import getsource
+from io import BytesIO
 from platform import python_version
 from time import time
+from typing import Optional
 
+import discord
 import psutil
 from discord.ext import commands
 from pkg_resources import get_distribution
@@ -15,6 +20,8 @@ class Utilities(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.proc = psutil.Process()
+        self.GITHUB_URL = "https://github.com/cobaltgit/versare"
+        self.GIT_BRANCH = "rewrite"
 
     @commands.command(
         name="ping",
@@ -122,6 +129,36 @@ class Utilities(commands.Cog):
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
         await msg.edit(content=None, embed=embed)
+
+    @commands.command(
+        name="source",
+        aliases=["code", "command"],
+        brief="Get source code of a command or the bot",
+        description="Fetch and send the source code of a bot command if specified or the GitHub repository",
+    )
+    async def source(
+        self, ctx, *, command: Optional[str] = commands.Option(description="Specify a command:", default=None)
+    ):
+        if not command:
+            return await ctx.send(f"Link to source code on GitHub\n{self.GITHUB_URL}/tree/{self.GIT_BRANCH}")
+        cmd = self.bot.get_command(command)
+        fn = cmd.callback
+        src = discord.utils.escape_markdown(getsource(fn))
+
+        if len(src) > 1990:
+            if len(src) > 3980:
+                buf = BytesIO()
+                buf.write(src.encode("utf-8"))
+                buf.seek(0)
+                if sys.getsizeof(buf) > ctx.guild.filesize_limit:
+                    return await ctx.send(
+                        f"Source code file is larger than this server's filesize_limit ({ctx.guild.filesize_limit/float(1<<20):,.0f}MB)\nLink to source code on GitHub\n{self.GITHUB_URL}/tree/{self.GIT_BRANCH}"
+                    )
+                return await ctx.send(file=discord.File(buf, filename=command + ".py"))
+            await ctx.send(f"```py\n{src[:1990]}```")
+            return await ctx.send(f"```py\n{src[1990:3980]}```")
+
+        await ctx.send(f"```py\n{src}```")
 
 
 def setup(bot):
