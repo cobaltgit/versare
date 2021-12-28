@@ -1,4 +1,4 @@
-name: Deploy bot to production on release
+name: Deploy bot to production server
 on:
   release:
     types:
