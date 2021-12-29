@@ -22,6 +22,7 @@ class Utilities(commands.Cog):
         self.proc = psutil.Process()
         self.GITHUB_URL = "https://github.com/cobaltgit/versare"
         self.GIT_BRANCH = "rewrite"
+        self.HELP_COMMAND_FILE = "./utils/help.py"
 
     @commands.command(
         name="ping",
@@ -142,6 +143,8 @@ class Utilities(commands.Cog):
     ):
         if not command:
             return await ctx.send(f"Link to source code on GitHub\n{self.GITHUB_URL}/tree/{self.GIT_BRANCH}")
+        elif command == "help":
+            return await ctx.send(file=discord.File(self.HELP_COMMAND_FILE, filename="help.py"))
         cmd = self.bot.get_command(command)
         fn = cmd.callback
         src = getsource(fn)
