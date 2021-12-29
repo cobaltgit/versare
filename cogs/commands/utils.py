@@ -73,6 +73,7 @@ class Utilities(commands.Cog):
             color=ctx.guild.me.color,
         )
         fields = [
+            ("\u200b", "**Versions of software used**", False),
             (
                 f"{self.bot.config['emojis']['versare']} Versare"
                 if self.bot.config.get("emojis", {}).get("versare")
@@ -101,7 +102,7 @@ class Utilities(commands.Cog):
                 pg_ver.split()[0],
                 True,
             ),
-            ("\u200b", "\u200b", True),
+            ("\u200b", "**Latency to the REST API, websocket and database**", False),
             (":globe_with_meridians: WS Latency", f"{round(self.bot.latency * 1000)}ms", True),
             (":desktop: REST Latency", f"{round((api_end - api_start) * 1000)}ms", True),
             (
@@ -111,13 +112,13 @@ class Utilities(commands.Cog):
                 f"{round((pg_end - pg_start) * 1000)}ms",
                 True,
             ),
-            ("\u200b", "\u200b", True),
+            ("\u200b", "**Uptime, process and other info**", False),
             (
                 ":computer: Process Usage",
                 f"RAM: {self.proc.memory_full_info().uss / 1024**2:.2f}MB\nCPU: {self.proc.cpu_percent() / psutil.cpu_count():.2f}%",
                 True,
             ),
-            ("Uptime", str(timedelta(seconds=int(round(time() - self.bot.start_time)))), True),
+            (":stopwatch: Uptime", str(timedelta(seconds=int(round(time() - self.bot.start_time)))), True),
             ("\u200b", "\u200b", True),
             (
                 ":busts_in_silhouette: Guild Count",
@@ -145,20 +146,11 @@ class Utilities(commands.Cog):
         fn = cmd.callback
         src = getsource(fn)
 
-        if len(src) > 1990:
-            if len(src) > 3980:
-                buf = BytesIO()
-                buf.write(src.encode("utf-8"))
-                buf.seek(0)
-                if sys.getsizeof(buf) > ctx.guild.filesize_limit:
-                    return await ctx.send(
-                        f"Source code file is larger than this server's filesize_limit ({ctx.guild.filesize_limit/float(1<<20):,.0f}MB)\nLink to source code on GitHub\n{self.GITHUB_URL}/tree/{self.GIT_BRANCH}"
-                    )
-                return await ctx.send(file=discord.File(buf, filename=command + ".py"))
-            await ctx.send(f"```py\n{discord.utils.escape_markdown(src[:1990])}```")
-            return await ctx.send(f"```py\n{discord.utils.escape_markdown(src[1990:3980])}```")
-
-        await ctx.send(f"```py\n{discord.utils.escape_markdown(src)}```")
+        buf = BytesIO()
+        buf.write(src.encode('utf-8'))
+        buf.seek(0)
+        
+        await ctx.send(file=discord.File(buf, filename=command.replace(" ", "_") + ".py"))
 
 
 def setup(bot):

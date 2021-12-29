@@ -3,6 +3,7 @@ import os
 import sys
 import traceback
 from time import time
+import contextlib
 
 import asyncpg
 import discord
@@ -26,7 +27,7 @@ class Versare(commands.AutoShardedBot):
 
     def __init__(self):
 
-        self.__version__ = "0.2.2-rw"
+        self.__version__ = "0.2.3-rw"
 
         with open("config.yml", "r") as config_file:
             self.config = yaml.safe_load(config_file)
@@ -82,16 +83,22 @@ class Versare(commands.AutoShardedBot):
 
     async def init_db_pool(self):
         database, pg_user, pg_password, pg_host, pg_port = self.config.get("postgres").values()
-        self.db = await asyncpg.create_pool(dsn=f"postgres://{pg_user}:{pg_password}@{pg_host}:{pg_port}/{database}")
-        with open("db/schema.sql", "r") as init:
-            await self.db.execute(init.read())
-        await self.cache_prefixes()
+        await self.wait_until_ready()
+        try:
+            self.db = await asyncpg.create_pool(dsn=f"postgres://{pg_user}:{pg_password}@{pg_host}:{pg_port}/{database}")
+        except:
+            sys.exit(f"Couldn't connect to PostgreSQL database server\n{traceback.format_exc()}")
+        else:
+            with open("db/schema.sql", "r") as init:
+                await self.db.execute(init.read())
+            await self.cache_prefixes()
 
     async def cache_prefixes(self):
         self.prefixes = await self.db.fetch("SELECT * FROM prefixes")
         self.prefixes = {str(guild_id): prefix for prefix, guild_id in self.prefixes}
 
     async def close(self):
-        await self.db.execute("DELETE FROM sniper")
-        await self.db.execute("DELETE FROM editsniper")
+        with contextlib.suppress(AttributeError):
+            await self.db.execute("DELETE FROM sniper")
+            await self.db.execute("DELETE FROM editsniper")
         await super().close()
