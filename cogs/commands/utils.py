@@ -73,6 +73,7 @@ class Utilities(commands.Cog):
             color=ctx.guild.me.color,
         )
         fields = [
+            ("\u200b", "**Versions of software used**", False),
             (
                 f"{self.bot.config['emojis']['versare']} Versare"
                 if self.bot.config.get("emojis", {}).get("versare")
@@ -101,7 +102,7 @@ class Utilities(commands.Cog):
                 pg_ver.split()[0],
                 True,
             ),
-            ("\u200b", "\u200b", True),
+            ("\u200b", "**Latency to the REST API, websocket and database**", False),
             (":globe_with_meridians: WS Latency", f"{round(self.bot.latency * 1000)}ms", True),
             (":desktop: REST Latency", f"{round((api_end - api_start) * 1000)}ms", True),
             (
@@ -111,13 +112,13 @@ class Utilities(commands.Cog):
                 f"{round((pg_end - pg_start) * 1000)}ms",
                 True,
             ),
-            ("\u200b", "\u200b", True),
+            ("\u200b", "**Uptime, process and other info**", False),
             (
                 ":computer: Process Usage",
                 f"RAM: {self.proc.memory_full_info().uss / 1024**2:.2f}MB\nCPU: {self.proc.cpu_percent() / psutil.cpu_count():.2f}%",
                 True,
             ),
-            ("Uptime", str(timedelta(seconds=int(round(time() - self.bot.start_time)))), True),
+            (":stopwatch: Uptime", str(timedelta(seconds=int(round(time() - self.bot.start_time)))), True),
             ("\u200b", "\u200b", True),
             (
                 ":busts_in_silhouette: Guild Count",
