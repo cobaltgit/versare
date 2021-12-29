@@ -12,6 +12,11 @@ jishaku = ">=2.3.0"
 psutil = "*"
 pyyaml = "*"
 
+# aiohttp speedups
+cchardet = "*"
+aiodns = "*"
+brotli = "*"
+
 [dev-packages]
 pre-commit = "*"
 black = "*"
