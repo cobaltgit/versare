@@ -146,20 +146,11 @@ class Utilities(commands.Cog):
         fn = cmd.callback
         src = getsource(fn)
 
-        if len(src) > 1990:
-            if len(src) > 3980:
-                buf = BytesIO()
-                buf.write(src.encode("utf-8"))
-                buf.seek(0)
-                if sys.getsizeof(buf) > ctx.guild.filesize_limit:
-                    return await ctx.send(
-                        f"Source code file is larger than this server's filesize_limit ({ctx.guild.filesize_limit/float(1<<20):,.0f}MB)\nLink to source code on GitHub\n{self.GITHUB_URL}/tree/{self.GIT_BRANCH}"
-                    )
-                return await ctx.send(file=discord.File(buf, filename=command + ".py"))
-            await ctx.send(f"```py\n{discord.utils.escape_markdown(src[:1990])}```")
-            return await ctx.send(f"```py\n{discord.utils.escape_markdown(src[1990:3980])}```")
-
-        await ctx.send(f"```py\n{discord.utils.escape_markdown(src)}```")
+        buf = BytesIO()
+        buf.write(src.encode('utf-8'))
+        buf.seek(0)
+        
+        await ctx.send(file=discord.File(buf, filename=command.replace(" ", "_") + ".py"))
 
 
 def setup(bot):
