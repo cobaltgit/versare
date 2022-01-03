@@ -17,7 +17,10 @@ from utils.help import VersareHelp
 class Versare(commands.AutoShardedBot):
     async def get_prefix(self, message):
         if message.guild:
-            prefix = self.prefixes.get(str(message.guild.id))
+            try:
+                prefix = self.prefixes.get(str(message.guild.id))
+            except AttributeError:
+                return commands.when_mentioned_or(self.config["defaults"]["prefix"])(self, message)
             if not prefix:
                 return commands.when_mentioned_or(self.config["defaults"]["prefix"])(self, message)
             else:
