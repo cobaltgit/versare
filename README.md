@@ -1,5 +1,7 @@
 # Versare Rewrite
 
+## NOTE: VERSARE IS MOVING TO HIKARI
+
 The rewrite branch of Versare, the in-development versatile(?) Discord bot
 
 ## Setup Instructions
