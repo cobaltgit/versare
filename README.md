@@ -3,6 +3,8 @@
 A general-purpose **WORK-IN-PROGRESS - INCOMPLETE** Discord bot for the masses  
 The public instance is currently unavailable, please follow the instructions to set up your own
 
+## NOTE: VERSARE IS MOVING TO HIKARI
+
 ### Requirements
 
 This is what you'll need to run your bot:  
