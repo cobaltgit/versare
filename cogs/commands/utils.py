@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import sys
 from datetime import timedelta
 from inspect import getsource
@@ -140,19 +141,26 @@ class Utilities(commands.Cog):
         description="Fetch and send the source code of a bot command if specified or the GitHub repository",
     )
     async def source(
-        self, ctx: commands.Context, *, command: Optional[str] = commands.Option(description="Specify a command:", default=None)
+        self,
+        ctx: commands.Context,
+        *,
+        command: Optional[str] = commands.Option(description="Specify a command:", default=None),
     ) -> discord.Message:
         if not command:
             return await ctx.send(f"Link to source code on GitHub\n{self.GITHUB_URL}/tree/{self.GIT_BRANCH}")
         elif not (cmd := self.bot.get_command(command)):
-            return await ctx.send(f"Unknown command '{command}'. Link to source code on GitHub\n{self.GITHUB_URL}/tree/{self.GIT_BRANCH}")
+            return await ctx.send(
+                f"Unknown command '{command}'. Link to source code on GitHub\n{self.GITHUB_URL}/tree/{self.GIT_BRANCH}"
+            )
         elif command == "help":
             return await ctx.send(file=discord.File(self.HELP_COMMAND_FILE, filename="help.py"))
         else:
-            buf = BytesIO(getsource(cmd.callback).encode('utf-8'))
+            buf = BytesIO(getsource(cmd.callback).encode("utf-8"))
             if sys.getsizeof(buf) > ctx.guild.filesize_limit:
-                return await ctx.send(f"Source code file is larger than this server's filesize limit ({ctx.guild.filesize_limit/float(1<<20):,.0f})\nThe bot's source code can be found here: {self.GITHUB_URL}/tree/{self.GIT_BRANCH}")
-            
+                return await ctx.send(
+                    f"Source code file is larger than this server's filesize limit ({ctx.guild.filesize_limit/float(1<<20):,.0f})\nThe bot's source code can be found here: {self.GITHUB_URL}/tree/{self.GIT_BRANCH}"
+                )
+
             return await ctx.send(file=discord.File(buf, filename=command.replace(" ", "_") + ".py"))
 
 

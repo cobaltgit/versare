@@ -1,10 +1,11 @@
 from __future__ import annotations
+
 import asyncio
+import contextlib
 import os
 import sys
 import traceback
 from time import time
-import contextlib
 
 import asyncpg
 import discord

@@ -1,7 +1,10 @@
 from __future__ import annotations
+
+from typing import Type
+
 import discord
 from discord.ext import commands
-from typing import Type
+
 
 # original code from https://github.com/Sly0511/TroveBot/blob/master/utils/buttons.py#L72
 class Traceback(discord.ui.View):
