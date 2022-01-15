@@ -20,6 +20,7 @@ class HelpEmbed(BaseEmbed):
 
 
 class VersareHelp(commands.MinimalHelpCommand):
+    """Custom help command for Versare"""
     def __init__(self) -> None:
         super().__init__(
             verify_checks=False,
@@ -40,9 +41,9 @@ class VersareHelp(commands.MinimalHelpCommand):
         embed.add_field(name="Usage", value=self.get_command_signature(command), inline=False)
         if command.aliases:
             embed.add_field(name="Aliases", value=", ".join(command.aliases), inline=False)
-        if command._buckets and (cooldown := command._buckets._cooldown):
+        if command._buckets and (cooldown := command._buckets):
             embed.add_field(
-                name="Cooldown", value=f"{cooldown.rate} use(s) per {cooldown.BucketType.value} per {cooldown.per:.0f} second(s)", inline=False
+                name="Cooldown", value=f"{cooldown._cooldown.rate} use(s) per {cooldown.type.name} per {cooldown._cooldown.per:.0f} second(s)", inline=False
             )
         return await self.context.send(embed=embed)
 
