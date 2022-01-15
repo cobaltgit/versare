@@ -1,3 +1,4 @@
+from __future__ import annotations
 import asyncio
 import os
 import sys
@@ -15,7 +16,7 @@ from utils.help import VersareHelp
 
 
 class Versare(commands.AutoShardedBot):
-    async def get_prefix(self, message):
+    async def get_prefix(self, message: discord.Message) -> function:
         if message.guild:
             try:
                 prefix = self.prefixes.get(str(message.guild.id))
@@ -28,7 +29,7 @@ class Versare(commands.AutoShardedBot):
         else:
             return commands.when_mentioned_or(self.config["defaults"]["prefix"])(self, message)
 
-    def __init__(self):
+    def __init__(self) -> None:
 
         self.__version__ = "0.2.3-rw"
 
@@ -44,7 +45,7 @@ class Versare(commands.AutoShardedBot):
             self.fernet = Fernet(self.config["auth"]["db_key"])
         except:
             sys.exit("Exception caught - Unable to initialise Fernet encryption key\n" + traceback.format_exc())
-
+            
         super().__init__(
             command_prefix=self.get_prefix,
             intents=discord.Intents(**self.config.get("intents")),
@@ -55,13 +56,13 @@ class Versare(commands.AutoShardedBot):
             help_command=VersareHelp(),
         )
 
-    async def on_ready(self):
+    async def on_ready(self) -> None:
         self.start_time = time()
         print(
             f"Versare is online - logged in as {self.user}\nClient ID: {self.user.id}\nPrefix: {self.config['defaults']['prefix']}"
         )
 
-    def load_extensions(self):
+    def load_extensions(self) -> None:
         initial_extensions = [
             "cogs.commands.prefix",
             "cogs.listeners.error",
@@ -73,18 +74,18 @@ class Versare(commands.AutoShardedBot):
         for ext in initial_extensions:
             try:
                 self.load_extension(ext)
-            except Exception:
+            except:
                 print(traceback.format_exc())
 
         os.environ["JISHAKU_HIDE"] = "true"
         self.load_extension("jishaku")
 
-    async def setup(self):
+    async def setup(self) -> None:
         self.load_extensions()
         asyncio.create_task(self.init_db_pool())
         await super().setup()
 
-    async def init_db_pool(self):
+    async def init_db_pool(self) -> None:
         database, pg_user, pg_password, pg_host, pg_port = self.config.get("postgres").values()
         await self.wait_until_ready()
         try:
@@ -96,11 +97,10 @@ class Versare(commands.AutoShardedBot):
                 await self.db.execute(init.read())
             await self.cache_prefixes()
 
-    async def cache_prefixes(self):
-        self.prefixes = await self.db.fetch("SELECT * FROM prefixes")
-        self.prefixes = {str(guild_id): prefix for prefix, guild_id in self.prefixes}
+    async def cache_prefixes(self) -> None:
+        self.prefixes = {str(guild_id): prefix for prefix, guild_id in await self.db.fetch("SELECT * FROM prefixes")}
 
-    async def close(self):
+    async def close(self) -> None:
         with contextlib.suppress(AttributeError):
             await self.db.execute("DELETE FROM sniper")
             await self.db.execute("DELETE FROM editsniper")

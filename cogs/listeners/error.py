@@ -1,3 +1,4 @@
+from __future__ import annotations
 import re
 import traceback
 
@@ -11,11 +12,11 @@ from utils.views import Traceback
 class ErrorHandler(commands.Cog):
     """Universal error handler"""
 
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
     @commands.Cog.listener()
-    async def on_command_error(self, ctx, error):
+    async def on_command_error(self, ctx: commands.Context, error: commands.CommandError) -> discord.Message:
         if hasattr(ctx.command, "on_error"):
             return
         error = getattr(error, "original", error)
@@ -26,7 +27,7 @@ class ErrorHandler(commands.Cog):
 
         if isinstance(error, commands.CommandInvokeError):
             return await ctx.send(
-                "Exception caught",
+                "A wild exception appears!",
                 view=Traceback(ctx, "".join(traceback.format_exception(type(error), error, error.__traceback__))),
             )
         elif isinstance(error, commands.MissingPermissions):
@@ -66,5 +67,5 @@ class ErrorHandler(commands.Cog):
         return await ctx.send(embed=embed)
 
 
-def setup(bot):
+def setup(bot: commands.Bot) -> None:
     bot.add_cog(ErrorHandler(bot))
