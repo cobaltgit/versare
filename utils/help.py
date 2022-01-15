@@ -21,6 +21,7 @@ class HelpEmbed(BaseEmbed):
 
 class VersareHelp(commands.MinimalHelpCommand):
     """Custom help command for Versare"""
+
     def __init__(self) -> None:
         super().__init__(
             verify_checks=False,
@@ -43,7 +44,9 @@ class VersareHelp(commands.MinimalHelpCommand):
             embed.add_field(name="Aliases", value=", ".join(command.aliases), inline=False)
         if command._buckets and (cooldown := command._buckets):
             embed.add_field(
-                name="Cooldown", value=f"{cooldown._cooldown.rate} use(s) per {cooldown.type.name} per {cooldown._cooldown.per:.0f} second(s)", inline=False
+                name="Cooldown",
+                value=f"{cooldown._cooldown.rate} use(s) per {cooldown.type.name} per {cooldown._cooldown.per:.0f} second(s)",
+                inline=False,
             )
         return await self.context.send(embed=embed)
 
@@ -80,7 +83,9 @@ class VersareHelp(commands.MinimalHelpCommand):
         )
         return await self.context.send(embed=embed)
 
-    async def send_bot_help(self, mapping: dict[commands.Cog, list[commands.Command | commands.Group]]) -> discord.Message:
+    async def send_bot_help(
+        self, mapping: dict[commands.Cog, list[commands.Command | commands.Group]]
+    ) -> discord.Message:
         embed = HelpEmbed(title="Versare Help", color=self.context.guild.me.color)
         for cog, commands in mapping.items():
             filtered = await self.filter_commands(commands, sort=True)

@@ -45,7 +45,7 @@ class Versare(commands.AutoShardedBot):
             self.fernet = Fernet(self.config["auth"]["db_key"])
         except:
             sys.exit("Exception caught - Unable to initialise Fernet encryption key\n" + traceback.format_exc())
-            
+
         super().__init__(
             command_prefix=self.get_prefix,
             intents=discord.Intents(**self.config.get("intents")),
@@ -89,7 +89,9 @@ class Versare(commands.AutoShardedBot):
         database, pg_user, pg_password, pg_host, pg_port = self.config.get("postgres").values()
         await self.wait_until_ready()
         try:
-            self.db = await asyncpg.create_pool(dsn=f"postgres://{pg_user}:{pg_password}@{pg_host}:{pg_port}/{database}")
+            self.db = await asyncpg.create_pool(
+                dsn=f"postgres://{pg_user}:{pg_password}@{pg_host}:{pg_port}/{database}"
+            )
         except:
             sys.exit(f"Couldn't connect to PostgreSQL database server\n{traceback.format_exc()}")
         else:

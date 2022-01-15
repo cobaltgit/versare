@@ -2,6 +2,7 @@ from __future__ import annotations
 from discord.ext import commands
 import discord
 
+
 class Prefix(commands.Cog):
     """Prefix management commands"""
 
@@ -15,13 +16,19 @@ class Prefix(commands.Cog):
         invoke_without_command=True,
     )
     async def prefix(self, ctx: commands.Context) -> discord.Message:
+        await ctx.defer()
         return await ctx.send(f"Prefix for this guild is `{self.bot.prefixes[str(ctx.guild.id)]}`")
 
     @prefix.command(
         name="set", brief="Set the prefix for this server", description="Add server prefix to the database and cache"
     )
     @commands.check_any(commands.has_permissions(manage_guild=True), commands.is_owner())
-    async def set(self, ctx: commands.Context, prefix: str = commands.Option(description="Prefix for this guild (max 8 characters)")) -> discord.Message:
+    async def set(
+        self,
+        ctx: commands.Context,
+        prefix: str = commands.Option(description="Prefix for this guild (max 8 characters)"),
+    ) -> discord.Message:
+        await ctx.defer()
         if len(prefix) > 8:
             return await ctx.send("Must be no more than 8 characters")
 

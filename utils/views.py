@@ -6,6 +6,7 @@ from typing import Type
 # original code from https://github.com/Sly0511/TroveBot/blob/master/utils/buttons.py#L72
 class Traceback(discord.ui.View):
     """Exception view for error handler"""
+
     def __init__(self, ctx: commands.Context, exception: Type[Exception], timeout=60) -> None:
         super().__init__(timeout=timeout)
         self.ctx = ctx
