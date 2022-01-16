@@ -1,5 +1,5 @@
 import discord
-from youtube_dl import YoutubeDL
+import youtube_dl
 
 
 def nitro_check(user: discord.User | discord.Member) -> bool:
@@ -29,5 +29,8 @@ def get_youtube_url(source_url: str, ydl_opts: dict[str] = {"quiet": True}) -> s
     Returns:
         str: the direct URL to the YouTube video - this is passed to aiohttp
     """
-    with YoutubeDL(ydl_opts) as ydl:
-        return ydl.extract_info(source_url, download=False)["formats"][-1]["url"]
+    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        try:
+            return ydl.extract_info(source_url, download=False)["formats"][-1]["url"]
+        except (youtube_dl.utils.UnsupportedError, youtube_dl.utils.ExtractorError):
+            return False
