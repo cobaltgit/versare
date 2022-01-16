@@ -1,3 +1,4 @@
+import re
 import sys
 from io import BytesIO
 
@@ -21,13 +22,16 @@ class Internet(commands.Cog):
         self, ctx: commands.Context, *, urls: str = commands.Option(description="Enter one or more URLs to download")
     ) -> discord.Message:
         await ctx.defer()
-        _urls = urls.split()
+        _urls = [
+            re.findall(
+                r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+",
+                input_url,
+            )
+            for input_url in urls.split()
+        ]
         await ctx.send(f":movie_camera: Downloading {len(_urls)} video(s)")
         successful_downloads = 0
         for url in _urls:
-            if url.startswith("ytsearch:"):
-                await ctx.send(":movie_camera: ytsearch is not supported, you can only use URLs")
-                continue
             dest_url = await self.bot.loop.run_in_executor(None, get_youtube_url, url)
             async with self.bot.httpsession.get(dest_url, headers=self.bot.HTTP_HEADERS) as vid:
                 buf = BytesIO(await vid.read())
