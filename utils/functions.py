@@ -19,18 +19,15 @@ def nitro_check(user: discord.User | discord.Member) -> bool:
     return any([user.display_avatar.is_animated(), user.banner])
 
 
-def get_youtube_url(source_url: str, ydl_opts: dict[str] = {"quiet": True}) -> str:
+def get_youtube_url(source_url: str, ydl_opts: dict[str] = {"quiet": True, "no_color": True}) -> str:
     """Get the direct URL to a YouTube video - this function must be run in an executor as youtube-dl is a blocking library
 
     Args:
         source_url (str): The source YouTube video URL
-        ydl_opts (dict[str], optional): options passed to youtube-dl. Defaults to {"quiet": True}.
+        ydl_opts (dict[str], optional): options passed to youtube-dl. Defaults to {"quiet": True, "no_color": True}.
 
     Returns:
         str: the direct URL to the YouTube video - this is passed to aiohttp
     """
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        try:
-            return ydl.extract_info(source_url, download=False)["formats"][-1]["url"]
-        except (youtube_dl.utils.UnsupportedError, youtube_dl.utils.ExtractorError):
-            return False
+        return ydl.extract_info(source_url, download=False)["formats"][-1]["url"]
