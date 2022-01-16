@@ -1,10 +1,13 @@
 import sys
+import traceback
 from io import BytesIO
+from urllib.parse import urlparse
 
 import discord
 from discord.ext import commands
 
 from utils.functions import get_youtube_url
+from utils.views import Traceback
 
 
 class Internet(commands.Cog):
@@ -21,16 +24,25 @@ class Internet(commands.Cog):
         self, ctx: commands.Context, *, urls: str = commands.Option(description="Enter one or more URLs to download")
     ) -> discord.Message:
         await ctx.defer()
-        _urls = urls.split()
+        _urls = [url for url in urls.split() if all((urlparse(url).scheme, urlparse(url).netloc))]
+        if not any(_urls):
+            return await ctx.send(":movie_camera: Please provide one or more valid URLs to download")
         await ctx.send(f":movie_camera: Downloading {len(_urls)} video(s)")
         successful_downloads = 0
         for url in _urls:
-            dest_url = await self.bot.loop.run_in_executor(None, get_youtube_url, url)
+            try:
+                dest_url = await self.bot.loop.run_in_executor(None, get_youtube_url, url)
+            except Exception as e:
+                await ctx.send(
+                    f":movie_camera: Failed to download video #{_urls.index(url) + 1} as youtube-dl caught an exception",
+                    view=Traceback(ctx, "".join(traceback.format_exception(type(e), e, e.__traceback__))),
+                )
+                continue
             async with self.bot.httpsession.get(dest_url, headers=self.bot.HTTP_HEADERS) as vid:
                 buf = BytesIO(await vid.read())
             if sys.getsizeof(buf) > ctx.guild.filesize_limit:
                 await ctx.send(
-                    f":movie_camera: Output file is larger than this server's filesize limit ({ctx.guild.filesize_limit/float(1<<20):,.0f}MB)"
+                    f":movie_camera: Output file for video #{_urls.index(url) + 1} is larger than this server's filesize limit ({ctx.guild.filesize_limit/float(1<<20):,.0f}MB)"
                 )
                 continue
             else:

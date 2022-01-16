@@ -25,13 +25,7 @@ class ErrorHandler(commands.Cog):
             title=f'Discord Error: {" ".join(re.split("(?=[A-Z])", type(error).__name__))}',
             color=0x800000,
         )
-
-        if isinstance(error, commands.CommandInvokeError):
-            return await ctx.send(
-                "A wild exception appears!",
-                view=Traceback(ctx, "".join(traceback.format_exception(type(error), error, error.__traceback__))),
-            )
-        elif isinstance(error, commands.MissingPermissions):
+        if isinstance(error, commands.MissingPermissions):
             missing = [perm.replace("_", " ").replace("guild", "server").title() for perm in error.missing_permissions]
             embed.description = "You are missing the following permissions required for this command:\n"
             for perm in missing:
@@ -64,7 +58,10 @@ class ErrorHandler(commands.Cog):
         elif isinstance(error, commands.CommandNotFound):
             return
         else:
-            raise error
+            return await ctx.send(
+                "A wild exception appears!",
+                view=Traceback(ctx, "".join(traceback.format_exception(type(error), error, error.__traceback__))),
+            )
         return await ctx.send(embed=embed)
 
 
