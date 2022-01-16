@@ -110,6 +110,7 @@ class Moderation(commands.Cog):
         ctx: commands.Context,
         member: discord.Member = commands.Option(description="Who to time out?"),
         duration: Optional[str] = commands.Option(description="How long will the mute last?", default="10m"),
+        *,
         reason: Optional[str] = commands.Option(description="Why are you muting them?", default="No reason provided"),
     ) -> discord.Message:
         await ctx.defer()
