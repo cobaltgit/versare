@@ -37,7 +37,7 @@ class Versare(commands.AutoShardedBot):
 
     def __init__(self) -> None:
 
-        self.__version__ = "0.3-rw"
+        self.__version__ = "0.3.2-rw"
 
         with open("config.yml", "r") as config_file:
             self.config = yaml.safe_load(config_file)
