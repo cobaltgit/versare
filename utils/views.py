@@ -20,6 +20,6 @@ class Traceback(discord.ui.View):
         """Send first 4000 characters of exception - in the future, this will send a file"""
         if len(self.exception) > 2000:
             await interaction.response.send_message(f"```py\n{self.exception[:1990]}```", ephemeral=True)
-            return await interaction.response.send_message(f"```py\n{self.exception[1990:3980]}```", ephemeral=True)
+            await interaction.followup.send(f"```py\n{self.exception[1990:3980]}```", ephemeral=True)
         else:
-            return await interaction.response.send_message(f"```py\n{self.exception}```", ephemeral=True)
+            await interaction.response.send_message(f"```py\n{self.exception}```", ephemeral=True)
