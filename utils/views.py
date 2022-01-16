@@ -21,5 +21,5 @@ class Traceback(discord.ui.View):
         """Send a file containing the traceback"""
         await interaction.response.defer()
         await interaction.followup.send(
-            file=discord.File(BytesIO(self.exception.encode("utf-8")), filename="exception.py")
+            file=discord.File(BytesIO(self.exception.encode("utf-8")), filename="exception.py"), ephemeral=True
         )
