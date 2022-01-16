@@ -2,9 +2,13 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
+import logging
 import os
 import sys
 import traceback
+from datetime import datetime
+from gzip import open as gzip_file
+from shutil import copyfileobj as copy
 from time import time
 
 import aiohttp
@@ -73,17 +77,31 @@ class Versare(commands.AutoShardedBot):
             "cogs.listeners.sniper",
             "cogs.commands.inet",
         ]
+        self._loaded_extensions = []
 
         for ext in initial_extensions:
             try:
                 self.load_extension(ext)
             except:
-                print(traceback.format_exc())
+                print(f"Error loading extension {ext}:\n{traceback.format_exc()}")
+            else:
+                self._loaded_extensions.append(ext)
 
         os.environ["JISHAKU_HIDE"] = "true"
         self.load_extension("jishaku")
 
     async def setup(self) -> None:
+
+        if not os.path.exists("./logs"):
+            os.makedirs("./logs")
+
+        self._logpath = f'logs/discord-{datetime.now().strftime("%d-%m-%Y-%H:%M:%S")}.log'
+        self.logger = logging.getLogger("discord")
+        self.logger.setLevel(logging.DEBUG)
+        handler = logging.FileHandler(filename=self._logpath, encoding="utf-8", mode="w")
+        handler.setFormatter(logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s"))
+        self.logger.addHandler(handler)
+
         self.HTTP_HEADERS = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:10.0) Gecko/20100101 Firefox/10.0"}
         self.httpsession = aiohttp.ClientSession()
         self.load_extensions()
@@ -108,8 +126,22 @@ class Versare(commands.AutoShardedBot):
         self.prefixes = {str(guild_id): prefix for prefix, guild_id in await self.db.fetch("SELECT * FROM prefixes")}
 
     async def close(self) -> None:
-        with contextlib.suppress(AttributeError):
+
+        for ext in self._loaded_extensions:
+            try:
+                self.unload_extension(ext)
+            except:
+                print(f"Error unloading extension {ext}:\n{traceback.format_exc()}")
+            else:
+                self._loaded_extensions.remove(ext)
+
+        with contextlib.suppress(AttributeError, FileNotFoundError):
             await self.db.execute("DELETE FROM sniper")
             await self.db.execute("DELETE FROM editsniper")
+            await self.db.close()
             await self.httpsession.close()
+            with open(self._logpath, "rb") as log:
+                with gzip_file(self._logpath + ".gz", "wb") as gzipped_log:
+                    copy(log, gzipped_log)
+            os.remove(self.logpath)
         await super().close()
