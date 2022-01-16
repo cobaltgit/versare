@@ -1,15 +1,18 @@
+from __future__ import annotations
+
 import asyncio
 import contextlib
 
+import discord
 from discord.ext import commands
 
 
 class Sniper(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.Cog.listener()
-    async def on_message_delete(self, message):
+    async def on_message_delete(self, message: discord.Message) -> None:
         user_optout = await self.bot.db.fetchrow("SELECT * FROM snipe_optout WHERE guild_id = $1", message.guild.id)
         if user_optout and message.author.id in list(user_optout):
             return
@@ -29,7 +32,7 @@ class Sniper(commands.Cog):
             del self.encrypted_message
 
     @commands.Cog.listener()
-    async def on_message_edit(self, before, after):
+    async def on_message_edit(self, before: discord.Message, after: discord.Message) -> None:
         user_optout = await self.bot.db.fetchrow("SELECT * FROM snipe_optout WHERE guild_id = $1", before.guild.id)
         if user_optout and before.author.id in list(user_optout):
             return
@@ -52,5 +55,5 @@ class Sniper(commands.Cog):
             del self.encrypted_after
 
 
-def setup(bot):
+def setup(bot: commands.Bot) -> None:
     bot.add_cog(Sniper(bot))

@@ -153,3 +153,4 @@ cython_debug/
 
 # Bot config (contains token)
 config.yml
+logs/

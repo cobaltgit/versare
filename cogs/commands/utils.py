@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import sys
 from datetime import timedelta
 from inspect import getsource
@@ -17,18 +19,20 @@ from utils.objects import BaseEmbed
 class Utilities(commands.Cog):
     """General utilities"""
 
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
         self.proc = psutil.Process()
         self.GITHUB_URL = "https://github.com/cobaltgit/versare"
         self.GIT_BRANCH = "rewrite"
+        self.HELP_COMMAND_FILE = "./utils/help.py"
 
     @commands.command(
         name="ping",
         brief="Get latency information",
         description="Get the websocket, API and PostgreSQL database latency values",
     )
-    async def ping(self, ctx):
+    async def ping(self, ctx: commands.Context) -> discord.Message:
+        await ctx.defer()
         api_start = time()
         msg = await ctx.send("Ping...")
         api_end = time()
@@ -50,7 +54,7 @@ class Utilities(commands.Cog):
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
 
-        await msg.edit(content=None, embed=embed)
+        return await msg.edit(content=None, embed=embed)
 
     @commands.command(
         name="about",
@@ -58,7 +62,8 @@ class Utilities(commands.Cog):
         brief="Get information about the bot",
         description="Get version information of the bot, Python, discord.py and PostgreSQL server",
     )
-    async def about(self, ctx):
+    async def about(self, ctx: commands.Context) -> discord.Message:
+        await ctx.defer()
         pg_ver = await self.bot.db.fetchval("SHOW server_version")
         api_start = time()
         msg = await ctx.send("Getting ping...")
@@ -129,7 +134,7 @@ class Utilities(commands.Cog):
         ]
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
-        await msg.edit(content=None, embed=embed)
+        return await msg.edit(content=None, embed=embed)
 
     @commands.command(
         name="source",
@@ -138,20 +143,31 @@ class Utilities(commands.Cog):
         description="Fetch and send the source code of a bot command if specified or the GitHub repository",
     )
     async def source(
-        self, ctx, *, command: Optional[str] = commands.Option(description="Specify a command:", default=None)
-    ):
+        self,
+        ctx: commands.Context,
+        *,
+        command: Optional[str] = commands.Option(description="Specify a command:", default=None),
+    ) -> discord.Message:
+        await ctx.defer()
         if not command:
             return await ctx.send(f"Link to source code on GitHub\n{self.GITHUB_URL}/tree/{self.GIT_BRANCH}")
-        cmd = self.bot.get_command(command)
-        fn = cmd.callback
-        src = getsource(fn)
+        elif not (cmd := self.bot.get_command(command)):
+            return await ctx.send(
+                f"Unknown command '{command}'. Link to source code on GitHub\n{self.GITHUB_URL}/tree/{self.GIT_BRANCH}"
+            )
+        elif command == "help":
+            return await ctx.send(file=discord.File(self.HELP_COMMAND_FILE, filename="help.py"))
+        else:
+            fn = cmd.callback
+            src = getsource(fn)
+            buf = BytesIO(src.encode("utf-8"))
+            if sys.getsizeof(buf) > ctx.guild.filesize_limit:
+                return await ctx.send(
+                    f"Source code file is larger than this server's filesize limit ({ctx.guild.filesize_limit/float(1<<20):,.0f})\nThe bot's source code can be found here: {self.GITHUB_URL}/tree/{self.GIT_BRANCH}"
+                )
 
-        buf = BytesIO()
-        buf.write(src.encode('utf-8'))
-        buf.seek(0)
-        
-        await ctx.send(file=discord.File(buf, filename=command.replace(" ", "_") + ".py"))
+            return await ctx.send(file=discord.File(buf, filename=command.replace(" ", "_") + ".py"))
 
 
-def setup(bot):
+def setup(bot: commands.Bot) -> None:
     bot.add_cog(Utilities(bot))

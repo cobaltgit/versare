@@ -1,5 +1,7 @@
 from bot import Versare
 
+bot = Versare()
+
 if __name__ == "__main__":
     if __import__("os").name != "nt":
         try:
@@ -8,6 +10,4 @@ if __name__ == "__main__":
             pass
         else:
             uvloop.install()
-
-    bot = Versare()
     bot.run(bot.config.get("auth", {}).get("token"))

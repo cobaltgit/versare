@@ -1,10 +1,17 @@
+from __future__ import annotations
+
 import asyncio
+import contextlib
+import logging
 import os
 import sys
 import traceback
+from datetime import datetime
+from gzip import open as gzip_file
+from shutil import copyfileobj as copy
 from time import time
-import contextlib
 
+import aiohttp
 import asyncpg
 import discord
 import yaml
@@ -15,9 +22,12 @@ from utils.help import VersareHelp
 
 
 class Versare(commands.AutoShardedBot):
-    async def get_prefix(self, message):
+    async def get_prefix(self, message: discord.Message) -> function:
         if message.guild:
-            prefix = self.prefixes.get(str(message.guild.id))
+            try:
+                prefix = self.prefixes.get(str(message.guild.id))
+            except AttributeError:
+                return commands.when_mentioned_or(self.config["defaults"]["prefix"])(self, message)
             if not prefix:
                 return commands.when_mentioned_or(self.config["defaults"]["prefix"])(self, message)
             else:
@@ -25,9 +35,9 @@ class Versare(commands.AutoShardedBot):
         else:
             return commands.when_mentioned_or(self.config["defaults"]["prefix"])(self, message)
 
-    def __init__(self):
+    def __init__(self) -> None:
 
-        self.__version__ = "0.2.3-rw"
+        self.__version__ = "0.3-rw"
 
         with open("config.yml", "r") as config_file:
             self.config = yaml.safe_load(config_file)
@@ -52,40 +62,59 @@ class Versare(commands.AutoShardedBot):
             help_command=VersareHelp(),
         )
 
-    async def on_ready(self):
+    async def on_ready(self) -> None:
         self.start_time = time()
         print(
             f"Versare is online - logged in as {self.user}\nClient ID: {self.user.id}\nPrefix: {self.config['defaults']['prefix']}"
         )
 
-    def load_extensions(self):
+    def load_extensions(self) -> None:
         initial_extensions = [
             "cogs.commands.prefix",
             "cogs.listeners.error",
             "cogs.commands.utils",
             "cogs.commands.mod",
             "cogs.listeners.sniper",
+            "cogs.commands.inet",
         ]
+        self._loaded_extensions = []
 
         for ext in initial_extensions:
             try:
                 self.load_extension(ext)
-            except Exception:
-                print(traceback.format_exc())
+            except:
+                print(f"Error loading extension {ext}:\n{traceback.format_exc()}")
+            else:
+                self._loaded_extensions.append(ext)
 
         os.environ["JISHAKU_HIDE"] = "true"
         self.load_extension("jishaku")
 
-    async def setup(self):
+    async def setup(self) -> None:
+
+        if not os.path.exists("./logs"):
+            os.makedirs("./logs")
+
+        self._logpath = f'logs/discord-{datetime.now().strftime("%d-%m-%Y-%H:%M:%S")}.log'
+        self.logger = logging.getLogger("discord")
+        self.logger.setLevel(logging.DEBUG)
+        handler = logging.FileHandler(filename=self._logpath, encoding="utf-8", mode="w")
+        handler.setFormatter(logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s"))
+        self.logger.addHandler(handler)
+
+        self.HTTP_HEADERS = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:10.0) Gecko/20100101 Firefox/10.0"}
+        self.httpsession = aiohttp.ClientSession()
         self.load_extensions()
         asyncio.create_task(self.init_db_pool())
         await super().setup()
 
-    async def init_db_pool(self):
+    async def init_db_pool(self) -> None:
         database, pg_user, pg_password, pg_host, pg_port = self.config.get("postgres").values()
         await self.wait_until_ready()
         try:
-            self.db = await asyncpg.create_pool(dsn=f"postgres://{pg_user}:{pg_password}@{pg_host}:{pg_port}/{database}")
+            self.db = await asyncpg.create_pool(
+                dsn=f"postgres://{pg_user}:{pg_password}@{pg_host}:{pg_port}/{database}"
+            )
         except:
             sys.exit(f"Couldn't connect to PostgreSQL database server\n{traceback.format_exc()}")
         else:
@@ -93,12 +122,26 @@ class Versare(commands.AutoShardedBot):
                 await self.db.execute(init.read())
             await self.cache_prefixes()
 
-    async def cache_prefixes(self):
-        self.prefixes = await self.db.fetch("SELECT * FROM prefixes")
-        self.prefixes = {str(guild_id): prefix for prefix, guild_id in self.prefixes}
+    async def cache_prefixes(self) -> None:
+        self.prefixes = {str(guild_id): prefix for prefix, guild_id in await self.db.fetch("SELECT * FROM prefixes")}
 
-    async def close(self):
-        with contextlib.suppress(AttributeError):
+    async def close(self) -> None:
+
+        for ext in self._loaded_extensions:
+            try:
+                self.unload_extension(ext)
+            except:
+                print(f"Error unloading extension {ext}:\n{traceback.format_exc()}")
+            else:
+                self._loaded_extensions.remove(ext)
+
+        with contextlib.suppress(AttributeError, FileNotFoundError):
             await self.db.execute("DELETE FROM sniper")
             await self.db.execute("DELETE FROM editsniper")
+            await self.db.close()
+            await self.httpsession.close()
+            with open(self._logpath, "rb") as log:
+                with gzip_file(self._logpath + ".gz", "wb") as gzipped_log:
+                    copy(log, gzipped_log)
+            os.remove(self.logpath)
         await super().close()
