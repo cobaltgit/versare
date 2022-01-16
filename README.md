@@ -7,6 +7,7 @@ The rewrite branch of Versare, the in-development versatile(?) Discord bot
 ### System Requirements
 * Git is required to fetch the repository code
 * Python 3.10 and pipenv is required to install dependencies
+* ffmpeg is required for the youtube-dl command to work
 * PostgreSQL's `psql` command-line utility is recommended to connect to the database from the command line
 
 Install these with your system package manager
