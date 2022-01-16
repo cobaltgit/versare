@@ -25,6 +25,9 @@ class Internet(commands.Cog):
         await ctx.send(f":movie_camera: Downloading {len(_urls)} video(s)")
         successful_downloads = 0
         for url in _urls:
+            if url.startswith("ytsearch:"):
+                await ctx.send(":movie_camera: ytsearch is not supported, you can only use URLs")
+                continue
             dest_url = await self.bot.loop.run_in_executor(None, get_youtube_url, url)
             async with self.bot.httpsession.get(dest_url, headers=self.bot.HTTP_HEADERS) as vid:
                 buf = BytesIO(await vid.read())
