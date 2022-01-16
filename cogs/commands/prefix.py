@@ -44,7 +44,7 @@ class Prefix(commands.Cog):
         return await ctx.send(f"Prefix for this guild is now `{prefix}`")
 
     @commands.Cog.listener()
-    async def on_guild_leave(self, guild: discord.Guild) -> None:
+    async def on_guild_remove(self, guild: discord.Guild) -> None:
         with suppress(KeyError):
             self.bot.prefixes.pop(str(guild.id))
         await self.bot.db.execute("DELETE FROM prefix WHERE guild_id = $1", guild.id)
