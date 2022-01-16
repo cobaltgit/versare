@@ -7,6 +7,7 @@ import sys
 import traceback
 from time import time
 
+import aiohttp
 import asyncpg
 import discord
 import yaml
@@ -70,6 +71,7 @@ class Versare(commands.AutoShardedBot):
             "cogs.commands.utils",
             "cogs.commands.mod",
             "cogs.listeners.sniper",
+            "cogs.commands.inet",
         ]
 
         for ext in initial_extensions:
@@ -82,6 +84,8 @@ class Versare(commands.AutoShardedBot):
         self.load_extension("jishaku")
 
     async def setup(self) -> None:
+        self.HTTP_HEADERS = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:10.0) Gecko/20100101 Firefox/10.0"}
+        self.httpsession = aiohttp.ClientSession()
         self.load_extensions()
         asyncio.create_task(self.init_db_pool())
         await super().setup()
@@ -107,4 +111,5 @@ class Versare(commands.AutoShardedBot):
         with contextlib.suppress(AttributeError):
             await self.db.execute("DELETE FROM sniper")
             await self.db.execute("DELETE FROM editsniper")
+            await self.httpsession.close()
         await super().close()
