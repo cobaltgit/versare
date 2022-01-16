@@ -36,6 +36,7 @@ class VersareHelp(commands.MinimalHelpCommand):
         self.code_lines = sum(1 for pyfile in Path(".").glob("**/*.py") for line in open(pyfile))
 
     async def send_command_help(self, command: commands.Command) -> discord.Message:
+        await self.context.defer()
         embed = HelpEmbed(
             title=f"Help for command '{command}'",
             color=self.context.guild.me.color,
@@ -53,6 +54,7 @@ class VersareHelp(commands.MinimalHelpCommand):
         return await self.context.send(embed=embed)
 
     async def send_group_help(self, group: commands.Group) -> discord.Message:
+        await self.context.defer()
         embed = HelpEmbed(
             title=f"Help for group '{group}'",
             color=self.context.guild.me.color,
@@ -75,6 +77,7 @@ class VersareHelp(commands.MinimalHelpCommand):
         return await self.context.send(embed=embed)
 
     async def send_cog_help(self, cog: commands.Cog) -> discord.Message:
+        await self.context.defer()
         embed = HelpEmbed(title=f"Help for cog '{cog.qualified_name}'", color=self.context.guild.me.color)
         embed.description = cog.description or "Cog not described"
         embed.add_field(
@@ -88,6 +91,7 @@ class VersareHelp(commands.MinimalHelpCommand):
     async def send_bot_help(
         self, mapping: dict[commands.Cog, list[commands.Command | commands.Group]]
     ) -> discord.Message:
+        await self.context.defer()
         embed = HelpEmbed(title="Versare Help", color=self.context.guild.me.color)
         for cog, commands in mapping.items():
             filtered = await self.filter_commands(commands, sort=True)
