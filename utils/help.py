@@ -44,7 +44,7 @@ class VersareHelp(commands.MinimalHelpCommand):
         embed.add_field(name="Usage", value=self.get_command_signature(command), inline=False)
         if command.aliases:
             embed.add_field(name="Aliases", value=", ".join(command.aliases), inline=False)
-        if command._buckets and (cooldown := command._buckets):
+        if (cooldown := command._buckets) and cooldown._cooldown:
             embed.add_field(
                 name="Cooldown",
                 value=f"{cooldown._cooldown.rate} use(s) per {cooldown.type.name} per {cooldown._cooldown.per:.0f} second(s)",
