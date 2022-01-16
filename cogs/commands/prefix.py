@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+from contextlib import suppress
+
 import discord
 from discord.ext import commands
-
-from contextlib suppress
 
 
 class Prefix(commands.Cog):
@@ -42,7 +42,7 @@ class Prefix(commands.Cog):
             await self.bot.db.execute("UPDATE prefixes SET prefix = $1 WHERE guild_id = $2", prefix, ctx.guild.id)
         self.bot.prefixes[str(ctx.guild.id)] = prefix
         return await ctx.send(f"Prefix for this guild is now `{prefix}`")
-    
+
     @commands.Cog.listener()
     async def on_guild_leave(self, guild: discord.Guild) -> None:
         with suppress(KeyError):
