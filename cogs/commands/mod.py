@@ -146,6 +146,7 @@ class Moderation(commands.Cog):
         ),
         duration: Optional[str] = commands.Option(description="Duration of the slowmode", default="5s"),
     ) -> discord.Message:
+        await ctx.defer()
         channel = channel or ctx.channel
         try:
             duration_conv = TimeConverter(duration)
