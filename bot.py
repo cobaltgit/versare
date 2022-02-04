@@ -90,11 +90,9 @@ class Versare(commands.AutoShardedBot):
         os.environ["JISHAKU_HIDE"] = "true"
         self.load_extension("jishaku")
 
-    async def setup(self) -> None:
-
+    def init_logs(self) -> None:
         if not os.path.exists("./logs"):
             os.makedirs("./logs")
-
         self._logpath = f'logs/discord-{datetime.now().strftime("%d-%m-%Y-%H:%M:%S")}.log'
         self.logger = logging.getLogger("discord")
         self.logger.setLevel(logging.DEBUG)
@@ -102,6 +100,8 @@ class Versare(commands.AutoShardedBot):
         handler.setFormatter(logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s"))
         self.logger.addHandler(handler)
 
+    async def setup(self) -> None:
+        self.init_logs()
         self.HTTP_HEADERS = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:10.0) Gecko/20100101 Firefox/10.0"}
         self.httpsession = aiohttp.ClientSession()
         self.load_extensions()
