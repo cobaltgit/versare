@@ -4,7 +4,7 @@ import youtube_dl
 
 def nitro_check(user: discord.User | discord.Member) -> bool:
     """Guesses if a user has Nitro from a set of attributes and features.
-    The Member.nitro attribute was removed in discord.py 1.7, so there is no official way to check if a user has Nitro for definite
+    The Member.nitro attribute was only intended for self bots, which are agains Discord's terms of service, so there is no official way to check if a user has Nitro for definite
 
     Args:
         user (discord.User|discord.Member): the user to query
