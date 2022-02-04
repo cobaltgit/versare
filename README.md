@@ -53,7 +53,8 @@ Enter the database name, username, password, IP address and port of your Postgre
 #### (Optional) GitHub API Token
 
 For the Discord token invalidator to work, copy and paste a GitHub personal access token into the `auth` section of your config.yml  
-This is a completely optional step and doesn't affect the bot itself
+This is a completely optional step and doesn't affect the bot itself  
+It's recommended that you use a separate, unused GitHub account for this operation.
 
 #### Launching
 
