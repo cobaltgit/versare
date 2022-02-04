@@ -31,5 +31,5 @@ class TokenInvalidator(commands.Cog):
 
 
 def setup(bot):
-    if bot.auth.get("github_token"):
+    if bot.config["auth"].get("github_token"):
         bot.add_cog(TokenInvalidator(bot))
