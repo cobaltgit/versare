@@ -1,6 +1,7 @@
 auth:
   token: "bot-token-here"
   owner_id: 123456789098765432
+  github_token: ghp_abcdEfghIJKLMn0PQr5tUVW8yzLa1mZyDfgh # this is a fake github token, don't worry
 
 postgres:
   database: versare

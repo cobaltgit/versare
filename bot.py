@@ -76,6 +76,7 @@ class Versare(commands.AutoShardedBot):
             "cogs.commands.mod",
             "cogs.listeners.sniper",
             "cogs.commands.inet",
+            "cogs.listeners.token",
         ]
         self._loaded_extensions = []
 

@@ -50,6 +50,11 @@ Rename `config.example.yml` to `config.yml` and paste your token into the `auth`
 Ensure you have a PostgreSQL server running for your database  
 Enter the database name, username, password, IP address and port of your PostgreSQL server into the `postgres` section of your config.yml
 
+#### (Optional) GitHub API Token
+
+For the Discord token invalidator to work, copy and paste a GitHub personal access token into the `auth` section of your config.yml  
+This is a completely optional step and doesn't affect the bot itself
+
 #### Launching
 
 Assuming you've followed the above instructions, you should be able to launch your bot.
