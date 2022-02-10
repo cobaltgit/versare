@@ -23,17 +23,16 @@ from utils.help import VersareHelp
 
 class Versare(commands.AutoShardedBot):
     async def get_prefix(self, message: discord.Message) -> function:
-        if message.guild:
-            try:
-                prefix = self.prefixes.get(str(message.guild.id))
-            except AttributeError:
-                return commands.when_mentioned_or(self.config["defaults"]["prefix"])(self, message)
-            if not prefix:
-                return commands.when_mentioned_or(self.config["defaults"]["prefix"])(self, message)
-            else:
-                return commands.when_mentioned_or(prefix)(self, message)
-        else:
+        if not message.guild:
             return commands.when_mentioned_or(self.config["defaults"]["prefix"])(self, message)
+        try:
+            prefix = self.prefixes.get(str(message.guild.id))
+        except AttributeError:
+            return commands.when_mentioned_or(self.config["defaults"]["prefix"])(self, message)
+        if not prefix:
+            return commands.when_mentioned_or(self.config["defaults"]["prefix"])(self, message)
+        else:
+            return commands.when_mentioned_or(prefix)(self, message)
 
     def __init__(self) -> None:
 
@@ -77,6 +76,7 @@ class Versare(commands.AutoShardedBot):
             "cogs.listeners.sniper",
             "cogs.commands.inet",
             "cogs.listeners.token",
+            "cogs.commands.music",
         ]
         self._loaded_extensions = []
 
@@ -128,6 +128,8 @@ class Versare(commands.AutoShardedBot):
 
     async def close(self) -> None:
 
+        await self.cogs["Music"].node.disconnect()
+
         for ext in self._loaded_extensions:
             try:
                 self.unload_extension(ext)
@@ -142,7 +144,7 @@ class Versare(commands.AutoShardedBot):
             await self.db.close()
             await self.httpsession.close()
             with open(self._logpath, "rb") as log:
-                with gzip_file(self._logpath + ".gz", "wb") as gzipped_log:
+                with gzip_file(f"{self._logpath}.gz", "wb") as gzipped_log:
                     copy(log, gzipped_log)
             os.remove(self.logpath)
         await super().close()

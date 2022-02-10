@@ -63,12 +63,7 @@ class VersareHelp(commands.MinimalHelpCommand):
         embed.add_field(name="Usage", value=f"{self.context.prefix}{group.name} {group.signature}", inline=False)
         embed.add_field(
             name="Subcommands",
-            value="\n".join(
-                [
-                    f"{self.get_command_signature(command)} - {command.brief}"
-                    for idx, command in enumerate(group.commands)
-                ]
-            )
+            value="\n".join([f"{self.get_command_signature(command)} - {command.brief}" for command in group.commands])
             or "No subcommands",
             inline=False,
         )
@@ -96,11 +91,10 @@ class VersareHelp(commands.MinimalHelpCommand):
         for cog, commands in mapping.items():
             filtered = await self.filter_commands(commands, sort=True)
 
-            commands = [self.get_command_signature(c) + f" - {c.brief}" for c in filtered]
-            if commands:
+            if commands := [self.get_command_signature(c) + f" - {c.brief}" for c in filtered]:
                 cog_name = getattr(cog, "qualified_name", "Uncategorised")
                 embed.add_field(
-                    name=cog_name + f" [{len(set(cog.walk_commands()))}]" if cog else cog_name,
+                    name=f"{cog_name} [{len(set(cog.walk_commands()))}]" if cog else cog_name,
                     value="\n".join(commands),
                     inline=False,
                 )
