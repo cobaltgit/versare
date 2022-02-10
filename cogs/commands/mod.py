@@ -151,18 +151,17 @@ class Moderation(commands.Cog):
         try:
             duration_conv = TimeConverter(duration)
         except ValueError:
-            return await ctx.send(f":slowmode: Invalid duration")
+            return await ctx.send(":slowmode: Invalid duration")
         if not 1 <= duration_conv.seconds <= 21600:
             return await ctx.send(
                 f":snail: Duration out of range: {duration_conv} - must be between 1 second and 6 hours"
             )
-        if channel.slowmode_delay != duration_conv.seconds:
-            await channel.edit(slowmode_delay=duration_conv.seconds)
-            return await ctx.send(f":snail: Applied slowmode to channel {channel.mention} for {duration_conv}")
-        else:
+        if channel.slowmode_delay == duration_conv.seconds:
             return await ctx.send(
                 f":snail: Slowmode is already enabled for channel {channel.mention} for {TimeConverter(channel.slowmode_delay)}"
             )
+        await channel.edit(slowmode_delay=duration_conv.seconds)
+        return await ctx.send(f":snail: Applied slowmode to channel {channel.mention} for {duration_conv}")
 
 
 def setup(bot: commands.Bot) -> None:
