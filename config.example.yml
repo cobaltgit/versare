@@ -30,3 +30,10 @@ emojis:
   python: <:Python:914950534887243776>
   discord.py: <:Discordpy:914951096974323793>
   postgres: <:PostgreSQL:923564294526885918>
+
+lavalink:
+  host: lavalink.cobaltonline.net
+  port: 443
+  password: cobaltlavanode23@
+  https: true
+  identifier: MAIN

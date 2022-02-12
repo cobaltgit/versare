@@ -43,12 +43,27 @@ $ pre-commit install
 In order to run the bot, you must obtain a Discord bot token - Instructions are [here](https://discordpy.readthedocs.io/en/stable/discord.html)*  
 Rename `config.example.yml` to `config.yml` and paste your token into the `auth` section
 
-*To enable slash commands, also tick the `applications.commands` scope
+*To enable slash commands (required from April-May 2022 for bots above 76 servers), also tick the `applications.commands` scope
 
 #### Setting up Postgres
 
 Ensure you have a PostgreSQL server running for your database  
 Enter the database name, username, password, IP address and port of your PostgreSQL server into the `postgres` section of your config.yml
+
+#### Setting up Lavalink
+
+A Lavalink setup is required for the music cog to work.
+The example config file uses my hosted public Lavalink node, you're free to use it or either [make your own](https://github.com/freyacodes/Lavalink#server-configuration)
+
+Enter your node details into the `lavalink` section of your config.yml
+```yml
+lavalink:
+    host: localhost # localhost if you're setting up your own on the same machine, otherwise use the WAN-facing IP of your node if on a separate machine from LAN
+    port: 2333 # defaults to 2333 on server application.yml file - typically use 443 when connecting to an SSL-enabled node
+    password: youshallnotpass # the password for the node, defaults to youshallnotpass on server application.yml file
+    https: ["true", "false"] # specify whether to use a secure websocket connection to the node - either true or false
+    identifier: MAIN # optional parameter - defaults to MAIN - the identifier of the node
+```
 
 #### (Optional) GitHub API Token
 
