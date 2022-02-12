@@ -5,14 +5,18 @@ from urllib.parse import urlparse
 
 import discord
 from discord.ext import commands
+from youtube_dl import YoutubeDL
 
-from utils.functions import get_youtube_url
 from utils.views import Traceback
 
 
 class Internet(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
+
+    def get_youtube_url(source_url: str, ydl_opts: dict[str] = {"quiet": True, "no_color": True}) -> str:
+        with YoutubeDL(ydl_opts) as ydl:
+            return ydl.extract_info(source_url, download=False)["formats"][-1]["url"]
 
     @commands.command(
         name="ytdl",
@@ -31,7 +35,7 @@ class Internet(commands.Cog):
         successful_downloads = 0
         for url in _urls:
             try:
-                dest_url = await self.bot.loop.run_in_executor(None, get_youtube_url, url)
+                dest_url = await self.bot.loop.run_in_executor(None, self.get_youtube_url, url)
             except Exception as e:
                 await ctx.send(
                     f":movie_camera: Failed to download video #{_urls.index(url) + 1} as youtube-dl caught an exception",

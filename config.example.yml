@@ -1,6 +1,7 @@
 auth:
   token: "bot-token-here"
   owner_id: 123456789098765432
+  github_token: ghp_abcdEfghIJKLMn0PQr5tUVW8yzLa1mZyDfgh # this is a fake github token, don't worry
 
 postgres:
   database: versare
@@ -29,3 +30,10 @@ emojis:
   python: <:Python:914950534887243776>
   discord.py: <:Discordpy:914951096974323793>
   postgres: <:PostgreSQL:923564294526885918>
+
+lavalink:
+  host: lavalink.cobaltonline.net
+  port: 443
+  password: cobaltlavanode23@
+  https: true
+  identifier: MAIN

@@ -118,13 +118,12 @@ class Moderation(commands.Cog):
             _duration = TimeConverter(duration)
         except ValueError:
             return await ctx.send(":stopwatch: Invalid duration")
-        if not 1 < _duration.seconds < 2419200:
+        if not 1 <= _duration.seconds <= 2419200:
             return await ctx.send(f":stopwatch: Duration must be between 1 second and 28 days, got {_duration}")
         if member.timed_out:
             return await ctx.send(
                 f":stopwatch: Member {member} is already timed out for {TimeConverter(member.timeout_until.timestamp()-ctx.message.created_at.timestamp())}"
             )
-
         try:
             await member.edit(timeout_until=discord.utils.utcnow() + _duration.delta)
         except discord.errors.Forbidden:
@@ -132,6 +131,37 @@ class Moderation(commands.Cog):
         with suppress(discord.errors.Forbidden):
             await member.send(f"You have been muted in {ctx.guild} for {_duration}\nReason: {reason}")
         return await ctx.send(f":stopwatch: Timed out member {member.mention} for {_duration}")
+
+    @commands.command(
+        name="slowmode",
+        aliases=["slow", "snail"],
+        brief="Enable slowmode for a channel",
+        description="Set the slowmode duration for a channel",
+    )
+    async def slowmode(
+        self,
+        ctx: commands.Context,
+        channel: Optional[discord.TextChannel] = commands.Option(
+            description="Channel to apply slowmode to (defaults to current channel", default=None
+        ),
+        duration: Optional[str] = commands.Option(description="Duration of the slowmode", default="5s"),
+    ) -> discord.Message:
+        await ctx.defer()
+        channel = channel or ctx.channel
+        try:
+            duration_conv = TimeConverter(duration)
+        except ValueError:
+            return await ctx.send(":slowmode: Invalid duration")
+        if not 1 <= duration_conv.seconds <= 21600:
+            return await ctx.send(
+                f":snail: Duration out of range: {duration_conv} - must be between 1 second and 6 hours"
+            )
+        if channel.slowmode_delay == duration_conv.seconds:
+            return await ctx.send(
+                f":snail: Slowmode is already enabled for channel {channel.mention} for {TimeConverter(channel.slowmode_delay)}"
+            )
+        await channel.edit(slowmode_delay=duration_conv.seconds)
+        return await ctx.send(f":snail: Applied slowmode to channel {channel.mention} for {duration_conv}")
 
 
 def setup(bot: commands.Bot) -> None:

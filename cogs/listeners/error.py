@@ -38,7 +38,7 @@ class ErrorHandler(commands.Cog):
         elif isinstance(error, commands.MissingRequiredArgument):
             embed.description = f"Required argument `{error.param.name}` missing"
         elif isinstance(error, commands.CommandOnCooldown):
-            embed.description = f"Cooldown - please retry this command in {round(error.retry_after)} seconds"
+            embed.description = f"Cooldown - please retry this command in {round(error.retry_after)} second(s)"
         elif isinstance(error, commands.DisabledCommand):
             embed.description = f"Command {ctx.command} has been disabled"
         elif isinstance(error, commands.NoPrivateMessage):
@@ -51,10 +51,8 @@ class ErrorHandler(commands.Cog):
             embed.description = (
                 f"Permissions check for command {ctx.command} failed - you may not have the required permissions"
             )
-        elif isinstance(error, commands.ConversionError):
+        elif isinstance(error, (commands.ConversionError, commands.BadArgument, commands.UserInputError)):
             embed.description = str(error)
-        elif isinstance(error, commands.UserInputError):
-            embed.description = "Please check your input and try again - something went wrong"
         elif isinstance(error, commands.CommandNotFound):
             return
         else:
