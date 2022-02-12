@@ -127,7 +127,7 @@ class Music(commands.Cog):
                 search_embed = BaseEmbed(
                     title="First 10 results",
                     description=f"**I found the following tracks on __{'SoundCloud' if service.lower() in ('soundcloud', 'sc') else 'YouTube'}__:**\n\n"
-                    + "\n".join(f"'{idx+1}'. '{val}' by '{val.author}'" for idx, val in enumerate(track_search[:10])),
+                    + "\n".join(f"{idx+1}. '{val}' by '{val.author}'" for idx, val in enumerate(track_search[:10])),
                     color=ctx.guild.me.color,
                 )
                 await ctx.send(embed=search_embed)
@@ -342,6 +342,7 @@ class Music(commands.Cog):
 
     @queue.command(name="shuffle", brief="Shuffle the queue", description="Shuffle the queue for random assignments")
     async def shuffle(self, ctx: commands.Context) -> discord.Message:
+        await ctx.defer()
         if not (await self.check_dj_perms(ctx.guild, ctx.author)):
             return await ctx.send(f"You are missing DJ permissions for **{ctx.guild.name}**")
 
@@ -366,6 +367,7 @@ class Music(commands.Cog):
         ctx: commands.Context,
         index: Optional[int] = commands.Option(description="The index of the item to remove", default=1),
     ) -> discord.Message:
+        await ctx.defer()
         if not ctx.voice_client:
             return await ctx.send("I am not connected to a voice channel")
         vc: wavelink.Player = ctx.voice_client
