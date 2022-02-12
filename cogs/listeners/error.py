@@ -38,7 +38,7 @@ class ErrorHandler(commands.Cog):
         elif isinstance(error, commands.MissingRequiredArgument):
             embed.description = f"Required argument `{error.param.name}` missing"
         elif isinstance(error, commands.CommandOnCooldown):
-            embed.description = f"Cooldown - please retry this command in {round(error.retry_after)} seconds"
+            embed.description = f"Cooldown - please retry this command in {round(error.retry_after)} second(s)"
         elif isinstance(error, commands.DisabledCommand):
             embed.description = f"Command {ctx.command} has been disabled"
         elif isinstance(error, commands.NoPrivateMessage):
