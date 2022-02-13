@@ -19,4 +19,9 @@ CREATE TABLE IF NOT EXISTS editsniper(
 CREATE TABLE IF NOT EXISTS snipe_optout(
     user_id bigint,
     guild_id bigint
+);
+
+CREATE TABLE IF NOT EXISTS dj(
+    guild_id bigint NOT NULL,
+    role_id bigint NOT NULL,
 )
