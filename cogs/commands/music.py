@@ -30,7 +30,8 @@ class Music(commands.Cog):
         self.node = wavelink.NodePool.get_node(identifier=self.bot.config["lavalink"]["identifier"])
 
     async def get_dj(self, guild: discord.Guild) -> discord.Role:
-        return guild.get_role(id := await self.bot.db.fetchval("SELECT role_id FROM dj WHERE guild_id = $1", guild.id))
+        role_id = await self.bot.db.fetchval("SELECT role_id FROM dj WHERE guild_id = $1", guild.id)
+        return None if not role_id else guild.get_role(role_id)
 
     async def check_dj_perms(self, guild: discord.Guild, member: discord.Member):
         dj_role = await self.get_dj(guild)
