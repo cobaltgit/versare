@@ -8,6 +8,7 @@ from discord.ext import commands
 
 
 # original code from https://github.com/Sly0511/TroveBot/blob/master/utils/buttons.py#L138-L152
+# Copyright (c) 2018-2022 Cobalt, Sly, licensed under the MIT License
 class Traceback(discord.ui.View):
     """Exception view for error handler"""
 
