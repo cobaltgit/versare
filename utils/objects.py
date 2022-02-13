@@ -15,6 +15,7 @@ class BaseEmbed(discord.Embed):
 
 
 # original code from https://github.com/Sly0511/TroveBot/blob/master/utils/CustomObjects.py#L26-L75
+# Copyright (c) 2018-2022 Cobalt, Sly - licensed under the MIT License
 class TimeConverter:
     """Convert human readable time to a datetime object"""
 
