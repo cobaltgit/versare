@@ -23,5 +23,5 @@ CREATE TABLE IF NOT EXISTS snipe_optout(
 
 CREATE TABLE IF NOT EXISTS dj(
     guild_id bigint NOT NULL,
-    role_id bigint NOT NULL,
+    role_id bigint NOT NULL
 )
