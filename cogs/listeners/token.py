@@ -22,7 +22,7 @@ class TokenInvalidator(commands.Cog):
                 "files": {"invalidated-token": {"content": "\n".join(tokens)}},
             }
             params = {"scope": "gist"}
-            headers = {"Authorization": f'token {self.bot.auth.get("github_token")}'}
+            headers = {"Authorization": f'token {self.bot.config["auth"].get("github_token")}'}
             async with self.bot.httpsession.post(
                 self.API_ENDPOINT, params=params, data=json.dumps(data), headers=headers
             ) as r:
