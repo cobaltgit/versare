@@ -22,6 +22,10 @@ from utils.help import VersareHelp
 
 
 class Versare(commands.AutoShardedBot):
+    @property
+    def loaded_extensions(self) -> list[str]:
+        return self._loaded_extensions
+
     async def get_prefix(self, message: discord.Message) -> function:
         if not message.guild:
             return commands.when_mentioned_or(self.config["defaults"]["prefix"])(self, message)
@@ -53,6 +57,8 @@ class Versare(commands.AutoShardedBot):
 
         super().__init__(
             command_prefix=self.get_prefix,
+            chunk_guilds_on_startup=False,
+            description=f"This is Versare {self.__version__}",
             intents=discord.Intents(**self.config.get("intents")),
             allowed_mentions=discord.AllowedMentions(**self.config.get("allowed-mentions")),
             slash_commands=True,
@@ -126,12 +132,12 @@ class Versare(commands.AutoShardedBot):
     async def cache_prefixes(self) -> None:
         self.prefixes = {str(guild_id): prefix for prefix, guild_id in await self.db.fetch("SELECT * FROM prefixes")}
 
-    async def close(self) -> None:
+    async def close(self, *args, **kwargs) -> None:
 
         with contextlib.suppress(AttributeError):
             await self.cogs["Music"].node.disconnect()
 
-        for ext in self._loaded_extensions:
+        for ext in self.loaded_extensions:
             try:
                 self.unload_extension(ext)
             except:
@@ -148,4 +154,4 @@ class Versare(commands.AutoShardedBot):
                 with gzip_file(f"{self._logpath}.gz", "wb") as gzipped_log:
                     copy(log, gzipped_log)
             os.remove(self.logpath)
-        await super().close()
+        await super().close(*args, **kwargs)
