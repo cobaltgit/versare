@@ -6,6 +6,7 @@ from typing import Optional
 import discord
 from discord.ext import commands
 
+import db.snipe
 from utils.objects import BaseEmbed, TimeConverter
 
 
@@ -23,8 +24,7 @@ class Moderation(commands.Cog):
     )
     async def snipe(self, ctx: commands.Context) -> discord.Message:
         await ctx.defer()
-        target = await self.bot.db.fetchrow("SELECT * FROM sniper WHERE channel_id = $1", ctx.message.channel.id)
-        if not target:
+        if not (target := await db.snipe.get_snipe(ctx)):
             return await ctx.send(":envelope: No message to snipe")
 
         author = ctx.guild.get_member(target[1])
@@ -46,15 +46,10 @@ class Moderation(commands.Cog):
     )
     async def optout(self, ctx: commands.Context) -> discord.Message:
         await ctx.defer()
-        user_optout = await self.bot.db.fetchrow("SELECT * FROM snipe_optout WHERE guild_id = $1", ctx.guild.id)
-
-        if user_optout and ctx.author.id in user_optout:
+        if await db.snipe.optout(ctx):
+            return await ctx.send(":envelope: You have sucessfully opted out of being sniped")
+        else:
             return await ctx.send(":envelope: You have already opted out of being sniped")
-
-        await self.bot.db.execute(
-            "INSERT INTO snipe_optout(user_id, guild_id) VALUES ($1, $2)", ctx.author.id, ctx.guild.id
-        )
-        return await ctx.send(":envelope: You have sucessfully opted out of being sniped")
 
     @snipe.command(
         name="optin",
@@ -63,14 +58,10 @@ class Moderation(commands.Cog):
     )
     async def optin(self, ctx: commands.Context) -> discord.Message:
         await ctx.defer()
-        user_optout = await self.bot.db.fetchrow("SELECT * FROM snipe_optout WHERE guild_id = $1", ctx.guild.id)
-        if ctx.author.id not in user_optout:
+        if await db.snipe.optin(ctx):
+            return await ctx.send(":envelope: You have successfully opted in to being sniped")
+        else:
             return await ctx.send(":envelope: You are already opted in to being sniped")
-
-        await self.bot.db.execute(
-            "DELETE FROM snipe_optout WHERE user_id = $1 AND guild_id = $2", ctx.author.id, ctx.guild.id
-        )
-        return await ctx.send(":envelope: You have successfully opted in to being sniped")
 
     @snipe.command(
         name="edit",
@@ -80,8 +71,7 @@ class Moderation(commands.Cog):
     )
     async def editsnipe(self, ctx: commands.Context) -> discord.Message:
         await ctx.defer()
-        target = await self.bot.db.fetchrow("SELECT * FROM editsniper WHERE channel_id = $1", ctx.message.channel.id)
-        if not target:
+        if not (target := await db.snipe.get_editsnipe(ctx)):
             return await ctx.send(":envelope: No message to editsnipe")
 
         author = ctx.guild.get_member(target[2])

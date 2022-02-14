@@ -10,6 +10,7 @@ import discord
 import wavelink
 from discord.ext import commands
 
+import db.dj
 from utils.objects import BaseEmbed
 
 
@@ -28,14 +29,6 @@ class Music(commands.Cog):
         await self.bot.wait_until_ready()
         await wavelink.NodePool.create_node(bot=self.bot, **self.bot.config["lavalink"])
         self.node = wavelink.NodePool.get_node(identifier=self.bot.config["lavalink"]["identifier"])
-
-    async def get_dj(self, guild: discord.Guild) -> discord.Role:
-        role_id = await self.bot.db.fetchval("SELECT role_id FROM dj WHERE guild_id = $1", guild.id)
-        return None if not role_id else guild.get_role(role_id)
-
-    async def check_dj_perms(self, guild: discord.Guild, member: discord.Member):
-        dj_role = await self.get_dj(guild)
-        return dj_role in member.roles or member.guild_permissions.manage_guild
 
     async def initialise_voice_client(self, channel: discord.VoiceChannel) -> wavelink.Player:
         vc: wavelink.Player = await channel.connect(cls=wavelink.Player)
@@ -201,7 +194,7 @@ class Music(commands.Cog):
     @commands.has_permissions(manage_guild=True)
     async def leave(self, ctx: commands.Context) -> discord.Message:
         await ctx.defer()
-        if not (await self.check_dj_perms(ctx.guild, ctx.author)):
+        if not await db.dj.check_dj_perms(ctx, ctx.author):
             return await ctx.send(f"You are missing DJ permissions for **{ctx.guild.name}**")
         if not ctx.voice_client:
             return await ctx.send("I am not connected to a voice channel")
@@ -221,7 +214,7 @@ class Music(commands.Cog):
     @commands.has_permissions(manage_guild=True)
     async def stop(self, ctx: commands.Context) -> discord.Message:
         await ctx.defer()
-        if not (await self.check_dj_perms(ctx.guild, ctx.author)):
+        if not await db.dj.check_dj_perms(ctx, ctx.author):
             return await ctx.send(f"You are missing DJ permissions for **{ctx.guild.name}**")
         if not ctx.voice_client:
             return await ctx.send("I am not connected to a voice channel")
@@ -369,6 +362,8 @@ class Music(commands.Cog):
         index: Optional[int] = commands.Option(description="The index of the item to remove", default=1),
     ) -> discord.Message:
         await ctx.defer()
+        if not await db.dj.check_dj_perms(ctx, ctx.author):
+            return await ctx.send(f"You are missing DJ permissions for **{ctx.guild.name}**")
         if not ctx.voice_client:
             return await ctx.send("I am not connected to a voice channel")
         vc: wavelink.Player = ctx.voice_client
@@ -418,7 +413,7 @@ class Music(commands.Cog):
     )
     async def dj(self, ctx: commands.Context) -> discord.Message:
         await ctx.defer()
-        dj_role = await self.get_dj(ctx.guild)
+        dj_role = await db.dj.get_dj(ctx)
 
         if not dj_role:
             return await ctx.send(f"There is no DJ role configured for **{ctx.guild.name}**")
@@ -433,19 +428,13 @@ class Music(commands.Cog):
         role: discord.Role = commands.Option(description="Please pick a role to grant DJ permissions to"),
     ) -> discord.Message:
         await ctx.defer()
-        if not (await self.bot.db.fetchval("SELECT role_id FROM dj WHERE guild_id = $1", ctx.guild.id)):
-            await self.bot.db.execute("INSERT INTO dj (guild_id, role_id) VALUES ($1, $2)", ctx.guild.id, role.id)
-        else:
-            current = await self.get_dj(ctx.guild)
-            if role.id == current.id:
-                return await ctx.send(f"DJ role for guild **{ctx.guild.name}** hasn't changed")
-            await self.bot.db.execute("UPDATE dj SET role_id = $1 WHERE guild_id = $2", role.id, ctx.guild.id)
+        await db.dj.set_dj(ctx, role)
         return await ctx.send(f"New DJ role for **{ctx.guild.name}** is now `{role.name}`")
 
     @commands.command(name="pause", brief="Pause the queue", description="Pause the player from playing the queue")
     async def pause(self, ctx: commands.Context) -> discord.Message:
         await ctx.defer()
-        if not (await self.check_dj_perms(ctx.guild, ctx.author)):
+        if not await db.dj.check_dj_perms(ctx, ctx.author):
             return await ctx.send(f"You are missing DJ permissions for **{ctx.guild.name}**")
 
         if not ctx.voice_client:
@@ -461,7 +450,7 @@ class Music(commands.Cog):
     )
     async def resume(self, ctx: commands.Context) -> discord.Message:
         await ctx.defer()
-        if not (await self.check_dj_perms(ctx.guild, ctx.author)):
+        if not await db.dj.check_dj_perms(ctx, ctx.author):
             return await ctx.send(f"You are missing DJ permissions for **{ctx.guild.name}**")
 
         if not ctx.voice_client:
