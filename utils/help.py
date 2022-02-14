@@ -87,7 +87,11 @@ class VersareHelp(commands.MinimalHelpCommand):
         self, mapping: dict[commands.Cog, list[commands.Command | commands.Group]]
     ) -> discord.Message:
         await self.context.defer()
-        embed = HelpEmbed(title="Versare Help", color=self.context.guild.me.color)
+        embed = HelpEmbed(
+            title="Versare Help",
+            description=f"{self.context.bot.description}\nWritten in {self.code_lines} lines of Python source code - this is yet to increase",
+            color=self.context.guild.me.color,
+        )
         for cog, commands in mapping.items():
             filtered = await self.filter_commands(commands, sort=True)
 
@@ -99,7 +103,6 @@ class VersareHelp(commands.MinimalHelpCommand):
                     inline=False,
                 )
 
-        embed.description = f"""Written in {self.code_lines} lines of Python source code - this is yet to increase"""
         return await self.context.send(embed=embed)
 
     async def send_error_message(self, error: commands.CommandError) -> discord.Message:
