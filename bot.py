@@ -153,5 +153,5 @@ class Versare(commands.AutoShardedBot):
             with open(self._logpath, "rb") as log:
                 with gzip_file(f"{self._logpath}.gz", "wb") as gzipped_log:
                     copy(log, gzipped_log)
-            os.remove(self.logpath)
+            os.remove(self._logpath)
         await super().close(*args, **kwargs)
