@@ -42,13 +42,13 @@ class Music(commands.Cog):
     @commands.Cog.listener()
     async def on_wavelink_track_end(self, player: wavelink.Player, track, reason):
 
-        if not player.loop:
-            await player.stop()
-        elif player.track is not None:
-            return await player.play(player.track)
-
         if all(m.bot for m in player.channel.members):
             return await player.disconnect()
+
+        if player.loop and player.track is not None:
+            return await player.play(player.track)
+        else:
+            await player.stop()
 
         try:
             with async_timeout.timeout(90):
