@@ -79,7 +79,7 @@ class Music(commands.Cog):
 
         if not ctx.author.voice:
             return await ctx.send("You must be connected to a voice channel")
-        elif (
+        if (
             self.YT_REGEX.match(query)
             and service == "SoundCloud"
             or self.SC_REGEX.match(query)
