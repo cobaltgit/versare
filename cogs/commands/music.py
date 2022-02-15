@@ -229,7 +229,7 @@ class Music(commands.Cog):
     async def skip(self, ctx: commands.Context) -> discord.Message:
         await ctx.defer()
 
-        if not (await self.check_dj_perms(ctx.guild, ctx.author)):
+        if not await db.dj.check_dj_perms(ctx.guild, ctx.author):
             return await ctx.send(f"You are missing DJ permissions for **{ctx.guild.name}**")
 
         if not ctx.voice_client:
@@ -337,7 +337,7 @@ class Music(commands.Cog):
     @queue.command(name="shuffle", brief="Shuffle the queue", description="Shuffle the queue for random assignments")
     async def shuffle(self, ctx: commands.Context) -> discord.Message:
         await ctx.defer()
-        if not (await self.check_dj_perms(ctx.guild, ctx.author)):
+        if not await db.dj.check_dj_perms(ctx.guild, ctx.author):
             return await ctx.send(f"You are missing DJ permissions for **{ctx.guild.name}**")
 
         if not ctx.voice_client:
