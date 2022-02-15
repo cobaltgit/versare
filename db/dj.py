@@ -18,4 +18,4 @@ async def get_dj(ctx: commands.Context) -> None | discord.Role:
 
 
 async def check_dj_perms(ctx: commands.Context, member: discord.Member) -> bool:
-    return (dj_role := await get_dj(ctx.guild)) in member.roles or member.guild_permissions.manage_guild
+    return (dj_role := await get_dj(ctx)) in member.roles or member.guild_permissions.manage_guild
