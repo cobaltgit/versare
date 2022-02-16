@@ -5,6 +5,8 @@ from contextlib import suppress
 import discord
 from discord.ext import commands
 
+import db.prefix
+
 
 class Prefix(commands.Cog):
     """Prefix management commands"""
@@ -32,19 +34,11 @@ class Prefix(commands.Cog):
         prefix: str = commands.Option(description="Prefix for this guild (max 8 characters)"),
     ) -> discord.Message:
         await ctx.defer()
-        if len(prefix) > 8:
-            return await ctx.send("Must be no more than 8 characters")
-
-        prefix_exists = await self.bot.db.fetchval("SELECT prefix FROM prefixes WHERE guild_id = $1", ctx.guild.id)
-        if not prefix_exists:
-            await self.bot.db.execute("INSERT INTO prefixes (guild_id, prefix) VALUES ($1, $2)", ctx.guild.id, prefix)
-        else:
-            await self.bot.db.execute("UPDATE prefixes SET prefix = $1 WHERE guild_id = $2", prefix, ctx.guild.id)
-        self.bot.prefixes[str(ctx.guild.id)] = prefix
+        await db.prefix.upsert_prefix(ctx, prefix)
         return await ctx.send(f"Prefix for this guild is now `{prefix}`")
 
     @commands.Cog.listener()
-    async def on_guild_remove(self, guild: discord.Guild) -> None:
+    async def on_guild_leave(self, guild: discord.Guild) -> None:
         with suppress(KeyError):
             self.bot.prefixes.pop(str(guild.id))
         await self.bot.db.execute("DELETE FROM prefix WHERE guild_id = $1", guild.id)
