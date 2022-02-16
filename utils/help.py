@@ -29,6 +29,8 @@ class VersareHelp(commands.MinimalHelpCommand):
             verify_checks=False,
             command_attrs={
                 "name": "help",
+                "brief": "Get help with Versare",
+                "description": "Get help with Versare - look up commands, cogs and groups and get information about them and how to use them",
                 "aliases": ["plshelp", "helpme", "assistance"],
                 "cooldown": commands.CooldownMapping.from_cooldown(2, 5, commands.BucketType.user),
             },
