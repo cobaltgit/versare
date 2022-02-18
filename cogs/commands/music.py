@@ -134,7 +134,7 @@ class Music(commands.Cog):
 
             embed.set_thumbnail(url=track.thumbnail)
 
-            vc: wavelink.Player = ctx.voice_client or await self.initialise_voice_client(ctx.author.voice.channel)
+        vc: wavelink.Player = ctx.voice_client or await self.initialise_voice_client(ctx.author.voice.channel)
 
         if isinstance(track, wavelink.YouTubePlaylist):
             if vc.is_playing():
