@@ -22,7 +22,9 @@ class Prefix(commands.Cog):
     )
     async def prefix(self, ctx: commands.Context) -> discord.Message:
         await ctx.defer()
-        return await ctx.send(f"Prefix for this guild is `{self.bot.prefixes[str(ctx.guild.id)]}`")
+        return await ctx.send(
+            f"Prefix for this guild is `{self.bot.prefixes.get(str(ctx.guild.id), self.bot.config['defaults']['prefix'])}`"
+        )
 
     @prefix.command(
         name="set", brief="Set the prefix for this server", description="Add server prefix to the database and cache"
