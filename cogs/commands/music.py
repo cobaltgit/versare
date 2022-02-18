@@ -104,17 +104,17 @@ class Music(commands.Cog):
             else:
                 track_search = await wavelink.YouTubeTrack.search(query)
 
-            if track_search:
-                search_embed = BaseEmbed(
-                    title="First 10 results",
-                    description=(
-                        "**I found the following tracks on __YouTube__:**\n\n"
-                        + "\n".join(f"{idx+1}. '{val}' by '{val.author}'" for idx, val in enumerate(track_search[:10]))
-                    ),
-                    color=ctx.guild.me.color,
-                )
+        if track_search:
+            search_embed = BaseEmbed(
+                title="First 10 results",
+                description=(
+                    "**I found the following tracks on __YouTube__:**\n\n"
+                    + "\n".join(f"{idx+1}. '{val}' by '{val.author}'" for idx, val in enumerate(track_search[:10]))
+                ),
+                color=ctx.guild.me.color,
+            )
 
-                await ctx.send(embed=search_embed)
+            await ctx.send(embed=search_embed)
 
             try:
                 response = await self.bot.wait_for(
