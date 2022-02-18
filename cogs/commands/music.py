@@ -3,7 +3,7 @@ import re
 from contextlib import suppress
 from io import BytesIO
 from random import shuffle
-from typing import Literal, Optional
+from typing import Optional
 
 import async_timeout
 import discord
@@ -61,37 +61,36 @@ class Music(commands.Cog):
                 if next_track:
                     return await player.play(next_track)
 
-    @commands.command(
+    @commands.group(
         name="play",
         aliases=["p"],
         brief="Play music in the current voice channel",
         description="Play music in the current voice channel, and connect to it if not present",
+        invoke_without_command=True,
     )
-    @commands.cooldown(1, 7, commands.BucketType.user)
     async def play(
         self,
         ctx,
-        service: Literal["SoundCloud", "YouTube"] = commands.Option(description="Pick SoundCloud or YouTube"),
-        *,
-        query: str = commands.Option(description="Search YouTube or SoundCloud for tracks"),
     ) -> discord.Message:
         await ctx.defer()
+        return await ctx.send_help("play")
 
+    @play.command(
+        name="youtube", aliases=["yt"], brief="Play YouTube tracks", description="Search and play YouTube tracks"
+    )
+    @commands.cooldown(1, 7, commands.BucketType.user)
+    async def play_youtube(
+        self, ctx: commands.Context, *, query: str = commands.Option(description="Enter a query for YouTube tracks")
+    ) -> discord.Message:
+        await ctx.defer()
         if not ctx.author.voice:
             return await ctx.send("You must be connected to a voice channel")
-        if (
-            self.YT_REGEX.match(query)
-            and service == "SoundCloud"
-            or self.SC_REGEX.match(query)
-            and service == "YouTube"
-        ):
-            return await ctx.send(f"Please provide a valid {service} URL")
 
-        with ctx.channel.typing():
-            embed = BaseEmbed(color=ctx.guild.me.color)
-            track_search = None
-            track = None
+        embed = BaseEmbed(color=ctx.guild.me.color)
+        track_search = None
+        track = None
 
+        async with ctx.channel.typing():
             if self.YT_REGEX.match(query):
                 try:
                     if "playlist" in query:
@@ -102,53 +101,40 @@ class Music(commands.Cog):
                     return await ctx.send("Lavalink node is offline")
                 except wavelink.errors.LavalinkException as e:
                     return await ctx.send(e)
-            elif self.SC_REGEX.match(query):
-                try:
-                    track = (await self.node.get_tracks(query=query, cls=wavelink.SoundCloudTrack))[0]
-                except AttributeError:
-                    return await ctx.send("Lavalink node is offline")
-                except wavelink.errors.LavalinkException as e:
-                    return await ctx.send(e)
-            elif service == "YouTube" and not self.YT_REGEX.match(query):
+            else:
                 track_search = await wavelink.YouTubeTrack.search(query)
-            elif service == "SoundCloud" and not self.SC_REGEX.match(query):
-                try:
-                    track_search = await wavelink.SoundCloudTrack.search(query)
-                except wavelink.errors.LavalinkException as e:
-                    return await ctx.send(e)
 
             if track_search:
                 search_embed = BaseEmbed(
                     title="First 10 results",
-                    description=f"**I found the following tracks on __{'SoundCloud' if service.lower() in ('soundcloud', 'sc') else 'YouTube'}__:**\n\n"
-                    + "\n".join(f"{idx+1}. '{val}' by '{val.author}'" for idx, val in enumerate(track_search[:10])),
+                    description=(
+                        "**I found the following tracks on __YouTube__:**\n\n"
+                        + "\n".join(f"{idx+1}. '{val}' by '{val.author}'" for idx, val in enumerate(track_search[:10]))
+                    ),
                     color=ctx.guild.me.color,
                 )
+
                 await ctx.send(embed=search_embed)
 
-                try:
-                    response = await self.bot.wait_for(
-                        "message", check=lambda m: m.author == ctx.author and m.channel == ctx.channel
-                    )
-                except asyncio.TimeoutError:
-                    return await ctx.send("Sorry, this command timed out. Please try again")
-                except ValueError:
+            try:
+                response = await self.bot.wait_for(
+                    "message", check=lambda m: m.author == ctx.author and m.channel == ctx.channel
+                )
+            except asyncio.TimeoutError:
+                return await ctx.send("Sorry, this command timed out. Please try again")
+            except ValueError:
+                return await ctx.send("Must provide a value between 1 and 10. Please try again")
+            try:
+                if int(response.content) not in range(1, 11):
                     return await ctx.send("Must provide a value between 1 and 10. Please try again")
-                try:
-                    if int(response.content) not in range(1, 11):
-                        return await ctx.send("Must provide a value between 1 and 10. Please try again")
-                except (ValueError, TypeError):
-                    return await ctx.send("Must provide a value between 1 and 10. Please try again")
+            except (ValueError, TypeError):
+                return await ctx.send("Must provide a value between 1 and 10. Please try again")
 
-                track = track_search[int(response.content) - 1]
+            track = track_search[int(response.content) - 1]
 
-            if isinstance(track, wavelink.YouTubeTrack):
-                embed.set_thumbnail(url=track.thumbnail)
+            embed.set_thumbnail(url=track.thumbnail)
 
-        if not ctx.voice_client:
-            vc: wavelink.Player = await self.initialise_voice_client(ctx.author.voice.channel)
-        else:
-            vc: wavelink.Player = ctx.voice_client
+            vc: wavelink.Player = ctx.voice_client or await self.initialise_voice_client(ctx.author.voice.channel)
 
         if isinstance(track, wavelink.YouTubePlaylist):
             if vc.is_playing():
@@ -159,13 +145,12 @@ class Music(commands.Cog):
                 for pl_track in track.tracks[1:]:
                     await vc.queue.put_wait(pl_track)
             embed.title = "Queued Playlist"
+        elif vc.is_playing():
+            await vc.queue.put_wait(track)
+            embed.title = "Added to Queue"
         else:
-            if vc.is_playing():
-                await vc.queue.put_wait(track)
-                embed.title = "Added to Queue"
-            else:
-                await vc.play(track)
-                embed.title = "Now Playing"
+            await vc.play(track)
+            embed.title = "Now Playing"
 
         if isinstance(track, wavelink.YouTubePlaylist):
             fields = [
@@ -175,12 +160,84 @@ class Music(commands.Cog):
             embed.set_thumbnail(url=track.tracks[0].thumbnail)
         else:
             fields = [
-                ("Source", f"**{'SoundCloud' if service.lower() in ('soundcloud', 'sc') else 'YouTube'}**", True),
+                ("Source", "**YouTube**", True),
                 ("Title", f"**{track}**", True),
                 ("Author", f"**{track.author}**", True),
             ]
+
             if isinstance(track, wavelink.YouTubeTrack):
                 embed.set_thumbnail(url=track.thumbnail)
+        for name, value, inline in fields:
+            embed.add_field(name=name, value=value, inline=inline)
+        return await ctx.send(embed=embed)
+
+    @play.command(
+        name="soundcloud",
+        aliases=["sc"],
+        brief="Play SoundCloud tracks",
+        description="Search and play SoundCloud tracks",
+    )
+    @commands.cooldown(1, 7, commands.BucketType.user)
+    async def play_soundcloud(
+        self, ctx: commands.Context, *, query: str = commands.Option(description="Enter a query for SoundCloud tracks")
+    ) -> discord.Message:
+        await ctx.defer()
+        embed = BaseEmbed(color=ctx.guild.me.color)
+        track_search = None
+        track = None
+
+        async with ctx.channel.typing():
+            if self.SC_REGEX.match(query):
+                try:
+                    track = (await self.node.get_tracks(query=query, cls=wavelink.SoundCloudTrack))[0]
+                except AttributeError:
+                    return await ctx.send("Lavalink node is offline")
+                except wavelink.errors.LavalinkException as e:
+                    return await ctx.send(e)
+            else:
+                track_search = await wavelink.SoundCloudTrack.search(query)
+
+            if track_search:
+                search_embed = BaseEmbed(
+                    title="First 10 results",
+                    description=(
+                        "**I found the following tracks on __SoundCloud__:**\n\n"
+                        + "\n".join(f"{idx+1}. '{val}' by '{val.author}'" for idx, val in enumerate(track_search[:10]))
+                    ),
+                    color=ctx.guild.me.color,
+                )
+
+                await ctx.send(embed=search_embed)
+
+            try:
+                response = await self.bot.wait_for(
+                    "message", check=lambda m: m.author == ctx.author and m.channel == ctx.channel
+                )
+            except asyncio.TimeoutError:
+                return await ctx.send("Sorry, this command timed out. Please try again")
+            except ValueError:
+                return await ctx.send("Must provide a value between 1 and 10. Please try again")
+            try:
+                if int(response.content) not in range(1, 11):
+                    return await ctx.send("Must provide a value between 1 and 10. Please try again")
+            except (ValueError, TypeError):
+                return await ctx.send("Must provide a value between 1 and 10. Please try again")
+
+            track = track_search[int(response.content) - 1]
+
+            vc: wavelink.Player = ctx.voice_client or await self.initialise_voice_client(ctx.author.voice.channel)
+            vc.loop = False
+        if vc.is_playing():
+            await vc.queue.put_wait(track)
+            embed.title = "Added to Queue"
+        else:
+            await vc.play(track)
+            embed.title = "Now Playing"
+        fields = [
+            ("Source", "**SoundCloud**", True),
+            ("Title", f"**{track}**", True),
+            ("Author", f"**{track.author}**", True),
+        ]
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
         return await ctx.send(embed=embed)
@@ -229,7 +286,7 @@ class Music(commands.Cog):
     async def skip(self, ctx: commands.Context) -> discord.Message:
         await ctx.defer()
 
-        if not await db.dj.check_dj_perms(ctx.guild, ctx.author):
+        if not await db.dj.check_dj_perms(ctx, ctx.author):
             return await ctx.send(f"You are missing DJ permissions for **{ctx.guild.name}**")
 
         if not ctx.voice_client:
@@ -323,7 +380,7 @@ class Music(commands.Cog):
                 for idx, val in enumerate(vc.queue)
             )
             if vc.queue
-            else ""
+            else f"Currently Playing: '{vc.track}' by '{vc.track.author}' on {'YouTube' if isinstance(vc.track, wavelink.YouTubeTrack) else 'SoundCloud'}\n\n"
         )
         if len(embed.description) > 4000:
             return await ctx.send(
@@ -337,7 +394,7 @@ class Music(commands.Cog):
     @queue.command(name="shuffle", brief="Shuffle the queue", description="Shuffle the queue for random assignments")
     async def shuffle(self, ctx: commands.Context) -> discord.Message:
         await ctx.defer()
-        if not await db.dj.check_dj_perms(ctx.guild, ctx.author):
+        if not await db.dj.check_dj_perms(ctx, ctx.author):
             return await ctx.send(f"You are missing DJ permissions for **{ctx.guild.name}**")
 
         if not ctx.voice_client:
