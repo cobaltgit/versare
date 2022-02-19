@@ -93,12 +93,13 @@ class Music(commands.Cog):
         async with ctx.channel.typing():
             if self.YT_REGEX.match(query):
                 try:
-                    if "playlist" in query:
-                        track = await self.node.get_playlist(wavelink.YouTubePlaylist, query)
+                    if hasattr(self, "node"):
+                        if "playlist" not in query:
+                            track = (await self.node.get_tracks(query=query, cls=wavelink.SoundCloudTrack))[0]
+                        else:
+                            track = await self.node.get_playlist(query, wavelink.YouTubePlaylist)
                     else:
-                        track = (await self.node.get_tracks(query=query, cls=wavelink.YouTubeTrack))[0]
-                except AttributeError:
-                    return await ctx.send("Lavalink node is offline")
+                        return await ctx.send("Lavalink node is offline")
                 except wavelink.errors.LavalinkException as e:
                     return await ctx.send(e)
             else:
@@ -189,9 +190,10 @@ class Music(commands.Cog):
         async with ctx.channel.typing():
             if self.SC_REGEX.match(query):
                 try:
-                    track = (await self.node.get_tracks(query=query, cls=wavelink.SoundCloudTrack))[0]
-                except AttributeError:
-                    return await ctx.send("Lavalink node is offline")
+                    if hasattr(self, "node"):
+                        track = (await self.node.get_tracks(query=query, cls=wavelink.SoundCloudTrack))[0]
+                    else:
+                        return await ctx.send("Lavalink node is offline")
                 except wavelink.errors.LavalinkException as e:
                     return await ctx.send(e)
             else:
