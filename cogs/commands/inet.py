@@ -23,7 +23,7 @@ class Internet(commands.Cog):
     async def ytdl(
         self, ctx: commands.Context, *, urls: str = commands.Option(description="Enter one or more URLs to download")
     ) -> discord.Message:
-        await ctx.defer()
+
         _urls = [url for url in urls.split() if all((urlparse(url).scheme, urlparse(url).netloc))]
         if not any(_urls):
             return await ctx.send(":movie_camera: Please provide one or more valid URLs to download")

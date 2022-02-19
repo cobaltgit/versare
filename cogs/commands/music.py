@@ -72,7 +72,7 @@ class Music(commands.Cog):
         self,
         ctx,
     ) -> discord.Message:
-        await ctx.defer()
+
         return await ctx.send_help("play")
 
     @play.command(
@@ -82,7 +82,7 @@ class Music(commands.Cog):
     async def play_youtube(
         self, ctx: commands.Context, *, query: str = commands.Option(description="Enter a query for YouTube tracks")
     ) -> discord.Message:
-        await ctx.defer()
+
         if not ctx.author.voice:
             return await ctx.send("You must be connected to a voice channel")
 
@@ -181,7 +181,7 @@ class Music(commands.Cog):
     async def play_soundcloud(
         self, ctx: commands.Context, *, query: str = commands.Option(description="Enter a query for SoundCloud tracks")
     ) -> discord.Message:
-        await ctx.defer()
+
         embed = BaseEmbed(color=ctx.guild.me.color)
         track_search = None
         track = None
@@ -250,7 +250,7 @@ class Music(commands.Cog):
     )
     @commands.has_permissions(manage_guild=True)
     async def leave(self, ctx: commands.Context) -> discord.Message:
-        await ctx.defer()
+
         if not await db.dj.check_dj_perms(ctx, ctx.author):
             return await ctx.send(f"You are missing DJ permissions for **{ctx.guild.name}**")
         if not ctx.voice_client:
@@ -270,7 +270,7 @@ class Music(commands.Cog):
     )
     @commands.has_permissions(manage_guild=True)
     async def stop(self, ctx: commands.Context) -> discord.Message:
-        await ctx.defer()
+
         if not await db.dj.check_dj_perms(ctx, ctx.author):
             return await ctx.send(f"You are missing DJ permissions for **{ctx.guild.name}**")
         if not ctx.voice_client:
@@ -284,7 +284,6 @@ class Music(commands.Cog):
 
     @commands.command(name="skip", brief="Skip the current track", description="Skip the current track on the player")
     async def skip(self, ctx: commands.Context) -> discord.Message:
-        await ctx.defer()
 
         if not await db.dj.check_dj_perms(ctx, ctx.author):
             return await ctx.send(f"You are missing DJ permissions for **{ctx.guild.name}**")
@@ -301,7 +300,7 @@ class Music(commands.Cog):
         name="next", brief="Get the next track in the queue", description="Get the next track in the queue"
     )
     async def next(self, ctx: commands.Context) -> discord.Message:
-        await ctx.defer()
+
         if not ctx.voice_client:
             return await ctx.send("I am not connected to a voice channel")
         vc: wavelink.Player = ctx.voice_client
@@ -331,7 +330,7 @@ class Music(commands.Cog):
         description="Get the track that is currently playing in the queue",
     )
     async def nowplaying(self, ctx: commands.Context) -> discord.Message:
-        await ctx.defer()
+
         if not ctx.voice_client:
             return await ctx.send("I am not connected to a voice channel")
 
@@ -364,7 +363,7 @@ class Music(commands.Cog):
         invoke_without_command=True,
     )
     async def queue(self, ctx: commands.Context) -> discord.Message:
-        await ctx.defer()
+
         if not ctx.voice_client:
             return await ctx.send("I am not connected to a voice channel")
         vc: wavelink.Player = ctx.voice_client
@@ -393,7 +392,7 @@ class Music(commands.Cog):
 
     @queue.command(name="shuffle", brief="Shuffle the queue", description="Shuffle the queue for random assignments")
     async def shuffle(self, ctx: commands.Context) -> discord.Message:
-        await ctx.defer()
+
         if not await db.dj.check_dj_perms(ctx, ctx.author):
             return await ctx.send(f"You are missing DJ permissions for **{ctx.guild.name}**")
 
@@ -418,7 +417,7 @@ class Music(commands.Cog):
         ctx: commands.Context,
         index: Optional[int] = commands.Option(description="The index of the item to remove", default=1),
     ) -> discord.Message:
-        await ctx.defer()
+
         if not await db.dj.check_dj_perms(ctx, ctx.author):
             return await ctx.send(f"You are missing DJ permissions for **{ctx.guild.name}**")
         if not ctx.voice_client:
@@ -453,7 +452,7 @@ class Music(commands.Cog):
         name="loop", brief="Toggle repetition of the current queue", description="Toggle repeat for the current queue"
     )
     async def loop(self, ctx: commands.Context) -> discord.Message:
-        await ctx.defer()
+
         if not ctx.voice_client:
             return await ctx.send("I am not connected to a voice channel")
         vc: wavelink.Player = ctx.voice_client
@@ -469,7 +468,7 @@ class Music(commands.Cog):
         name="dj", brief="DJ Management Commands", description="Manage DJs in the guild", invoke_without_command=True
     )
     async def dj(self, ctx: commands.Context) -> discord.Message:
-        await ctx.defer()
+
         dj_role = await db.dj.get_dj(ctx)
 
         if not dj_role:
@@ -484,13 +483,13 @@ class Music(commands.Cog):
         ctx: commands.Context,
         role: discord.Role = commands.Option(description="Please pick a role to grant DJ permissions to"),
     ) -> discord.Message:
-        await ctx.defer()
+
         await db.dj.set_dj(ctx, role)
         return await ctx.send(f"New DJ role for **{ctx.guild.name}** is now `{role.name}`")
 
     @commands.command(name="pause", brief="Pause the queue", description="Pause the player from playing the queue")
     async def pause(self, ctx: commands.Context) -> discord.Message:
-        await ctx.defer()
+
         if not await db.dj.check_dj_perms(ctx, ctx.author):
             return await ctx.send(f"You are missing DJ permissions for **{ctx.guild.name}**")
 
@@ -506,7 +505,7 @@ class Music(commands.Cog):
         name="resume", brief="Resume the queue if paused", description="Pause the player from playing the queue"
     )
     async def resume(self, ctx: commands.Context) -> discord.Message:
-        await ctx.defer()
+
         if not await db.dj.check_dj_perms(ctx, ctx.author):
             return await ctx.send(f"You are missing DJ permissions for **{ctx.guild.name}**")
 

@@ -32,7 +32,7 @@ class Utilities(commands.Cog):
         description="Get the websocket, API and PostgreSQL database latency values",
     )
     async def ping(self, ctx: commands.Context) -> discord.Message:
-        await ctx.defer()
+
         api_start = time()
         msg = await ctx.send("Ping...")
         api_end = time()
@@ -63,7 +63,7 @@ class Utilities(commands.Cog):
         description="Get version information of the bot, Python, discord.py and PostgreSQL server",
     )
     async def about(self, ctx: commands.Context) -> discord.Message:
-        await ctx.defer()
+
         pg_ver = await self.bot.db.fetchval("SHOW server_version")
         api_start = time()
         msg = await ctx.send("Getting ping...")
@@ -148,7 +148,7 @@ class Utilities(commands.Cog):
         *,
         command: Optional[str] = commands.Option(description="Specify a command:", default=None),
     ) -> discord.Message:
-        await ctx.defer()
+
         if not command:
             return await ctx.send(f"Link to source code on GitHub\n{self.GITHUB_URL}/tree/{self.GIT_BRANCH}")
         elif not (cmd := self.bot.get_command(command)):

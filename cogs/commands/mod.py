@@ -23,7 +23,7 @@ class Moderation(commands.Cog):
         invoke_without_command=True,
     )
     async def snipe(self, ctx: commands.Context) -> discord.Message:
-        await ctx.defer()
+
         if not (target := await db.snipe.get_snipe(ctx)):
             return await ctx.send(":envelope: No message to snipe")
 
@@ -45,7 +45,7 @@ class Moderation(commands.Cog):
         description="Opt out of having your deleted messages sniped by other users",
     )
     async def optout(self, ctx: commands.Context) -> discord.Message:
-        await ctx.defer()
+
         if await db.snipe.optout(ctx):
             return await ctx.send(":envelope: You have sucessfully opted out of being sniped")
         else:
@@ -57,7 +57,7 @@ class Moderation(commands.Cog):
         description="Opt back in to having your deleted messages sniped by other users",
     )
     async def optin(self, ctx: commands.Context) -> discord.Message:
-        await ctx.defer()
+
         if await db.snipe.optin(ctx):
             return await ctx.send(":envelope: You have successfully opted in to being sniped")
         else:
@@ -70,7 +70,7 @@ class Moderation(commands.Cog):
         description="Get the previous contents of the last edited message in the channel - some users may opt out, which the sniper will ignore",
     )
     async def editsnipe(self, ctx: commands.Context) -> discord.Message:
-        await ctx.defer()
+
         if not (target := await db.snipe.get_editsnipe(ctx)):
             return await ctx.send(":envelope: No message to editsnipe")
 
@@ -103,7 +103,7 @@ class Moderation(commands.Cog):
         *,
         reason: Optional[str] = commands.Option(description="Why are you muting them?", default="No reason provided"),
     ) -> discord.Message:
-        await ctx.defer()
+
         try:
             _duration = TimeConverter(duration)
         except ValueError:
@@ -136,7 +136,7 @@ class Moderation(commands.Cog):
         ),
         duration: Optional[str] = commands.Option(description="Duration of the slowmode", default="5s"),
     ) -> discord.Message:
-        await ctx.defer()
+
         channel = channel or ctx.channel
         try:
             duration_conv = TimeConverter(duration)

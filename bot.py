@@ -26,21 +26,17 @@ class Versare(commands.AutoShardedBot):
     def loaded_extensions(self) -> list[str]:
         return self._loaded_extensions
 
-    async def get_prefix(self, message: discord.Message) -> function:
-        if not message.guild:
-            return commands.when_mentioned_or(self.config["defaults"]["prefix"])(self, message)
-        try:
-            prefix = self.prefixes.get(str(message.guild.id))
-        except AttributeError:
-            return commands.when_mentioned_or(self.config["defaults"]["prefix"])(self, message)
-        if not prefix:
-            return commands.when_mentioned_or(self.config["defaults"]["prefix"])(self, message)
+    def get_pfx(self, bot: commands.Bot, message: discord.Message):
+        default = self.config["defaults"]["prefix"]
+
+        if message.guild and hasattr(self, "prefixes"):
+            return commands.when_mentioned_or(self.prefixes.get(str(message.guild.id), default))(self, message)
         else:
-            return commands.when_mentioned_or(prefix)(self, message)
+            return commands.when_mentioned_or(default)(self, message)
 
     def __init__(self) -> None:
 
-        self.__version__ = "0.4.10-rw"
+        self.__version__ = "0.5"
 
         with open("config.yml", "r") as config_file:
             self.config = yaml.safe_load(config_file)
@@ -56,7 +52,7 @@ class Versare(commands.AutoShardedBot):
             sys.exit("Exception caught - Unable to initialise Fernet encryption key\n" + traceback.format_exc())
 
         super().__init__(
-            command_prefix=self.get_prefix,
+            command_prefix=self.get_pfx,
             chunk_guilds_on_startup=False,
             description=f"This is Versare {self.__version__}",
             intents=discord.Intents(**self.config.get("intents")),
@@ -94,8 +90,8 @@ class Versare(commands.AutoShardedBot):
             else:
                 self._loaded_extensions.append(ext)
 
-        os.environ["JISHAKU_HIDE"] = "true"
         self.load_extension("jishaku")
+        self.get_command("jsk").hidden = True
 
     def init_logs(self) -> None:
         if not os.path.exists("./logs"):
@@ -107,13 +103,13 @@ class Versare(commands.AutoShardedBot):
         handler.setFormatter(logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s"))
         self.logger.addHandler(handler)
 
-    async def setup(self) -> None:
+    async def setup(self, *args, **kwargs) -> None:
         self.init_logs()
         self.HTTP_HEADERS = {"User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:10.0) Gecko/20100101 Firefox/10.0"}
         self.httpsession = aiohttp.ClientSession()
         self.load_extensions()
         asyncio.create_task(self.init_db_pool())
-        await super().setup()
+        await super().setup(*args, **kwargs)
 
     async def init_db_pool(self) -> None:
         database, pg_user, pg_password, pg_host, pg_port = self.config.get("postgres").values()
@@ -134,7 +130,7 @@ class Versare(commands.AutoShardedBot):
 
     async def close(self, *args, **kwargs) -> None:
 
-        with contextlib.suppress(AttributeError):
+        if hasattr(self.cogs.get("Music"), "node"):
             await self.cogs["Music"].node.disconnect()
 
         for ext in self.loaded_extensions:
@@ -145,11 +141,15 @@ class Versare(commands.AutoShardedBot):
             else:
                 self._loaded_extensions.remove(ext)
 
-        with contextlib.suppress(AttributeError, FileNotFoundError):
+        if hasattr(self, "db"):
             await self.db.execute("DELETE FROM sniper")
             await self.db.execute("DELETE FROM editsniper")
             await self.db.close()
+
+        if hasattr(self, "httpsession"):
             await self.httpsession.close()
+
+        with contextlib.suppress(FileNotFoundError):
             with open(self._logpath, "rb") as log:
                 with gzip_file(f"{self._logpath}.gz", "wb") as gzipped_log:
                     copy(log, gzipped_log)
