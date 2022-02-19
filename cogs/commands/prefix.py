@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from contextlib import suppress
-
 import discord
 from discord.ext import commands
 
@@ -23,7 +21,7 @@ class Prefix(commands.Cog):
     async def prefix(self, ctx: commands.Context) -> discord.Message:
 
         return await ctx.send(
-            f"Prefix for this guild is `{self.bot.prefixes.get(str(ctx.guild.id), self.bot.config['defaults']['prefix'])}`"
+            f"Prefix for this guild is `{self.bot.prefixes.get(ctx.guild.id, self.bot.config['defaults']['prefix'])}`"
         )
 
     @prefix.command(
@@ -41,8 +39,7 @@ class Prefix(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_leave(self, guild: discord.Guild) -> None:
-        with suppress(KeyError):
-            self.bot.prefixes.pop(str(guild.id))
+        self.bot.prefixes.pop(guild.id, None)
         await self.bot.db.execute("DELETE FROM prefix WHERE guild_id = $1", guild.id)
 
 

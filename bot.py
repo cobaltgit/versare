@@ -30,7 +30,7 @@ class Versare(commands.AutoShardedBot):
         default = self.config["defaults"]["prefix"]
 
         if message.guild and hasattr(self, "prefixes"):
-            return commands.when_mentioned_or(self.prefixes.get(str(message.guild.id), default))(self, message)
+            return commands.when_mentioned_or(self.prefixes.get(message.guild.id, default))(self, message)
         else:
             return commands.when_mentioned_or(default)(self, message)
 
@@ -126,7 +126,7 @@ class Versare(commands.AutoShardedBot):
             await self.cache_prefixes()
 
     async def cache_prefixes(self) -> None:
-        self.prefixes = {str(guild_id): prefix for prefix, guild_id in await self.db.fetch("SELECT * FROM prefixes")}
+        self.prefixes = {guild_id: prefix for prefix, guild_id in await self.db.fetch("SELECT * FROM prefixes")}
 
     async def close(self, *args, **kwargs) -> None:
 

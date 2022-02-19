@@ -20,4 +20,4 @@ async def upsert_prefix(ctx: commands.Context, prefix: str) -> None:
     else:
         await ctx.bot.db.execute("INSERT INTO prefixes (prefix, guild_id) VALUES($1, $2)", prefix, ctx.guild.id)
 
-    ctx.bot.prefixes[str(ctx.guild.id)] = prefix
+    ctx.bot.prefixes[ctx.guild.id] = prefix
