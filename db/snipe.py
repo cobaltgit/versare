@@ -57,8 +57,10 @@ async def get_editsnipe(ctx: commands.Context):
 
 
 async def optout(ctx: commands.Context):
-    snipe_optout = await ctx.bot.db.fetchrow("SELECT * FROM snipe_optout WHERE guild_id = $1", ctx.guild.id)
-    if snipe_optout and ctx.author.id in snipe_optout:
+    snipe_optout = await ctx.bot.db.fetchval(
+        "SELECT * FROM snipe_optout WHERE guild_id = $1 AND user_id = $2", ctx.guild.id, ctx.author.id
+    )
+    if snipe_optout:
         return False
     else:
         return await ctx.bot.db.execute(
@@ -67,8 +69,10 @@ async def optout(ctx: commands.Context):
 
 
 async def optin(ctx: commands.Context):
-    snipe_optout = await ctx.bot.db.fetchrow("SELECT * FROM snipe_optout WHERE guild_id = $1", ctx.guild.id)
-    if snipe_optout and ctx.author.id not in snipe_optout:
+    snipe_optout = await ctx.bot.db.fetchval(
+        "SELECT * FROM snipe_optout WHERE guild_id = $1 AND user_id = $2", ctx.guild.id, ctx.author.id
+    )
+    if not snipe_optout:
         return False
     else:
         return await ctx.bot.db.execute(
