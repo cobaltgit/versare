@@ -21,8 +21,8 @@ async def snipe_message(ctx: commands.Context, message: discord.Message) -> None
     )
     await asyncio.sleep(30)
     await ctx.bot.db.execute("DELETE FROM sniper WHERE channel_id = $1", message.channel.id)
-    with contextlib.suppress(AttributeError, NameError):
-        del ctx.encrypted_message
+    with contextlib.suppress(NameError):
+        del encrypted_message
 
 
 async def snipe_edit(ctx: commands.Context, before: discord.Message, after: discord.Message):
@@ -43,7 +43,7 @@ async def snipe_edit(ctx: commands.Context, before: discord.Message, after: disc
     )
     await asyncio.sleep(30)
     await ctx.bot.db.execute("DELETE FROM editsniper WHERE channel_id = $1", before.channel.id)
-    with contextlib.suppress(AttributeError, NameError):
+    with contextlib.suppress(NameError):
         del encrypted_before
         del encrypted_after
 
