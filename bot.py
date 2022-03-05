@@ -7,6 +7,7 @@ import os
 import sys
 import traceback
 from datetime import datetime
+from glob import glob
 from gzip import open as gzip_file
 from shutil import copyfileobj as copy
 from time import time
@@ -22,10 +23,6 @@ from utils.help import VersareHelp
 
 
 class Versare(commands.AutoShardedBot):
-    @property
-    def loaded_extensions(self) -> list[str]:
-        return self._loaded_extensions
-
     def get_pfx(self, bot: commands.Bot, message: discord.Message):
         default = self.config["defaults"]["prefix"]
 
@@ -63,6 +60,8 @@ class Versare(commands.AutoShardedBot):
             help_command=VersareHelp(),
         )
 
+        self._extensions = [x.replace("/", ".")[2:-3] for x in glob("./cogs/**/*.py")]
+
     async def on_ready(self) -> None:
         self.start_time = time()
         print(
@@ -70,25 +69,8 @@ class Versare(commands.AutoShardedBot):
         )
 
     def load_extensions(self) -> None:
-        initial_extensions = [
-            "cogs.commands.prefix",
-            "cogs.listeners.error",
-            "cogs.commands.utils",
-            "cogs.commands.mod",
-            "cogs.listeners.sniper",
-            "cogs.commands.inet",
-            "cogs.listeners.token",
-            "cogs.commands.music",
-        ]
-        self._loaded_extensions = []
-
-        for ext in initial_extensions:
-            try:
-                self.load_extension(ext)
-            except:
-                print(f"Error loading extension {ext}:\n{traceback.format_exc()}")
-            else:
-                self._loaded_extensions.append(ext)
+        for ext in self._extensions:
+            self.load_extension(ext)
 
         self.load_extension("jishaku")
         self.get_command("jsk").hidden = True
@@ -133,13 +115,11 @@ class Versare(commands.AutoShardedBot):
         if hasattr(self.cogs.get("Music"), "node"):
             await self.cogs["Music"].node.disconnect()
 
-        for ext in self.loaded_extensions:
+        for ext in self._extensions:
             try:
                 self.unload_extension(ext)
             except:
                 print(f"Error unloading extension {ext}:\n{traceback.format_exc()}")
-            else:
-                self._loaded_extensions.remove(ext)
 
         if hasattr(self, "db"):
             await self.db.execute("DELETE FROM sniper")
