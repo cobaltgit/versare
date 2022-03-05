@@ -38,6 +38,8 @@ class Games(commands.Cog):
                 if view.is_finished():
                     return
             except asyncio.TimeoutError:
+                if view.is_finished():
+                    return
                 return await ctx.send("Game timed out!")
 
             if user_word.content not in self.WORDLE_DICT:
