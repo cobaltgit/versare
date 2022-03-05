@@ -7,7 +7,7 @@ from discord.ext import commands
 class TokenInvalidator(commands.Cog):
     """Checks for tokens in messages and invalidates them"""
 
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
         self.TOKEN_REGEX = re.compile(r"([a-zA-Z0-9]{24}\.[a-zA-Z0-9]{6}\.[a-zA-Z0-9_\-]{27}|mfa\.[a-zA-Z0-9_\-]{84})")
         self.API_ENDPOINT = "https://api.github.com/gists"
@@ -30,6 +30,6 @@ class TokenInvalidator(commands.Cog):
             return await message.channel.send(f"Found {len(tokens)} token(s) in message - invalidated\n{gist_url}")
 
 
-def setup(bot):
+def setup(bot: commands.Bot) -> None:
     if bot.config["auth"].get("github_token"):
         bot.add_cog(TokenInvalidator(bot))
