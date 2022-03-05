@@ -24,4 +24,11 @@ CREATE TABLE IF NOT EXISTS snipe_optout(
 CREATE TABLE IF NOT EXISTS dj(
     guild_id bigint NOT NULL,
     role_id bigint NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS afk(
+    user_id bigint NOT NULL,
+    guild_id bigint NOT NULL,
+    message TEXT,
+    timestamp TIMESTAMP NOT NULL
 )
