@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from io import BytesIO
+from io import StringIO
 from typing import Type
 
 import discord
@@ -22,5 +22,29 @@ class Traceback(discord.ui.View):
         """Send a file containing the traceback"""
         await interaction.response.defer()
         await interaction.followup.send(
-            file=discord.File(BytesIO(self.exception.encode("utf-8")), filename="exception.py"), ephemeral=True
+            file=discord.File(StringIO(self.exception), filename="exception.py"), ephemeral=True
         )
+
+
+class Wordle(discord.ui.View):
+    """View for Wordle game command"""
+
+    def __init__(self, word: str) -> None:
+        super().__init__()
+        self.word = word
+
+    @discord.ui.button(label="How to Play", style=discord.ButtonStyle.green, emoji="⌨️")
+    async def instructions(self, button: discord.ui.Button, interaction: discord.Interaction) -> discord.Message:
+        """Send official instructions on how to play"""
+        await interaction.response.defer()
+        return await interaction.followup.send(
+            "To guess a word, type it in chat!",
+            file=discord.File("utils/files/wordle_instructions.png"),
+            ephemeral=True,
+        )
+
+    @discord.ui.button(label="Exit", style=discord.ButtonStyle.danger, emoji="❌")
+    async def exit(self, button: discord.ui.Button, interaction: discord.Interaction) -> discord.Message:
+        """Stop the view and game"""
+        await interaction.response.send_message(f"Exited Wordle. The correct word was '{self.word}'")
+        return self.stop()
