@@ -1,12 +1,8 @@
 from __future__ import annotations
 
-import sys
 from datetime import timedelta
-from inspect import getsource
-from io import BytesIO
 from platform import python_version
 from time import time
-from typing import Optional
 
 import discord
 import psutil
@@ -135,38 +131,6 @@ class Utilities(commands.Cog):
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
         return await msg.edit(content=None, embed=embed)
-
-    @commands.command(
-        name="source",
-        aliases=["code", "command", "src", "git", "github"],
-        brief="Get source code of a command or the bot",
-        description="Fetch and send the source code of a bot command if specified or the GitHub repository",
-    )
-    async def source(
-        self,
-        ctx: commands.Context,
-        *,
-        command: Optional[str] = commands.Option(description="Specify a command:", default=None),
-    ) -> discord.Message:
-
-        if not command:
-            return await ctx.send(f"Link to source code on GitHub\n{self.GITHUB_URL}/tree/{self.GIT_BRANCH}")
-        elif not (cmd := self.bot.get_command(command)):
-            return await ctx.send(
-                f"Unknown command '{command}'. Link to source code on GitHub\n{self.GITHUB_URL}/tree/{self.GIT_BRANCH}"
-            )
-        elif command == "help":
-            return await ctx.send(file=discord.File(self.HELP_COMMAND_FILE, filename="help.py"))
-        else:
-            fn = cmd.callback
-            src = getsource(fn)
-            buf = BytesIO(src.encode("utf-8"))
-            if sys.getsizeof(buf) > ctx.guild.filesize_limit:
-                return await ctx.send(
-                    f"Source code file is larger than this server's filesize limit ({ctx.guild.filesize_limit/float(1<<20):,.0f})\nThe bot's source code can be found here: {self.GITHUB_URL}/tree/{self.GIT_BRANCH}"
-                )
-
-            return await ctx.send(file=discord.File(buf, filename=command.replace(" ", "_") + ".py"))
 
 
 def setup(bot: commands.Bot) -> None:
