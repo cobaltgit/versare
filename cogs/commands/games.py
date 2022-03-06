@@ -35,12 +35,11 @@ class Games(commands.Cog):
                 user_word = await self.bot.wait_for(
                     "message", check=lambda m: m.author == ctx.author and m.channel == ctx.channel
                 )
-                if view.is_finished():
-                    return
             except asyncio.TimeoutError:
-                if view.is_finished():
-                    return
-                return await ctx.send("Game timed out!")
+                return await ctx.send("Game timed out!") if not view.is_finished() else False
+
+            if view.is_finished():
+                return
 
             if user_word.content not in self.WORDLE_DICT:
                 await ctx.send(
