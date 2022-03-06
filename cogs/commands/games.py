@@ -30,7 +30,7 @@ class Games(commands.Cog):
 
         guesses = 6
 
-        while guesses and ("\U0001f7e9" * 5) not in matrix:
+        while guesses:
             try:
                 user_word = await self.bot.wait_for(
                     "message", check=lambda m: m.author == ctx.author and m.channel == ctx.channel
