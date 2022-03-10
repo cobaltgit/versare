@@ -32,8 +32,8 @@ emojis:
   postgres: <:PostgreSQL:923564294526885918>
 
 lavalink:
-  host: lavalink.cobaltonline.net
-  port: 443
-  password: cobaltlavanode23@
-  https: true
+  host: localhost
+  port: 2333
+  password: youshallnotpass
+  https: false
   identifier: MAIN

@@ -53,7 +53,7 @@ Enter the database name, username, password, IP address and port of your Postgre
 #### Setting up Lavalink
 
 A Lavalink setup is required for the music cog to work.
-The example config file uses my hosted public Lavalink node, you're free to use it or either [make your own](https://github.com/freyacodes/Lavalink#server-configuration)
+Follow [these instructions](https://github.com/freyacodes/Lavalink#server-configuration) to set up a Lavalink node
 
 Enter your node details into the `lavalink` section of your config.yml
 ```yml
