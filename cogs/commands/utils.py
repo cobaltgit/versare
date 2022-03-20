@@ -147,7 +147,7 @@ class Utilities(commands.Cog):
         brief="Convert a message in chat to an audio file",
         description="Uses gTTS to convert a message in chat to an audio file which is then sent to the channel",
     )
-    @commands.has_cooldown(1, 10, commands.BucketType.user)
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def tts(
         self,
         ctx: commands.Context,
