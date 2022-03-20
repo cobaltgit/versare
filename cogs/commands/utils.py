@@ -1,12 +1,16 @@
 from __future__ import annotations
 
 from datetime import timedelta
+from functools import partial
+from io import BytesIO
 from platform import python_version
 from time import time
+from typing import Optional
 
 import discord
 import psutil
 from discord.ext import commands
+from gtts import gTTS
 from pkg_resources import get_distribution
 
 from utils.objects import BaseEmbed
@@ -21,6 +25,12 @@ class Utilities(commands.Cog):
         self.GITHUB_URL = "https://github.com/cobaltgit/versare"
         self.GIT_BRANCH = "rewrite"
         self.HELP_COMMAND_FILE = "./utils/help.py"
+
+    def tts_save(self, lang: str, text: str, slow: bool = False) -> BytesIO:
+        fp = BytesIO()
+        gTTS(text, lang=lang, slow=slow).write_to_fp(fp)
+        fp.seek(0)
+        return fp
 
     @commands.command(
         name="ping",
@@ -131,6 +141,27 @@ class Utilities(commands.Cog):
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
         return await msg.edit(content=None, embed=embed)
+
+    @commands.command(
+        name="tts",
+        brief="Convert a message in chat to an audio file",
+        description="Uses gTTS to convert a message in chat to an audio file which is then sent to the channel",
+    )
+    @commands.has_cooldown(1, 10, commands.BucketType.user)
+    async def tts(
+        self,
+        ctx: commands.Context,
+        language: Optional[str] = commands.Option(
+            description="What language would you like to speak in?", default="en"
+        ),
+        *,
+        message: str = commands.Option(description="What would you like to say?"),
+    ) -> discord.Message:
+        msg = await ctx.send(":speaker: Processing text...")
+        async with ctx.typing():
+            _func = partial(self.tts_save, language, message)
+            tts_file = await self.bot.loop.run_in_executor(None, _func)
+        return await msg.edit(":speaker: Here you go!", file=discord.File(tts_file, filename="tts.wav"))
 
 
 def setup(bot: commands.Bot) -> None:

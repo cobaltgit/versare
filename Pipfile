@@ -16,6 +16,7 @@ cchardet = "*"
 aiodns = "*"
 brotli = "*"
 wavelink = "*"
+gtts = "*"
 
 [dev-packages]
 pre-commit = "*"

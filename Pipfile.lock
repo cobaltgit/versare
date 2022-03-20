@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "2e753a092793e3797b5b6509c311665137b6a74b4014eb712254c1d205479034"
+            "sha256": "2c925217d9ebed61f6451374a9f711d578ba9206f735ab036d2e1e8c7c000ae3"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -275,6 +275,13 @@
             "index": "pypi",
             "version": "==2.1.7"
         },
+        "certifi": {
+            "hashes": [
+                "sha256:78884e7c1d4b00ce3cea67b44566851c4343c120abd683433ce934a68ea58872",
+                "sha256:d62a0163eb4c2344ac042ab2bdf75399a71a2d8c7d47eac2e2ee91b9d6339569"
+            ],
+            "version": "==2021.10.8"
+        },
         "cffi": {
             "hashes": [
                 "sha256:00c878c90cb53ccfaae6b8bc18ad05d2036553e6d9d1d9dbcf323bbe83854ca3",
@@ -378,7 +385,7 @@
                 "voice"
             ],
             "git": "https://github.com/iDevision/enhanced-discord.py",
-            "ref": "15eb9d952e634ce043d0955dab17cbb607b2e6f4"
+            "ref": "03c51210a54c529fd26011d0ca6dcab878fee2b7"
         },
         "discord.py": {
             "extras": [
@@ -451,6 +458,14 @@
             ],
             "markers": "python_version >= '3.7'",
             "version": "==1.3.0"
+        },
+        "gtts": {
+            "hashes": [
+                "sha256:8376d9bde85ac8cda95ea92dcd12bf31a3efe9e810edcb04437a4151cbec30d6",
+                "sha256:88cfaa112471867009a0450a696e5bc69cf1671fa0fa683fe17d0650023c863c"
+            ],
+            "index": "pypi",
+            "version": "==2.2.3"
         },
         "idna": {
             "hashes": [
@@ -725,6 +740,14 @@
             "index": "pypi",
             "version": "==6.0"
         },
+        "requests": {
+            "hashes": [
+                "sha256:68d7c56fd5a8999887728ef304a6d12edc7be74f1cfa47714fc8b414525c9a61",
+                "sha256:f22fa1e554c9ddfd16e6e41ac79759e17be9e492b3587efa038054674760e72d"
+            ],
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4, 3.5'",
+            "version": "==2.27.1"
+        },
         "six": {
             "hashes": [
                 "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926",
@@ -732,6 +755,14 @@
             ],
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
             "version": "==1.16.0"
+        },
+        "urllib3": {
+            "hashes": [
+                "sha256:000ca7f471a233c2251c6c7023ee85305721bfdf18621ebff4fd17a8653427ed",
+                "sha256:0e7c33d9a63e7ddfcb86780aac87befc2fbddf46c58dbb487e0855f7ceec283c"
+            ],
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4' and python_version < '4'",
+            "version": "==1.26.8"
         },
         "uvloop": {
             "hashes": [
@@ -757,11 +788,11 @@
         },
         "wavelink": {
             "hashes": [
-                "sha256:4b0d50c282eb86ecbd6cc209ed638eeed669435432eaede810e3212f9113d0ef",
-                "sha256:560e2594086e5219e1a830dfb8b5a0f4228f068d6a28c59d105942ba59ac84d1"
+                "sha256:2f0f0e75d725f3d754ef4cd925900608f7ef2a4b5f9c53ad0706d5491f18df0a",
+                "sha256:a575e0fc4bcfbfc51f93afaa7e654bdfd4bbd67957278c59f6148057c67eb128"
             ],
             "index": "pypi",
-            "version": "==1.1.1"
+            "version": "==1.2.1"
         },
         "wheel": {
             "hashes": [
@@ -1052,11 +1083,11 @@
         },
         "virtualenv": {
             "hashes": [
-                "sha256:01f5f80744d24a3743ce61858123488e91cb2dd1d3bdf92adaf1bba39ffdedf0",
-                "sha256:e7b34c9474e6476ee208c43a4d9ac1510b041c68347eabfe9a9ea0c86aa0a46b"
+                "sha256:dd448d1ded9f14d1a4bfa6bfc0c5b96ae3be3f2d6c6c159b23ddcfd701baa021",
+                "sha256:e9dd1a1359d70137559034c0f5433b34caf504af2dc756367be86a5a32967134"
             ],
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'",
-            "version": "==20.13.2"
+            "version": "==20.13.3"
         }
     }
 }
