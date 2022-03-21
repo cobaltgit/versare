@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+import asyncio
 import re
+from contextlib import suppress
 from datetime import timedelta
 
+import async_timeout
 import discord
+from wavelink import Player
 
 
 class BaseEmbed(discord.Embed):
@@ -75,3 +79,24 @@ class TimeConverter:
 
     def __str__(self) -> str:
         return ", ".join(self._naturaldelta())
+
+
+class VersarePlayer(Player):
+    """Custom wavelink player class"""
+
+    async def wait_for_next(self) -> None:
+        """Task to wait for next track"""
+        try:
+            with async_timeout.timeout(3):
+                next_track = await self.queue.get_wait()
+        except (asyncio.TimeoutError, asyncio.CancelledError):
+            if not self.is_playing() and self.is_connected():
+                return await self.disconnect()
+        finally:
+            with suppress(UnboundLocalError):
+                if next_track:
+                    return await self.play(next_track)
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.loop = False

@@ -1,17 +1,15 @@
 import asyncio
 import re
-from contextlib import suppress
 from io import BytesIO
 from random import shuffle
 from typing import Optional
 
-import async_timeout
 import discord
 import wavelink
 from discord.ext import commands
 
 import db.dj
-from utils.objects import BaseEmbed
+from utils.objects import BaseEmbed, VersarePlayer
 
 
 class Music(commands.Cog):
@@ -30,29 +28,12 @@ class Music(commands.Cog):
         await wavelink.NodePool.create_node(bot=self.bot, **self.bot.config["lavalink"])
         self.node = wavelink.NodePool.get_node(identifier=self.bot.config["lavalink"]["identifier"])
 
-    async def initialise_voice_client(self, channel: discord.VoiceChannel) -> wavelink.Player:
-        vc: wavelink.Player = await channel.connect(cls=wavelink.Player)
-        vc.loop = False
-        return vc
-
-    async def get_next(self, player: wavelink.Player) -> ...:
-        try:
-            with async_timeout.timeout(90):
-                next_track = await player.queue.get_wait()
-        except (asyncio.TimeoutError, asyncio.CancelledError):
-            if not player.is_playing():
-                return await player.disconnect()
-        finally:
-            with suppress(UnboundLocalError):
-                if next_track:
-                    return await player.play(next_track)
-
     @commands.Cog.listener()
     async def on_wavelink_node_ready(self, node: wavelink.Node) -> None:
         print(f"Lavalink node {node.identifier} ready")
 
     @commands.Cog.listener()
-    async def on_wavelink_track_end(self, player: wavelink.Player, track, reason):
+    async def on_wavelink_track_end(self, player: VersarePlayer, track, reason):
 
         if all(m.bot for m in player.channel.members):
             return await player.disconnect()
@@ -62,7 +43,7 @@ class Music(commands.Cog):
         else:
             await player.stop()
 
-        player.wait_task = self.bot.loop.create_task(self.get_next(player))
+        player.wait_task = self.bot.loop.create_task(player.wait_for_next())
 
     @commands.group(
         name="play",
@@ -86,9 +67,6 @@ class Music(commands.Cog):
         self, ctx: commands.Context, *, query: str = commands.Option(description="Enter a query for YouTube tracks")
     ) -> discord.Message:
 
-        if not ctx.author.voice:
-            return await ctx.send("You must be connected to a voice channel")
-
         embed = BaseEmbed(color=ctx.guild.me.color)
         track_search = None
         track = None
@@ -109,7 +87,7 @@ class Music(commands.Cog):
 
         if track_search:
             search_embed = BaseEmbed(
-                title="First 10 results",
+                title=f"First {len(track_search[:10])} results",
                 description=(
                     "**I found the following tracks on __YouTube__:**\n\n"
                     + "\n".join(f"{idx+1}. '{val}' by '{val.author}'" for idx, val in enumerate(track_search[:10]))
@@ -137,7 +115,7 @@ class Music(commands.Cog):
 
             embed.set_thumbnail(url=track.thumbnail)
 
-        vc: wavelink.Player = ctx.voice_client or await self.initialise_voice_client(ctx.author.voice.channel)
+        vc: VersarePlayer = ctx.voice_client or await self.initialise_voice_client(ctx.author.voice.channel)
 
         try:
             vc.wait_task.cancel()
@@ -234,7 +212,7 @@ class Music(commands.Cog):
 
             track = track_search[int(response.content) - 1]
 
-            vc: wavelink.Player = ctx.voice_client or await self.initialise_voice_client(ctx.author.voice.channel)
+            vc: wavelink.Player = ctx.voice_client or await self.ensure_voice(ctx)
             vc.loop = False
 
             try:
@@ -531,6 +509,16 @@ class Music(commands.Cog):
             return await ctx.send("I am already playing tracks")
         await vc.resume()
         return await ctx.send("Resumed the player")
+
+    @play_soundcloud.before_invoke
+    @play_youtube.before_invoke
+    async def ensure_voice(self, ctx: commands.Context) -> discord.Message | VersarePlayer:
+        if not ctx.voice_client:
+            if ctx.author.voice:
+                vc: VersarePlayer = await ctx.author.voice.channel.connect(cls=VersarePlayer)
+                return vc
+            else:
+                raise commands.CommandError("Must be connected to a voice channel")
 
 
 def setup(bot: commands.Bot) -> None:
