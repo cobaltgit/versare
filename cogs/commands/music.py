@@ -35,6 +35,18 @@ class Music(commands.Cog):
         vc.loop = False
         return vc
 
+    async def get_next(self, player: wavelink.Player) -> ...:
+        try:
+            with async_timeout.timeout(90):
+                next_track = await player.queue.get_wait()
+        except (asyncio.TimeoutError, asyncio.CancelledError):
+            if not player.is_playing():
+                return await player.disconnect()
+        finally:
+            with suppress(UnboundLocalError):
+                if next_track:
+                    return await player.play(next_track)
+
     @commands.Cog.listener()
     async def on_wavelink_node_ready(self, node: wavelink.Node) -> None:
         print(f"Lavalink node {node.identifier} ready")
@@ -50,16 +62,7 @@ class Music(commands.Cog):
         else:
             await player.stop()
 
-        try:
-            with async_timeout.timeout(90):
-                next_track = await player.queue.get_wait()
-        except (asyncio.TimeoutError, asyncio.CancelledError):
-            if not player.is_playing():
-                return await player.disconnect()
-        finally:
-            with suppress(UnboundLocalError):
-                if next_track:
-                    return await player.play(next_track)
+        player.wait_task = self.bot.loop.create_task(self.get_next(player))
 
     @commands.group(
         name="play",
@@ -93,13 +96,12 @@ class Music(commands.Cog):
         async with ctx.channel.typing():
             if self.YT_REGEX.match(query):
                 try:
-                    if hasattr(self, "node"):
-                        if "playlist" not in query:
-                            track = (await self.node.get_tracks(query=query, cls=wavelink.SoundCloudTrack))[0]
-                        else:
-                            track = await self.node.get_playlist(query, wavelink.YouTubePlaylist)
-                    else:
+                    if not hasattr(self, "node"):
                         return await ctx.send("Lavalink node is offline")
+                    if "playlist" in query:
+                        track = await self.node.get_playlist(query, wavelink.YouTubePlaylist)
+                    else:
+                        track = (await self.node.get_tracks(query=query, cls=wavelink.SoundCloudTrack))[0]
                 except wavelink.errors.LavalinkException as e:
                     return await ctx.send(e)
             else:
@@ -136,6 +138,11 @@ class Music(commands.Cog):
             embed.set_thumbnail(url=track.thumbnail)
 
         vc: wavelink.Player = ctx.voice_client or await self.initialise_voice_client(ctx.author.voice.channel)
+
+        try:
+            vc.wait_task.cancel()
+        except:
+            pass
 
         if isinstance(track, wavelink.YouTubePlaylist):
             if vc.is_playing():
@@ -229,6 +236,12 @@ class Music(commands.Cog):
 
             vc: wavelink.Player = ctx.voice_client or await self.initialise_voice_client(ctx.author.voice.channel)
             vc.loop = False
+
+            try:
+                vc.wait_task.cancel()
+            except:
+                pass
+
         if vc.is_playing():
             await vc.queue.put_wait(track)
             embed.title = "Added to Queue"

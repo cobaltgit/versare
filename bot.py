@@ -33,7 +33,7 @@ class Versare(commands.AutoShardedBot):
 
     def __init__(self) -> None:
 
-        self.__version__ = "0.5.4"
+        self.__version__ = "0.5.5"
 
         with open("config.yml", "r") as config_file:
             self.config = yaml.safe_load(config_file)
