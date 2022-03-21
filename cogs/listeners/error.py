@@ -23,6 +23,7 @@ class ErrorHandler(commands.Cog):
         error = getattr(error, "original", error)
         embed = BaseEmbed(
             title=f'Discord Error: {" ".join(re.split("(?=[A-Z])", type(error).__name__))}',
+            description=str(error),
             color=0x800000,
         )
         if isinstance(error, commands.MissingPermissions):
@@ -56,10 +57,11 @@ class ErrorHandler(commands.Cog):
         elif isinstance(error, commands.CommandNotFound):
             return
         else:
-            return await ctx.send(
-                "A wild exception appears!",
-                view=Traceback(ctx, "".join(traceback.format_exception(type(error), error, error.__traceback__))),
-            )
+            if not isinstance(error, commands.CommandError):
+                return await ctx.send(
+                    "A wild exception appears!",
+                    view=Traceback(ctx, "".join(traceback.format_exception(type(error), error, error.__traceback__))),
+                )
         return await ctx.send(embed=embed)
 
 
